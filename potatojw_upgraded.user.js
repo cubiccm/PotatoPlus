@@ -1,18 +1,19 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.2
+// @version      0.0.2.1
 // @description  土豆改善工程！
-// @author       You
-// @match        *://*.nju.edu.cn/jiaowu/student/elective/*
+// @author       Limosity
+// @match        *://*.nju.edu.cn/jiaowu/*
 // @grant        none
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
 // ==/UserScript==
 (function() {
   'use strict';
   $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.2 by Limosity");
+  console.log("potatojw_upgraded v0.0.2.1 by Limosity");
   // Your code here...
+  $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
   var reg_read = /readCourseList.do/i;
   var reg_fr_dis = /freshman_discuss.do/i;
@@ -120,7 +121,7 @@
       });
     }
 
-    window.initClassList = function(type = 1, success_func = function() {}){ 
+    window.initClassList = function(type = 1, success_func = function() {}){
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do",
         data: 'method=readCourseList&type=' + type,
@@ -149,13 +150,14 @@
 <div id="potatojw_mask"></div>
 <div id="potatojw_filter_setting_frame">
   <input type="checkbox" id="filter_full_class" checked="checked">
-  <label for="filter_full_class">过滤满员课程</label>
+  <label for="filter_full_class">仅显示空余课程</label>
   <br>
   <section id="filter_time">
-    <h3>上课时间过滤器</h3>
+    <h3>仅显示这些上课时间：</h3>
   </section>
   <br>
-  <button onclick="hideFilterSetting();">关闭</button>
+  <button onclick="hideFilterSetting();">应用设置并关闭</button>
+  <span>potatojw_upgraded Beta v0.0.2.1 当前仅支持体育补选 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
 </div>
   `;
   $$("body").append(filter_setting_html);
@@ -164,6 +166,7 @@
 <div id='potatojw_upgraded_toolbar'>
 <input type="checkbox" id="filter_switch">
 <label for="filter_switch">打开过滤器</label>
+<button id="show_filter_setting" onclick="showFilterSetting();">过滤器设置</button>
 <input type="checkbox" id="auto_refresh">
 <label for="auto_refresh">自动刷新</label>
 <input type="checkbox" id="auto_select">
@@ -172,9 +175,8 @@
 <label for="close_alert">关闭所有提示框</label>
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">更漂亮的界面</label>
-<button id="show_filter_setting" onclick="showFilterSetting();">过滤器设置</button>
 <br>
-potatojw_upgraded Beta 当前仅限体育补选 注：自动选课是按过滤器选课~ 更多功能开发中~
+<span>potatojw_upgraded Beta</span>
 </div>
   `;
   $$("body").append(toolbar_html);
@@ -204,6 +206,7 @@ potatojw_upgraded Beta 当前仅限体育补选 注：自动选课是按过滤�
   border-radius: 8px;
   padding: 15px;
   color: white;
+  overflow: auto;
 }
 #potatojw_upgraded_toolbar {
   position: fixed;
@@ -234,7 +237,7 @@ potatojw_upgraded Beta 当前仅限体育补选 注：自动选课是按过滤�
       date_list.push(current_time_val);
       var filter_time_append_html = `
         <input type="checkbox" class="filter_time_checkbox" id="filter_time_checkbox_` + date_num + `" checked="checked">
-        <label for="filter_time_checkbox_` + (date_num++) + `">` + current_time_val + `</label>
+        <label for="filter_time_checkbox_` + (date_num++) + `">` + current_time_val + `</label><br>
       `;
       $$("section#filter_time").append(filter_time_append_html);
     });
