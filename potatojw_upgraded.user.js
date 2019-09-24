@@ -1,17 +1,18 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.3.2
+// @version      0.0.3.3
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
+// @match        *://219.219.120.46/jiaowu/*
 // @grant        none
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
 // ==/UserScript==
 (function() {
   'use strict';
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.3.2 by Limosity");
+  console.log("potatojw_upgraded v0.0.3.3 by Limosity");
   // Your code here...
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -182,24 +183,32 @@
       return parseInt($$(element).children("td:eq(7)").html()) >= parseInt($$(element).children("td:eq(6)").html());
     };
   } else if (mode == "open") {
-    window.campusChange = function() {};
+    window.showCourseDetailInfo = function(classId, courseNumber){
+      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
+    };
+
+    window.campusChange = function() {
+      initClassList();
+    };
+
     window.selectedClass = function(class_ID, course_name) {
       console.log("Select: " + course_name);
       var academy_ID = $$('#academyList').val();
       $$.ajax({
-        url: "http://jw.nju.edu.cn:80/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + class_ID + "&academy=" + academy_ID,
+        url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + class_ID + "&academy=" + academy_ID,
         type: "GET",
         success: function(res) {
           console.log("Success!");
           initClassList();
         }
       });
-    }
+    };
 
     window.optimizeClassList = function() {
+      $$("#btSearch").attr("value", "刷 新");
       $$("#iframeTable").after(`<div id="tbCourseList"></div>`);
       $$("#iframeTable").remove();
-    }
+    };
 
     $$(document).ready(function() {
       optimizeClassList();
@@ -207,7 +216,7 @@
 
     window.initClassList = function() {
       $$.ajax({
-        url: "http://jw.nju.edu.cn:80/jiaowu/student/elective/courseList.do?method=openRenewCourse&campus="+document.getElementById('campusList').value+"&academy="+document.getElementById('academyList').value,
+        url: "/jiaowu/student/elective/courseList.do?method=openRenewCourse&campus="+document.getElementById('campusList').value+"&academy="+document.getElementById('academyList').value,
         type: "GET",
         success: function(res) {
           $$("#tbCourseList").html($$(res).find("table.TABLE_BODY").html());
@@ -219,7 +228,7 @@
 
     window.searchCourseList = function(truenmn) {
       initClassList();
-    }
+    };
 
     window.isClassFull = function(element) {
       return parseInt($$(element).children("td:eq(8)").html()) >= parseInt($$(element).children("td:eq(7)").html());
@@ -233,8 +242,8 @@
   <label for="filter_full_class">仅显示空余课程</label>
   <br>
   <section id="filter_class_name">
-    <h3>课名过滤Beta</h3>
-    <h5>仅显示含有以下全部字符的课程（如：游泳 微积分）</h5>
+    <h3>课名过滤</h3>
+    <h5>仅显示含有以下全部字符的课程</h5>
     <h5>说明：当且仅当下面输入框中的文字是课程名的连续一段文字时才会显示该课程~</h5>
     <input type="text" id="filter_class_name_text">
   </section>
@@ -245,7 +254,7 @@
   <br>
   <button onclick="hideFilterSetting();">应用设置并关闭</button>
   <br>
-  <span>potatojw_upgraded Beta v0.0.3.2 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
+  <span>potatojw_upgraded Beta v0.0.3.3 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
   <br>
   <span>字体美化已启用</span>
 </div>
@@ -266,7 +275,7 @@
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">整体界面美化</label>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.2</span>
+<span>potatojw_upgraded Beta v0.0.3.3</span>
 </div>
   `;
   $$("body").append(toolbar_html);
@@ -431,6 +440,9 @@ body {
 
   window.time_list = new Array();
   window.updateFilterList = function() {
+    time_list = [];
+    $$("section#filter_time > input").remove();
+    $$("section#filter_time > label").remove();
     var date_num = 0;
     getAllClassDOM().each(function() {
       if (typeof(class_time_index[mode]) != "undefined") {
