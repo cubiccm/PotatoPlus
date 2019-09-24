@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.3.1
+// @version      0.0.3.2
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -11,7 +11,7 @@
 (function() {
   'use strict';
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.3.1 by Limosity");
+  console.log("potatojw_upgraded v0.0.3.2 by Limosity");
   // Your code here...
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -245,7 +245,7 @@
   <br>
   <button onclick="hideFilterSetting();">应用设置并关闭</button>
   <br>
-  <span>potatojw_upgraded Beta v0.0.3.1 注：自动选课是按过滤器选课，正在改善~ 更多功能开发中~</span>
+  <span>potatojw_upgraded Beta v0.0.3.2 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
   <br>
   <span>字体美化已启用</span>
 </div>
@@ -266,7 +266,7 @@
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">整体界面美化</label>
 <br>
-<span>potatojw_upgraded Beta</span>
+<span>potatojw_upgraded Beta v0.0.3.2</span>
 </div>
   `;
   $$("body").append(toolbar_html);
@@ -351,8 +351,6 @@ body {
 
   window.auto_select_switch = $$("#auto_select").prop("checked");
   $$("#auto_select").change(function() {
-    if ($$("#auto_select").prop("checked") && !$$("#auto_refresh").prop("checked"))
-      $$("#auto_refresh").click();
     window.auto_select_switch = $$("#auto_select").prop("checked");
   });
 
@@ -386,12 +384,30 @@ body {
   // Update class list automatically
   // 自动更新
   window.startAutoRefresh = function() {
-    var auto_check_times = 0, random_interval = 500 + Math.floor(Math.random() * 800);
+    function getNumberInNormalDistribution(mean, std_dev, lower_limit, upper_limit) {
+      var res = Math.floor(mean + randomNormalDistribution() * std_dev);
+      if (res >= upper_limit) return upper_limit;
+      if (res >= mean) return res;
+      res = mean - (mean-res) * 0.6;
+      if (res < lower_limit) return lower_limit;
+      return res;
+    }
+    function randomNormalDistribution() {
+      var u=0.0, v=0.0, w=0.0, c=0.0;
+      do {
+        u = Math.random()*2 - 1.0;
+        v = Math.random()*2 - 1.0;
+        w = u*u + v*v;
+      } while (w == 0.0 || w >= 1.0)
+      c = Math.sqrt((-2 * Math.log(w)) / w);
+      return u * c;
+    }
+    var auto_check_times = 0, random_interval = getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 800, 1000, 3500);
     return window.setInterval(function() {
       window.setTimeout(function() {
         initClassList();
         console.log((++auto_check_times) + " times refreshed");
-      }, Math.floor(Math.random() * 1000));
+      }, getNumberInNormalDistribution(800, 1000, 50, random_interval));
     }, random_interval);
   };
 
@@ -401,7 +417,7 @@ body {
     getAllClassDOM().each(function() {
       if (!filterClass(this)) return;
       if (!isClassFull(this)) {
-        $$(this).children("td:eq(" + select_class_button_index[mode] + ")").children("a").click();
+        $$(this).children("td:eq(" + select_class_button_index[mode] + ")").children("a")[0].click();
         console.log("Class Selected: " + $$(this).children("td:eq(" + class_name_index[mode] + ")".html()));
       }
     });
