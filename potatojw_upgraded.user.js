@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.3.4
+// @version      0.0.3.5
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -10,9 +10,8 @@
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
 // ==/UserScript==
 (function() {
-  'use strict';
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.3.4 by Limosity");
+  console.log("potatojw_upgraded v0.0.3.5 by Limosity");
   // Your code here...
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -39,13 +38,13 @@
       var sel_C = lib.lastIndexOf('C', pos);
       var sel_D = lib.lastIndexOf('D', pos);
       return Math.max(sel_A, sel_B, sel_C, sel_D);
-    }
+    };
 
     window.problemNum = function(pos) {
       return lib.substr(0, pos - 1).split('\n').length;
-    }
+    };
 
-    var times = new Array();
+    window.prob_times = new Array();
 
     window.solve = function() {
       for (var i = 0; i < 4; i++) {
@@ -68,10 +67,10 @@
             found_sel = true;
             $$("input[type='radio']:eq(" + (i*4 + j) + ")").click();
             console.log("#" + problemNum(sel_pos) + ": " + String.fromCharCode('A'.charCodeAt() + j));
-            if (typeof(times[problemNum(sel_pos)]) == "undefined") {
-              times[problemNum(sel_pos)] = 1;
+            if (typeof(prob_times[problemNum(sel_pos)]) == "undefined") {
+              prob_times[problemNum(sel_pos)] = 1;
             } else {
-              times[problemNum(sel_pos)]++;
+              prob_times[problemNum(sel_pos)]++;
               console.log("WARNING: PROBLEM REPEATED: #" + problemNum(sel_pos));
               return false;
             }
@@ -84,13 +83,13 @@
         }
       }
       return true;
-    }
+    };
 
     window.autoSolve = function() {
       if (solve()) {
         getnextpage();
         if (parseInt($$("#currentpage").val()) == 20) {
-          console.log(times);
+          console.log(prob_times);
           console.log("Done.");
           return true;
         }
@@ -324,7 +323,7 @@
   <br>
   <button onclick="hideFilterSetting();">应用设置并关闭</button>
   <br>
-  <span>potatojw_upgraded Beta v0.0.3.4 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
+  <span>potatojw_upgraded Beta v0.0.3.5 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
   <br>
   <span>字体美化已启用 浏览器F12 - Console可查看输出信息</span>
 </div>
@@ -345,7 +344,7 @@
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">整体界面美化</label>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.4</span>
+<span>potatojw_upgraded Beta v0.0.3.5</span>
 </div>
   `;
   if (mode != "freshmen_exam")
@@ -355,7 +354,7 @@
 <div id='potatojw_upgraded_toolbar'>
 <button onclick="autoSolve();">执行自动答题模块</button>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.4 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
+<span>potatojw_upgraded Beta v0.0.3.5 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
 </div>
   `;
   if (mode == "freshmen_exam")
