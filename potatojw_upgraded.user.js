@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.3.5
+// @version      0.0.3.6
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -11,7 +11,7 @@
 // ==/UserScript==
 (function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.3.5 by Limosity");
+  console.log("potatojw_upgraded v0.0.3.6 by Limosity");
   // Your code here...
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -20,6 +20,7 @@
   var reg_open = /openRenewCourse/i;
   var reg_common = /commonCourseRenewList/i;
   var reg_freshmen_exam = /student\/exam\/index.do/i;
+  var reg_all_course_list = /teachinginfo\/allCourseList.do\?method=getTermAcademy/i;
 
 
   var mode = "";
@@ -29,9 +30,12 @@
   else if (reg_open.test(window.location.href)) mode = "open"; // 跨专业补选
   else if (reg_common.test(window.location.href)) mode = "common"; // 通修课补选
   else if (reg_freshmen_exam.test(window.location.href)) mode = "freshmen_exam"; // 新生测试
+  else if (reg_all_course_list.test(window.location.href)) mode = "all_course_list"; // 全校课程
   else return;
 
-  if (mode == "freshmen_exam") {
+  if (mode == "all_course_list") {
+    $$("#termList > option:eq(0)").after('<option value="20192">*2019-2020学年第二学期</option>');
+  } else if (mode == "freshmen_exam") {
     window.findSelection = function(pos) {
       var sel_A = lib.lastIndexOf('A', pos);
       var sel_B = lib.lastIndexOf('B', pos);
@@ -323,7 +327,7 @@
   <br>
   <button onclick="hideFilterSetting();">应用设置并关闭</button>
   <br>
-  <span>potatojw_upgraded Beta v0.0.3.5 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
+  <span>potatojw_upgraded Beta v0.0.3.6 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
   <br>
   <span>字体美化已启用 浏览器F12 - Console可查看输出信息</span>
 </div>
@@ -344,21 +348,32 @@
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">整体界面美化</label>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.5</span>
+<span>potatojw_upgraded Beta v0.0.3.6</span>
 </div>
   `;
-  if (mode != "freshmen_exam")
-    $$("body").append(toolbar_html);
 
   const freshmen_exam_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
 <button onclick="autoSolve();">执行自动答题模块</button>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.5 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
+<span>potatojw_upgraded Beta v0.0.3.6 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
 </div>
   `;
-  if (mode == "freshmen_exam")
+
+  const basic_toolbar_html = `
+<div id='potatojw_upgraded_toolbar'>
+<span>potatojw_upgraded Beta v0.0.3.6</span>
+<br>
+<span>Activated on this page.</span>
+</div>
+  `;
+
+  if (mode != "freshmen_exam" && mode != "all_course_list")
+    $$("body").append(toolbar_html);
+  else if (mode == "freshmen_exam")
     $$("body").append(freshmen_exam_toolbar_html);
+  else if (mode != "")
+    $$("body").append(basic_toolbar_html);
 
   const css = `
 #potatojw_mask {
