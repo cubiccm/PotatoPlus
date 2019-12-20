@@ -1,17 +1,18 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.3.7
+// @version      0.0.3.8
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
 // @match        *://219.219.120.46/jiaowu/*
 // @grant        none
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
+// jQuery内网可用版本 1.7.1 未经测试 https://jw.nju.edu.cn/_js/jquery.min.js
 // ==/UserScript==
 (function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.3.7 by Limosity");
+  console.log("potatojw_upgraded v0.0.3.8 by Limosity");
   // Your code here...
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -21,6 +22,8 @@
   var reg_common = /commonCourseRenewList/i;
   var reg_freshmen_exam = /student\/exam\/index.do/i;
   var reg_all_course_list = /teachinginfo\/allCourseList.do\?method=getTermAcademy/i;
+  var reg_eval_course = /evalcourse\/courseEval.do\?method=currentEvalCourse/i;
+
 
 
   var mode = "";
@@ -31,9 +34,57 @@
   else if (reg_common.test(window.location.href)) mode = "common"; // 通修课补选
   else if (reg_freshmen_exam.test(window.location.href)) mode = "freshmen_exam"; // 新生测试
   else if (reg_all_course_list.test(window.location.href)) mode = "all_course_list"; // 全校课程
+  else if (reg_eval_course.test(window.location.href)) mode = "eval_course"; // 全校课程
   else return;
 
-  if (mode == "all_course_list") {
+  if (mode == "eval_course") {
+    window.quick_eval_mode_enabled = false;
+    window.updateEval = function(){
+      document.getElementById("td" + g_evlId).innerHTML = quick_eval_mode_enabled ? "已自动五星好评" : "已评";
+      $('evalDetail').innerHTML = "谢谢您的评估！";
+    }
+    window.quickSubmitEval = function() {
+      $$.ajax({
+        url: "/jiaowu/student/evalcourse/courseEval.do?method=submitEval",
+        data: "question1=5&question2=5&question3=5&question4=5&question5=5&question6=5&question7=5&question8=5&question9=5&question10=5&question=+10&mulItem1=0&mulItem=+1&ta1=",
+        type: "POST",
+        success: function(res) {
+          updateEval();
+        },
+        error: function(res) {
+          console.log("ERROR: " + res);
+        }
+      });
+    }
+
+    window.showEvalItem = function(id){
+      g_evlId = id;
+      $$.ajax({
+        url: "/jiaowu/student/evalcourse/courseEval.do",
+        data: 'method=currentEvalItem&id=' + id,
+        type: "POST",
+        success: function(res) {
+          if (quick_eval_mode_enabled == true)
+            quickSubmitEval();
+          else
+            $$("#evalDetail").html(res);
+        },
+        error: function(res) {
+          console.log("ERROR: " + res);
+        }
+      });
+    }
+
+    window.toggleAutoEval = function() {
+      if (quick_eval_mode_enabled == true) {
+        quick_eval_mode_enabled = false;
+        $$("#toggle_auto_eval_button").html("启用自动评价模式");
+      } else {
+        quick_eval_mode_enabled = true;
+        $$("#toggle_auto_eval_button").html("停用自动评价模式");
+      }
+    }
+  } else if (mode == "all_course_list") {
     $$("#termList > option:eq(0)").after('<option value="20192">*2019-2020学年第二学期</option>');
     $$("#termList > option:eq(0)").remove();
     $$("#academySelect > option:eq(0)").after('<option value="00">*全部课程</option>');
@@ -379,7 +430,7 @@
   <br>
   <button onclick="hideFilterSetting();">应用设置并关闭</button>
   <br>
-  <span>potatojw_upgraded v0.0.3.7 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
+  <span>potatojw_upgraded v0.0.3.8 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
   <br>
   <span>字体美化已启用 浏览器F12 - Console可查看输出信息</span>
 </div>
@@ -400,7 +451,7 @@
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">整体界面美化</label>
 <br>
-<span>potatojw_upgraded v0.0.3.7</span>
+<span>potatojw_upgraded v0.0.3.8</span>
 </div>
   `;
 
@@ -408,22 +459,32 @@
 <div id='potatojw_upgraded_toolbar'>
 <button onclick="autoSolve();">执行自动答题模块</button>
 <br>
-<span>potatojw_upgraded v0.0.3.7 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
+<span>potatojw_upgraded v0.0.3.8 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
+</div>
+  `;
+
+    const eval_course_toolbar_html = `
+<div id='potatojw_upgraded_toolbar'>
+<button onclick="toggleAutoEval();" id="toggle_auto_eval_button">启用自动评价模式</button>
+<br>
+<span>potatojw_upgraded v0.0.3.8 启用后，点进对应课程即自动五星好评 浏览器F12 - Console可查看输出信息</span>
 </div>
   `;
 
   const basic_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
-<span>potatojw_upgraded v0.0.3.7</span>
+<span>potatojw_upgraded v0.0.3.8</span>
 <br>
 <span>Activated on this page.</span>
 </div>
   `;
 
-  if (mode != "freshmen_exam" && mode != "all_course_list")
+  if (mode != "freshmen_exam" && mode != "all_course_list" &&mode != "eval_course")
     $$("body").append(toolbar_html);
   else if (mode == "freshmen_exam")
     $$("body").append(freshmen_exam_toolbar_html);
+  else if (mode == "eval_course")
+    $$("body").append(eval_course_toolbar_html);
   else if (mode != "")
     $$("body").append(basic_toolbar_html);
 
