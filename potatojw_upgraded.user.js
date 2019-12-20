@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.0.3.6
+// @version      0.0.3.7
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -11,7 +11,7 @@
 // ==/UserScript==
 (function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.0.3.6 by Limosity");
+  console.log("potatojw_upgraded v0.0.3.7 by Limosity");
   // Your code here...
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -35,6 +35,58 @@
 
   if (mode == "all_course_list") {
     $$("#termList > option:eq(0)").after('<option value="20192">*2019-2020学年第二学期</option>');
+    $$("#termList > option:eq(0)").remove();
+    $$("#academySelect > option:eq(0)").after('<option value="00">*全部课程</option>');
+    $$("#academySelect > option:eq(0)").remove();
+    window.searchCourseList = function(bInit) {
+      if (!bInit) {
+        if (document.myForm.termList.value.length == 0) {
+          alert("请选择学期！");
+          document.myForm.termList.focus();
+          return;
+        }
+        if (document.myForm.gradeList.value.length == 0) {
+          alert("请选择年级！");
+          document.myForm.gradeList.focus();
+          return;
+        }
+        if (document.myForm.specialitySelect.value.length == 0 && document.myForm.academySelect.value != "00") {
+          alert("请选择上课专业！");
+          document.myForm.specialitySelect.focus();
+          return;
+        }
+      }
+      document.getElementById('frameCourseView').height="25";
+      document.getElementById('iframeTable').style.height="25";
+      document.getElementById('btSearch').disabled = "disabled";
+      document.getElementById('operationInfo').style.visibility = "visible";
+
+      if ($$("#academySelect").val() == "00")
+        frames['frameCourseView'].location.href="http://elite.nju.edu.cn:80/jiaowu/"
+        +"student/teachinginfo/allCourseList.do?method=getCourseList&curTerm="+document.getElementById('termList').value
+        +"&curGrade="+document.getElementById('gradeList').value;
+      else
+        frames['frameCourseView'].location.href="http://elite.nju.edu.cn:80/jiaowu/"
+        +"student/teachinginfo/allCourseList.do?method=getCourseList&curTerm="+document.getElementById('termList').value
+        +"&curSpeciality="+document.getElementById('specialitySelect').value
+        +"&curGrade="+document.getElementById('gradeList').value;
+    }
+    $$("#specialitySelect").css("display", "none");
+    window.academySelectredirect = function(x) {
+      if (x == 0) {
+        $$("#specialitySelect").css("display", "none");
+      } else {
+        $$("#specialitySelect").css("display", "inline-block");
+      }
+      for (m = academySelecttemp.options.length - 1; m > 0; m--)
+          academySelecttemp.options[m] = null;
+      for (i = 0; i < academySelectgroup[x].length; i++) {
+          academySelecttemp.options[i] = new Option(academySelectgroup[x][i].text,academySelectgroup[x][i].value);
+          if (academySelectgroup[x][i].value == '')
+              academySelecttemp.options[i].selected = true
+      }
+      academySelectredirect1(0)
+    }
   } else if (mode == "freshmen_exam") {
     window.findSelection = function(pos) {
       var sel_A = lib.lastIndexOf('A', pos);
@@ -327,7 +379,7 @@
   <br>
   <button onclick="hideFilterSetting();">应用设置并关闭</button>
   <br>
-  <span>potatojw_upgraded Beta v0.0.3.6 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
+  <span>potatojw_upgraded v0.0.3.7 注：自动选课是按过滤器选课~ 更多功能开发中~</span>
   <br>
   <span>字体美化已启用 浏览器F12 - Console可查看输出信息</span>
 </div>
@@ -348,7 +400,7 @@
 <input type="checkbox" id="close_alert" disabled="disabled">
 <label for="close_alert">整体界面美化</label>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.6</span>
+<span>potatojw_upgraded v0.0.3.7</span>
 </div>
   `;
 
@@ -356,13 +408,13 @@
 <div id='potatojw_upgraded_toolbar'>
 <button onclick="autoSolve();">执行自动答题模块</button>
 <br>
-<span>potatojw_upgraded Beta v0.0.3.6 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
+<span>potatojw_upgraded v0.0.3.7 若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
 </div>
   `;
 
   const basic_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
-<span>potatojw_upgraded Beta v0.0.3.6</span>
+<span>potatojw_upgraded v0.0.3.7</span>
 <br>
 <span>Activated on this page.</span>
 </div>
