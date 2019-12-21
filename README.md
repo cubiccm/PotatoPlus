@@ -2,7 +2,7 @@
 
 土豆改善工程
 
-####Features
+## Features
 
 * 课程过滤器（适用于补选课程）
 * 自动刷新与选课（适用于专业选课与补选课程）
@@ -11,7 +11,7 @@
 * 课程评估自动评价
 * 部分体验优化
 
-####Installation
+## Installation
 
 请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)或[Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)插件，之后从下面链接获取脚本。
 
@@ -23,6 +23,6 @@
 
 安装后，脚本会依照插件的设定自动更新，您可以在插件的菜单中配置自动更新。
 
-####More Info
+## More Info
 
 [更多信息](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
