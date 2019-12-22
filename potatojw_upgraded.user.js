@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1
+// @version      0.1.0.1
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -12,7 +12,7 @@
 
 window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.1 Pre-release by Limosity");
+  console.log("potatojw_upgraded v0.1.0.1 by Limosity");
   console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -24,7 +24,7 @@ window.potatojw_intl = function() {
   var reg_all_course_list = /teachinginfo\/allCourseList.do\?method=getTermAcademy/i;
   var reg_eval_course = /evalcourse\/courseEval.do\?method=currentEvalCourse/i;
   var reg_major_course = /student\/elective\/specialityCourseList.do/i;
-  var reg_main_page = /jiaowu\/student\/index.do/i;
+  var reg_main_page = /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i;
 
   var mode = "";
   if (reg_main_page.test(window.location.href)) mode = "main_page";
@@ -451,7 +451,7 @@ window.potatojw_intl = function() {
         specialityChange();
         return;
       }
-      var pars = 'method=specialityCourseList';
+      var pars = 'method=specialityCourseList'; 
       var myAjax = new Ajax.Updater(
         'courseList',
         '/jiaowu/student/elective/courseList.do',
@@ -502,7 +502,7 @@ window.potatojw_intl = function() {
     };
 
     $$(document).ready(function() {
-      showFilter("optional");
+      // showFilter("optional");
       $$(".filter_full_class").css("display", "none");
       $$("#filter_switch").css("display", "none");
       $$("#potatojw_upgraded_toolbar > label:eq(0)").css("display", "none");
@@ -537,13 +537,19 @@ window.potatojw_intl = function() {
 </div>
   `;
   const about_this_project = `
-  potatojw_upgraded v0.1-pre &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  potatojw_upgraded v0.1.0.1 &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
   const main_page_toolbar_html = `
     <div id='potatojw_upgraded_toolbar' style="height: auto;">
     <h5>Tips</h5>
-    <span>这个工具栏挡到什么东西了？试着双击来隐藏它。</span>
+    <ul><li>这个工具栏挡到什么东西了？试着双击来隐藏它。</li></ul>
+    <br>
+    <h5>v0.1.0.1 更新日志</h5>
+    <ul>
+      <li>^> 修复了脚本可能不在首页执行的问题</li>
+      <li>^> 修复了部分未启用功能可能已经显示的问题</li>
+    </ul><br>
     <h5>v0.1 更新日志</h5>
     <ul>
     <li>+> 增加专业选课功能，可以根据课程名和教师名设定过滤器</li>
