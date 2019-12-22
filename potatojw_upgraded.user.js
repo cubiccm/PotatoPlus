@@ -7,12 +7,13 @@
 // @match        *://*.nju.edu.cn/jiaowu/*
 // @match        *://219.219.120.46/jiaowu/*
 // @grant        none
-// @require      https://wx.nju.edu.cn/thirdparty/nifty/js/jquery.min.js
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
 // ==/UserScript==
-(function() {
+
+window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
   console.log("potatojw_upgraded v0.1 Pre-release by Limosity");
+  console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
   var reg_read = /readRenewCourseList.do/i;
@@ -23,9 +24,11 @@
   var reg_all_course_list = /teachinginfo\/allCourseList.do\?method=getTermAcademy/i;
   var reg_eval_course = /evalcourse\/courseEval.do\?method=currentEvalCourse/i;
   var reg_major_course = /student\/elective\/specialityCourseList.do/i;
+  var reg_main_page = /jiaowu\/student\/index.do/i;
 
   var mode = "";
-  if (reg_gym.test(window.location.href)) mode = "gym"; // 体育补选
+  if (reg_main_page.test(window.location.href)) mode = "main_page";
+  else if (reg_gym.test(window.location.href)) mode = "gym"; // 体育补选
   else if (reg_read.test(window.location.href)) mode = "read"; // 经典导读读书班补选
   else if (reg_dis.test(window.location.href)) mode = "dis"; // 导学、研讨、通识课补选
   else if (reg_open.test(window.location.href)) mode = "open"; // 跨专业补选
@@ -36,7 +39,8 @@
   else if (reg_major_course.test(window.location.href)) mode = "major_course"; // 专业选课
   else return;
 
-  if (mode == "eval_course") {
+  if (mode == "main_page") {
+  } else if (mode == "eval_course") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function(){
       document.getElementById("td" + g_evlId).innerHTML = quick_eval_mode_enabled ? "已自动五星好评" : "已评";
@@ -140,6 +144,19 @@
       }
       academySelectredirect1(0)
     }
+    window.iframeResize = function() {
+      var frameCourse = document.getElementById('frameCourseView');
+      frameCourse.height = frameCourse.contentWindow.document.body.scrollHeight;
+      frameCourse.height = frameCourse.contentWindow.document.body.scrollHeight;
+    }
+    $$("#frameCourseView").on("load", function() {
+      document.getElementById('btSearch').disabled = "";
+      document.getElementById('operationInfo').style.visibility = "hidden";
+      iframeResize();
+    })
+    $$(window).on("resize", function() {
+      iframeResize();
+    });
   } else if (mode == "freshmen_exam") {
     window.findSelection = function(pos) {
       var sel_A = lib.lastIndexOf('A', pos);
@@ -221,6 +238,8 @@
           if ($$("#errMsg").length) {
             console.log("Error: " + $$("#errMsg").attr("title"));
             $$("#courseOperation").html("");
+          } else {
+            stopAuto();
           }
           $$("#courseOperation").html("");
         }
@@ -229,7 +248,7 @@
 
     // Load gym class list
     // 加载体育课列表
-    window.initClassList = function(func = function() {}){
+    window.initClassList = function(success_func = function() {}){
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do",
         data: "method=gymCourseList",
@@ -238,8 +257,7 @@
           $$("#courseList").html(res);
           updateFilterList();
           applyFilter();
-          if (auto_select_switch) doAutoClassSelect();
-          func();
+          success_func();
         }
       });
     };
@@ -261,7 +279,7 @@
           $$("#courseDetail").html(res);
           $$('#courseOperation').html(res);
           if ($$("#errMsg").length == 0)
-            console.log("Error: " + $$("#errMsg").attr("title"));
+            console.log("Message: " + $$("#errMsg").attr("title"));
           else if ($$("#successMsg").length == 0)
             console.log("Error: " + $$("#successMsg").attr("title"));
           readTypeChange();
@@ -290,7 +308,10 @@
     // Detect reading type filter change
     // 检测阅读类型过滤器更新
     window.readTypeChange = function() {
-      initClassList(hideCourseDetail);
+      initClassList(function() {
+        hideCourseDetail();
+        doAutoClassSelect();
+      });
     };
 
     window.isClassFull = function(element) {
@@ -302,8 +323,12 @@
     window.readDelete = function(event, class_ID) {
       readSelect(event, class_ID, true);
     };
+
+    $$(document).ready(function() {
+      $$("#comment").html("[potatojw_upgraded Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatojw_upgraded<br><br>" + $$("#comment").html());
+    });
   } else if (mode == "common") {
-    window.initClassList = function() {
+    window.initClassList = function(success_func = function() {}) {
       $$.ajax({
         url: window.location.href,
         type: "GET",
@@ -311,6 +336,7 @@
           $$("#tbCourseList").html($$(res).find("table").html());
           updateFilterList();
           applyFilter();
+          success_func();
         }
       });
     };
@@ -346,7 +372,7 @@
       optimizeClassList();
     });
 
-    window.initClassList = function() {
+    window.initClassList = function(success_func = function() {}) {
       $$.ajax({
         url: window.location.href,
         type: "GET",
@@ -354,6 +380,7 @@
           $$("#tbCourseList").html($$(res).find("table").html());
           optimizeClassList();
           applyFilter();
+          success_func();
         }
       });
     };
@@ -367,7 +394,7 @@
     };
 
     window.campusChange = function() {
-      initClassList();
+      initClassList(doAutoClassSelect);
     };
 
     window.selectedClass = function(class_ID, course_name) {
@@ -394,7 +421,7 @@
       optimizeClassList();
     });
 
-    window.initClassList = function() {
+    window.initClassList = function(success_func = function() {}) {
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do?method=openRenewCourse&campus="+document.getElementById('campusList').value+"&academy="+document.getElementById('academyList').value,
         type: "GET",
@@ -402,12 +429,13 @@
           $$("#tbCourseList").html($$(res).find("table.TABLE_BODY").html());
           updateFilterList();
           applyFilter();
+          success_func();
         }
       });
     };
 
     window.searchCourseList = function(truenmn) {
-      initClassList();
+      initClassList(doAutoClassSelect);
     };
 
     window.isClassFull = function(element) {
@@ -418,12 +446,12 @@
       $('courseDetail').style.visibility = "hidden";
       if (auto_select_switch) doAutoClassSelect();
     }
-    window.initClassList = function() {
+    window.initClassList = function(success_func = function() {}) {
       if ($$("#courseList").html().length > 1) {
         specialityChange();
         return;
       }
-      var pars = 'method=specialityCourseList'; 
+      var pars = 'method=specialityCourseList';
       var myAjax = new Ajax.Updater(
         'courseList',
         '/jiaowu/student/elective/courseList.do',
@@ -458,7 +486,7 @@
             return true;
           console.log("Class Match. Selection requested.");
           this.children("td:eq(2) > input").click();
-          // selectClass();
+          selectClass();
         })
       }
     }
@@ -474,7 +502,7 @@
     };
 
     $$(document).ready(function() {
-      showFilter("teacher_name");
+      showFilter("optional");
       $$(".filter_full_class").css("display", "none");
       $$("#filter_switch").css("display", "none");
       $$("#potatojw_upgraded_toolbar > label:eq(0)").css("display", "none");
@@ -512,6 +540,24 @@
   potatojw_upgraded v0.1-pre &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
+  const main_page_toolbar_html = `
+    <div id='potatojw_upgraded_toolbar' style="height: auto;">
+    <h5>Tips</h5>
+    <span>这个工具栏挡到什么东西了？试着双击来隐藏它。</span>
+    <h5>v0.1 更新日志</h5>
+    <ul>
+    <li>+> 增加专业选课功能，可以根据课程名和教师名设定过滤器</li>
+    <li>+> 现在可以按照教师名过滤课程</li>
+    <li>+> 增加校内网jQuery源备用</li>
+    <li>+> 增加主页工具栏</li>
+    <li>^> 修复了部分课程无法自动选课的问题</li>
+    <li>^> 工具栏界面更新，现在双击可以收起工具栏</li>
+    <li>^> 现在选到课后会自动停止自动刷新和自动选课</li>
+    <li>^> 视觉及操作细节更新</li>
+    </ul><br>
+    <span class="about_proj"></span>
+    </div>
+  `
   if (mode in filter_mode_list) {
     const filter_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
@@ -534,7 +580,11 @@
   <input type="checkbox" id="filter_full_class" class="filter_full_class" checked="checked">
   <label for="filter_full_class" class="filter_full_class">仅显示空余课程</label>
   <br>
-  <section id="filter_class_name" class="filter_section" style="display: block;">
+  <section id="filter_optional" class="filter_section">
+    <input type="checkbox" id="filter_optional_class">
+    <label for="filter_optional_class">仅显示可选课程</label>
+  </section>
+  <section id="filter_class_name" class="filter_section">
     <h3>课名过滤</h3>
     <h5>仅显示含有以下全部字符的课程</h5>
     <h5>说明：当且仅当下面输入框中的文字是课程名的连续一段文字时才会显示该课程~</h5>
@@ -564,10 +614,51 @@
     $$("body").append(freshmen_exam_toolbar_html);
   else if (mode == "eval_course")
     $$("body").append(eval_course_toolbar_html);
+  else if (mode == "main_page")
+    $$("body").append(main_page_toolbar_html);
   else if (mode != "")
     $$("body").append(basic_toolbar_html);
 
   if (mode in filter_mode_list) {
+    window.select_class_button_index = {
+      "gym": 5,
+      "read": 6,
+      "common": 9,
+      "dis": 10,
+      "open": 9
+    };
+
+    window.class_name_index = {
+      "gym": 0,
+      "read": 1,
+      "common": 2,
+      "dis": 2,
+      "open": 2,
+      "major_course": -1
+    };
+
+    window.teacher_name_index = {
+      "dis": 5,
+      "open": 6,
+      "common": 5,
+      "major_course": -1
+    };
+
+    window.class_time_index = {
+      "gym": 1,
+      "common": 4,
+      "dis": 4,
+      "open": 5
+    };
+
+    $$(document).ready(function() {
+      if (typeof(class_name_index[mode]) != "undefined")
+        showFilter("class_name");
+      if (typeof(teacher_name_index[mode]) != "undefined")
+        showFilter("teacher_name");
+      if (typeof(class_time_index[mode]) != "undefined")
+        showFilter("time");
+    });
     window.showFilter = function(filter_name) {
       $$("#filter_" + filter_name).css("display", "block");
     }
@@ -614,29 +705,6 @@
       if ($$("#auto_select").prop("checked"))  $$("#auto_select").click();
     }
 
-    const select_class_button_index = {
-      "gym": 5,
-      "read": 6,
-      "common": 9,
-      "dis": 10,
-      "open": 9
-    };
-
-    const class_name_index = {
-      "gym": 0,
-      "read": 1,
-      "common": 2,
-      "dis": 2,
-      "open": 2
-    };
-
-    const class_time_index = {
-      "gym": 1,
-      "common": 4,
-      "dis": 4,
-      "open": 5
-    };
-
     window.getAllClassDOM = function() {
       return (mode == "open" ? $$("div#tbCourseList > tbody > tr:gt(0)") : $$("table#tbCourseList:eq(0) > tbody > tr"));
     }
@@ -665,7 +733,7 @@
       var auto_check_times = 0, random_interval = getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 800, 1000, 3500);
       return window.setInterval(function() {
         window.setTimeout(function() {
-          initClassList();
+          initClassList(function() {doAutoClassSelect();});
           console.log((++auto_check_times) + " times refreshed");
         }, getNumberInNormalDistribution(800, 1000, 50, random_interval));
       }, random_interval);
@@ -674,12 +742,13 @@
     // Select qualified class automatically
     // 自动选择符合过滤器的课程
     window.doAutoClassSelect = function() {
+      if (auto_select_switch == false) return;
       getAllClassDOM().each(function() {
         if (mode == "major_course") {
-          checkCourse(this); return true;
+          checkCourse(this); return;
         }
-        if (!filterClass(this)) return true;
-        if (!isClassFull(this)) {
+        if (!filterClass(this)) return;
+        if (typeof(isClassFull) == "function" && !isClassFull(this)) {
           $$(this).children("td:eq(" + select_class_button_index[mode] + ")").children("a")[0].click();
           console.log("Class Selected: " + $$(this).children("td:eq(" + class_name_index[mode] + ")".html()));
         }
@@ -717,9 +786,6 @@
     };
     updateFilterList();
 
-    if (typeof(class_time_index[mode]) != "undefined")
-      showFilter("time");
-
     // Check if the given class satisfy the filter
     // 检查课程是否符合过滤器
     window.filterClass = function(element) {
@@ -735,9 +801,16 @@
           if (time_list.indexOf(str_array[i]) >= 0 && $$("#filter_time_checkbox_" + time_list.indexOf(str_array[i])).prop("checked") == false)
             return false;
       }
-      var current_class_name = $$(element).children("td:eq(" + class_name_index[mode] + ")").html();
-      if (current_class_name.indexOf($$("#filter_class_name_text").val()) < 0)
-        return false;
+      if (typeof(class_name_index[mode]) != "undefined") {
+        var current_class_name = $$(element).children("td:eq(" + class_name_index[mode] + ")").html();
+        if (current_class_name.indexOf($$("#filter_class_name_text").val()) < 0)
+          return false;
+      }
+      if (typeof(teacher_name_index[mode]) != "undefined") {
+        var current_teacher_name = $$(element).children("td:eq(" + teacher_name_index[mode] + ")").html();
+        if (current_teacher_name.indexOf($$("#filter_teacher_name_text").val()) < 0)
+          return false;
+      }
       return true;
     };
 
@@ -749,14 +822,25 @@
   }
 
   $$(document).ready(function() {
+    window.toolbar_hidden = false;
     $$(".about_proj").html(about_this_project);
-    $$("#potatojw_upgraded_toolbar").on("dblclick", function() {
-      if ($$("#potatojw_upgraded_toolbar").css("bottom") != '-42px')
-        $$("#potatojw_upgraded_toolbar").css("bottom", "-42px");
-      else
+    $$("#potatojw_upgraded_toolbar").on("click", function() {
+      if (window.toolbar_hidden == true) {
         $$("#potatojw_upgraded_toolbar").css("bottom", "20px");
-    })
-  })
+        window.toolbar_hidden = false;
+      }
+    });
+    $$("#potatojw_upgraded_toolbar").on("dblclick", function() {
+      if (window.toolbar_hidden == false) {
+        var bottom_px = 4 - $$("#potatojw_upgraded_toolbar").height();
+        $$("#potatojw_upgraded_toolbar").css("bottom", bottom_px + "px");
+        window.toolbar_hidden = true;
+      } else {
+        $$("#potatojw_upgraded_toolbar").css("bottom", "20px");
+        window.toolbar_hidden = false;
+      }
+    });
+  });
 
   const css = `
 #potatojw_mask {
@@ -892,4 +976,29 @@ B.20; 学分绩计算方法为：学分绩=[(课程考分/______*学分数)求�
 C.两 网络课程; 交换期间，一般不得办理本校选课注册手续，经任课教师、开课院系和所在院系同意后，交换期间每学期最多可申请___门免修不免考课程;除_  外，擅自听课、考试者，其考试成绩不予承认。(1.25分)
 C.第一周 旷课; 每学期开学_____，学生必须办理报到注册手续;因故不能如期到校注册者，必须办理请假手续并提供必要的证明材料，否则以_论处。(1.25分)
 `;
+};
+
+(function() {
+  if (typeof(jQuery) == "function")
+    potatojw_intl();
+  else {
+    function loadScript(url, callback) {
+      var script = document.createElement('script');
+      script.type = "text/javaScript";
+      if (script.readyState)
+        script.onreadystatechange = function() {
+          if (script.readyState == "loaded" || script.readyState == "complete") {
+            script.onreadystatechange = null;
+            callback();
+          }
+        };
+      else
+        script.onload = function() {
+          callback();
+        };
+      script.src = url;
+      document.getElementsByTagName('head')[0].appendChild(script);
+    }
+    loadScript("https://wx.nju.edu.cn/thirdparty/nifty/js/jquery.min.js", potatojw_intl);
+  }
 })();
