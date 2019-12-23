@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1.0.1
+// @version      0.1.0.2
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -12,7 +12,7 @@
 
 window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.1.0.1 by Limosity");
+  console.log("potatojw_upgraded v0.1.0.2 by Limosity");
   console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -537,7 +537,7 @@ window.potatojw_intl = function() {
 </div>
   `;
   const about_this_project = `
-  potatojw_upgraded v0.1.0.1 &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  potatojw_upgraded v0.1.0.2 &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
   const main_page_toolbar_html = `
@@ -545,10 +545,9 @@ window.potatojw_intl = function() {
     <h5>Tips</h5>
     <ul><li>这个工具栏挡到什么东西了？试着双击来隐藏它。</li></ul>
     <br>
-    <h5>v0.1.0.1 更新日志</h5>
+    <h5>v0.1.0.2 更新日志</h5>
     <ul>
-      <li>^> 修复了脚本可能不在首页执行的问题</li>
-      <li>^> 修复了部分未启用功能可能已经显示的问题</li>
+      <li>+> 增加自动刷新频率调整</li>
     </ul><br>
     <h5>v0.1 更新日志</h5>
     <ul>
@@ -567,13 +566,20 @@ window.potatojw_intl = function() {
   if (mode in filter_mode_list) {
     const filter_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
+
 <input type="checkbox" id="filter_switch">
 <label for="filter_switch">打开过滤器</label>
 <button id="show_filter_setting" onclick="showFilterSetting();">过滤器设置</button>
+
 <input type="checkbox" id="auto_refresh">
-<label for="auto_refresh">自动刷新</label>
+<label for="auto_refresh" style="font-weight: bold;">自动刷新</label>
+
+<span style="color: #c1c1c1;"> 标准</span>
+<input type="range" id="auto_refresh_frequency" style="width: 50px;" value="0" onchange="frequencyUpdate();">
+<span style="color: #c1c1c1;">快 </span>
+
 <input type="checkbox" id="auto_select">
-<label for="auto_select">自动选课</label>
+<label for="auto_select" style="font-weight: bold;">自动选课</label>
 <br>
 <span class="about_proj"></span>
 </div>
@@ -692,12 +698,12 @@ window.potatojw_intl = function() {
       applyFilter();
     });
 
-    window.auto_refresh_interval_id;
+    window.auto_refresh_interval_id = -1;
     $$("#auto_refresh").change(function() {
       $$("#auto_refresh").prop("checked") ? (function() {
-        window.auto_refresh_interval_id = startAutoRefresh();
+        startAutoRefresh();
       } ()) : (function() {
-        window.clearInterval(window.auto_refresh_interval_id);
+        stopAutoRefresh();
       } ());
     });
 
@@ -715,6 +721,7 @@ window.potatojw_intl = function() {
       return (mode == "open" ? $$("div#tbCourseList > tbody > tr:gt(0)") : $$("table#tbCourseList:eq(0) > tbody > tr"));
     }
 
+    window.auto_refresh_frequency = 1.0;
     // Update class list automatically
     // 自动更新
     window.startAutoRefresh = function() {
@@ -722,7 +729,7 @@ window.potatojw_intl = function() {
         var res = Math.floor(mean + randomNormalDistribution() * std_dev);
         if (res >= upper_limit) return upper_limit;
         if (res >= mean) return res;
-        res = mean - (mean-res) * 0.6;
+        res = mean - (mean-res) * 0.8;
         if (res < lower_limit) return lower_limit;
         return res;
       }
@@ -736,14 +743,30 @@ window.potatojw_intl = function() {
         c = Math.sqrt((-2 * Math.log(w)) / w);
         return u * c;
       }
-      var auto_check_times = 0, random_interval = getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 800, 1000, 3500);
-      return window.setInterval(function() {
+      var auto_check_times = 0;
+      var random_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 800, 800, 3500);
+      if (auto_refresh_frequency <= 0.5)
+        ramdom_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 100, 200, 1000);
+      window.auto_refresh_interval_id = window.setInterval(function() {
         window.setTimeout(function() {
           initClassList(function() {doAutoClassSelect();});
           console.log((++auto_check_times) + " times refreshed");
-        }, getNumberInNormalDistribution(800, 1000, 50, random_interval));
+        }, getNumberInNormalDistribution(500, 100, 50, random_interval));
       }, random_interval);
     };
+
+    window.stopAutoRefresh = function() {
+      window.clearInterval(window.auto_refresh_interval_id);
+      window.auto_refresh_interval_id = -1;
+    }
+
+    window.frequencyUpdate = function() {
+      window.auto_refresh_frequency = 1.0 / (1.0 + parseInt($$("#auto_refresh_frequency").val()) / 25);
+      if (window.auto_refresh_interval_id != -1) {
+        stopAutoRefresh();
+        startAutoRefresh();
+      }
+    }
 
     // Select qualified class automatically
     // 自动选择符合过滤器的课程
