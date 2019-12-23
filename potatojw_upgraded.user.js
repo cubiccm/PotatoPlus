@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1.0.3
+// @version      0.1.1
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -12,7 +12,7 @@
 
 window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.1.0.3 by Limosity");
+  console.log("potatojw_upgraded v0.1.1 by Limosity");
   console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -27,7 +27,7 @@ window.potatojw_intl = function() {
   var reg_main_page = /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i;
 
   var mode = "";
-  if (reg_main_page.test(window.location.href)) mode = "main_page";
+  if (reg_main_page.test(window.location.href)) mode = "main_page"; // 主页
   else if (reg_gym.test(window.location.href)) mode = "gym"; // 体育补选
   else if (reg_read.test(window.location.href)) mode = "read"; // 经典导读读书班补选
   else if (reg_dis.test(window.location.href)) mode = "dis"; // 导学、研讨、通识课补选
@@ -447,11 +447,17 @@ window.potatojw_intl = function() {
       if (auto_select_switch) doAutoClassSelect();
     }
     window.initClassList = function(success_func = function() {}) {
-      if ($$("#courseList").html().length > 1) {
+      var filtered_major = filter_settings.filter_major_text;
+      var filtered_grade = filter_settings.filter_grade_text;
+      if ($$("#specialityList").length > 0 && (filtered_major && filtered_grade)) {
+        $$("#specialityList").val($$("#specialityList").find('option:contains("' + filtered_major + '")').val());
+        $$("#gradeList").val($$("#gradeList").find('option:contains("' + filtered_grade + '")').val());
+      }
+      if ($$("#specialityList").length > 0) {
         specialityChange();
         return;
       }
-      var pars = 'method=specialityCourseList'; 
+      var pars = 'method=specialityCourseList';
       var myAjax = new Ajax.Updater(
         'courseList',
         '/jiaowu/student/elective/courseList.do',
@@ -482,7 +488,7 @@ window.potatojw_intl = function() {
         class_list_auto_triggered = false;
         $$("div#classList > table > tbody > tr").each(function() {
           var current_teacher_name = $$(this).find("td:eq(1) > table > tbody > tr:eq(2) > td:eq(1)").html();
-          if (current_teacher_name.indexOf($$("#filter_teacher_name_text").val()) < 0)
+          if (current_teacher_name.indexOf(filter_settings.filter_teacher_name_text) < 0)
             return true;
           console.log("Class Match. Selection requested.");
           $$(this).children("td:eq(2)").children("input")[0].click();
@@ -493,7 +499,7 @@ window.potatojw_intl = function() {
 
     window.checkCourse = function(element) {
       var current_class_name = $$(element).children("td:eq(1)").html();
-      if (current_class_name.indexOf($$("#filter_class_name_text").val()) < 0)
+      if (current_class_name.indexOf(filter_settings.filter_class_name_text) < 0)
         return true;
       if ($$(element).children("td:eq(7)").html() == "已选")
         return true;
@@ -502,7 +508,8 @@ window.potatojw_intl = function() {
     };
 
     $$(document).ready(function() {
-      // showFilter("optional");
+      showFilter("grade");
+      showFilter("major");
       $$(".filter_full_class").css("display", "none");
       $$("#filter_switch").css("display", "none");
       $$("#potatojw_upgraded_toolbar > label:eq(0)").css("display", "none");
@@ -514,7 +521,7 @@ window.potatojw_intl = function() {
 
   const freshmen_exam_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
-<button onclick="autoSolve();">执行自动答题模块</button>
+<span class="potatojw_mini_button" onclick="autoSolve();">执行自动答题模块</span>
 <br>
 <span><span class="about_proj"></span>若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
 </div>
@@ -522,7 +529,7 @@ window.potatojw_intl = function() {
 
   const eval_course_toolbar_html = `
 <div id='potatojw_upgraded_toolbar'>
-<button onclick="toggleAutoEval();" id="toggle_auto_eval_button">启用自动评价模式</button>
+<span class="potatojw_mini_button" onclick="toggleAutoEval();" id="toggle_auto_eval_button">启用自动评价模式</span>
 <span>启用后，点一下对应课程即自动五星好评，手动修改请先停用 浏览器F12 - Console可查看输出信息</span>
 <br>
 <span class="about_proj"></span>
@@ -537,7 +544,7 @@ window.potatojw_intl = function() {
 </div>
   `;
   const about_this_project = `
-  potatojw_upgraded v0.1.0.3 &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  <span style="user-select: text;">potatojw_upgraded v0.1.1</span> &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
   const main_page_toolbar_html = `
@@ -545,18 +552,19 @@ window.potatojw_intl = function() {
     <h5>Tips</h5>
     <ul><li>这个工具栏挡到什么东西了？试着双击来隐藏它。</li></ul>
     <br>
-    <h5>v0.1.0.3 更新日志</h5>
+    <h5>v0.1.1 更新日志</h5>
     <ul>
-      <li>^> 修复专业选课的自动选课问题</li>
+      <li>+> 现在可以在专业选课中预先选择年级和专业</li>
+      <li>^> 用户界面更新</li>
+      <li>^> 更新自动刷新频率机制，使刷新更为自然</li>
     </ul><br>
     <h5>近期更新</h5>
     <ul>
     <li>+> 增加自动刷新频率调整</li>
-    <li>+> 增加专业选课功能，可以根据课程名和教师名设定过滤器</li>
+    <li>+> 增加专业选课功能</li>
     <li>+> 现在可以按照教师名过滤课程</li>
     <li>+> 增加校内网jQuery源备用</li>
-    <li>+> 增加主页工具栏</li>
-    <li>^> 修复了部分课程无法自动选课的问题</li>
+    <li>+> 增加了在“全校课程”中查看一学期全部课程的功能</li>
     <li>^> 工具栏界面更新，现在双击可以收起工具栏</li>
     <li>^> 现在选到课后会自动停止自动刷新和自动选课</li>
     <li>^> 视觉及操作细节更新</li>
@@ -570,14 +578,14 @@ window.potatojw_intl = function() {
 
 <input type="checkbox" id="filter_switch">
 <label for="filter_switch">打开过滤器</label>
-<button id="show_filter_setting" onclick="showFilterSetting();">过滤器设置</button>
+<span class="potatojw_mini_button" id="show_filter_setting" onclick="showFilterSetting();">配置课程过滤器</span>
 
 <input type="checkbox" id="auto_refresh">
 <label for="auto_refresh" style="font-weight: bold;">自动刷新</label>
 
-<span style="color: #c1c1c1;"> 标准</span>
-<input type="range" id="auto_refresh_frequency" style="width: 50px;" value="0" onchange="frequencyUpdate();">
-<span style="color: #c1c1c1;">快 </span>
+<span style="color: #c1c1c1; font-size: 11px;">标准</span>
+<input type="range" id="auto_refresh_frequency" style="width: 50px; height: 15px;" value="0" onchange="frequencyUpdate();">
+<span style="color: #c1c1c1; font-size: 11px;">封号退学</span>
 
 <input type="checkbox" id="auto_select">
 <label for="auto_select" style="font-weight: bold;">自动选课</label>
@@ -590,13 +598,27 @@ window.potatojw_intl = function() {
     const filter_setting_html = `
 <div id="potatojw_mask"></div>
 <div id="potatojw_filter_setting_frame">
-  <input type="checkbox" id="filter_full_class" class="filter_full_class" checked="checked">
-  <label for="filter_full_class" class="filter_full_class">仅显示空余课程</label>
-  <br>
+  <section id="filter_full_class" class="filter_section">
+    <input type="checkbox" id="filter_full_class" checked="checked">
+    <label for="filter_full_class">仅显示空余课程</label>
+  </section>
   <section id="filter_optional" class="filter_section">
     <input type="checkbox" id="filter_optional_class">
     <label for="filter_optional_class">仅显示可选课程</label>
   </section>
+
+  <section id="filter_major" class="filter_section">
+    <h3>专业过滤</h3>
+    <h5>输入专业名称，将会自动选择对应专业。</h5>
+    <input type="text" id="filter_major_text">
+  </section>
+
+  <section id="filter_grade" class="filter_section">
+    <h3>年级过滤</h3>
+    <h5>输入年级，将会自动选择对应年级。</h5>
+    <input type="text" id="filter_grade_text">
+  </section>
+
   <section id="filter_class_name" class="filter_section">
     <h3>课名过滤</h3>
     <h5>仅显示含有以下全部字符的课程</h5>
@@ -608,13 +630,12 @@ window.potatojw_intl = function() {
     <h5>输入教师姓名，所有不含该教师的课程都会被过滤掉。</h5>
     <input type="text" id="filter_teacher_name_text">
   </section>
-  <br>
   <section id="filter_time" class="filter_section">
-    <h3>仅显示这些上课时间：</h3>
+    <h3>上课时间过滤</h3>
   </section>
   <br>
-  <button onclick="hideFilterSetting();">应用设置并关闭</button>
-  <br>
+  <span class="potatojw_mini_button" onclick="hideFilterSetting();">应用设置并关闭</span>
+  <br><br>
   <span>注：自动选课打开后，potatojw将按照此处设置的过滤器选课</span>
   <br>
   <span>选课提示框已关闭 字体美化已启用 浏览器F12 - Console可查看输出信息</span>
@@ -664,6 +685,8 @@ window.potatojw_intl = function() {
       "open": 5
     };
 
+    window.filter_settings = {};
+
     $$(document).ready(function() {
       if (typeof(class_name_index[mode]) != "undefined")
         showFilter("class_name");
@@ -671,6 +694,8 @@ window.potatojw_intl = function() {
         showFilter("teacher_name");
       if (typeof(class_time_index[mode]) != "undefined")
         showFilter("time");
+      if (typeof(isClassFull) != "undefined")
+        showFilter("full_class");
     });
     window.showFilter = function(filter_name) {
       $$("#filter_" + filter_name).css("display", "block");
@@ -682,6 +707,9 @@ window.potatojw_intl = function() {
     };
 
     window.hideFilterSetting = function() {
+      $$("#potatojw_filter_setting_frame input").each(function() {
+        filter_settings[$$(this).attr("id")] = $$(this).val();
+      });
       applyFilter();
       $$("#potatojw_mask").css("display", "none");
       $$("#potatojw_filter_setting_frame").css("display", "none");
@@ -708,9 +736,13 @@ window.potatojw_intl = function() {
       } ());
     });
 
-    window.auto_select_switch = $$("#auto_select").prop("checked");
+    window.auto_select_switch = false;
     $$("#auto_select").change(function() {
-      window.auto_select_switch = $$("#auto_select").prop("checked");
+      if (JSON.stringify(filter_settings) == "{}") {
+        showFilterSetting();
+        $$("#auto_select").click();
+      }
+      else window.auto_select_switch = $$("#auto_select").prop("checked");
     });
 
     window.stopAuto = function(){
@@ -722,37 +754,43 @@ window.potatojw_intl = function() {
       return (mode == "open" ? $$("div#tbCourseList > tbody > tr:gt(0)") : $$("table#tbCourseList:eq(0) > tbody > tr"));
     }
 
-    window.auto_refresh_frequency = 1.0;
+    window.getNumberInNormalDistribution = function(mean, std_dev, lower_limit, upper_limit) {
+      var res = Math.floor(mean + randomNormalDistribution() * std_dev);
+      if (res >= upper_limit) return upper_limit;
+      if (res >= mean) return res;
+      res = mean - (mean-res) * 0.8;
+      if (res < lower_limit) return lower_limit;
+      return res;
+    };
+
+    window.randomNormalDistribution = function() {
+      var u=0.0, v=0.0, w=0.0, c=0.0;
+      do {
+        u = Math.random()*2 - 1.0;
+        v = Math.random()*2 - 1.0;
+        w = u*u + v*v;
+      } while (w == 0.0 || w >= 1.0)
+      c = Math.sqrt((-2 * Math.log(w)) / w);
+      return u * c;
+    }
+
+    window.auto_refresh_frequency = 1.0, 
+    window.auto_refresh_loss_rate = 0.1;
+
     // Update class list automatically
     // 自动更新
     window.startAutoRefresh = function() {
-      function getNumberInNormalDistribution(mean, std_dev, lower_limit, upper_limit) {
-        var res = Math.floor(mean + randomNormalDistribution() * std_dev);
-        if (res >= upper_limit) return upper_limit;
-        if (res >= mean) return res;
-        res = mean - (mean-res) * 0.8;
-        if (res < lower_limit) return lower_limit;
-        return res;
-      }
-      function randomNormalDistribution() {
-        var u=0.0, v=0.0, w=0.0, c=0.0;
-        do {
-          u = Math.random()*2 - 1.0;
-          v = Math.random()*2 - 1.0;
-          w = u*u + v*v;
-        } while (w == 0.0 || w >= 1.0)
-        c = Math.sqrt((-2 * Math.log(w)) / w);
-        return u * c;
-      }
-      var auto_check_times = 0;
-      var random_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 800, 800, 3500);
-      if (auto_refresh_frequency <= 0.5)
-        ramdom_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 500) + 1500, 100, 200, 1000);
+      initClassList(function() {doAutoClassSelect();});
+      window.auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
+      var auto_check_times = 1;
+      console.log("First time refreshed.");
+      var random_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 600) + 1400, 800, 800, 3000);
       window.auto_refresh_interval_id = window.setInterval(function() {
+        if (Math.random() < window.auto_refresh_loss_rate) return;
         window.setTimeout(function() {
           initClassList(function() {doAutoClassSelect();});
-          console.log((++auto_check_times) + " times refreshed");
-        }, getNumberInNormalDistribution(500, 100, 50, random_interval));
+          console.log((++auto_check_times) + " times refreshed.");
+        }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8));
       }, random_interval);
     };
 
@@ -821,7 +859,7 @@ window.potatojw_intl = function() {
     window.filterClass = function(element) {
       if ($$("#filter_switch").prop("checked") == false)
         return true;
-      if ($$("#filter_full_class").prop("checked"))
+      if (filter_settings.filter_full_class == "on")
         if (isClassFull(element))
           return false;
       if (typeof(class_time_index[mode]) != "undefined") {
@@ -833,12 +871,12 @@ window.potatojw_intl = function() {
       }
       if (typeof(class_name_index[mode]) != "undefined") {
         var current_class_name = $$(element).children("td:eq(" + class_name_index[mode] + ")").html();
-        if (current_class_name.indexOf($$("#filter_class_name_text").val()) < 0)
+        if (current_class_name.indexOf(filter_settings.filter_class_name_text) < 0)
           return false;
       }
       if (typeof(teacher_name_index[mode]) != "undefined") {
         var current_teacher_name = $$(element).children("td:eq(" + teacher_name_index[mode] + ")").html();
-        if (current_teacher_name.indexOf($$("#filter_teacher_name_text").val()) < 0)
+        if (current_teacher_name.indexOf(filter_settings.filter_teacher_name_text) < 0)
           return false;
       }
       return true;
@@ -900,7 +938,6 @@ window.potatojw_intl = function() {
   overflow: auto;
 }
 #potatojw_upgraded_toolbar {
-  user-select: text;
   font-size: 13px;
   position: fixed;
   left: 5%;
@@ -910,15 +947,26 @@ window.potatojw_intl = function() {
   background-color: #63065f;
   border-radius: 18px;
   color: white;
-  padding: 5px 10px;
+  padding: 5px 5px 5px 10px;
   opacity: 0.8;
   transition: bottom .2s ease-out;
+  user-select: none;
 }
 .filter_section {
   display: none;
 }
 body {
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+.potatojw_mini_button {
+  font-size: 15px;
+  border-radius: 4px; font-weight: bold; background-color: white; color: #63065f;
+  user-select: none; cursor: pointer;
+  padding: 2px 5px; margin: 5px;
+  transition: color 0.1s ease-in;
+}
+.potatojw_mini_button:hover {
+  color: #FF9B19;
 }
   `;
   $$("body").append("<br><br><br><br><style>" + css + "</style>");
