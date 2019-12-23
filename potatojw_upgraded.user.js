@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1.0.2
+// @version      0.1.0.3
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -12,7 +12,7 @@
 
 window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.1.0.2 by Limosity");
+  console.log("potatojw_upgraded v0.1.0.3 by Limosity");
   console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -481,11 +481,11 @@ window.potatojw_intl = function() {
       if (class_list_auto_triggered == true && auto_select_switch == true) {
         class_list_auto_triggered = false;
         $$("div#classList > table > tbody > tr").each(function() {
-          var current_teacher_name = this.children("td:eq(1) > table > tbody > tr:eq(2) > td:eq(1)").html();
+          var current_teacher_name = $$(this).find("td:eq(1) > table > tbody > tr:eq(2) > td:eq(1)").html();
           if (current_teacher_name.indexOf($$("#filter_teacher_name_text").val()) < 0)
             return true;
           console.log("Class Match. Selection requested.");
-          this.children("td:eq(2) > input").click();
+          $$(this).children("td:eq(2)").children("input")[0].click();
           selectClass();
         })
       }
@@ -497,7 +497,7 @@ window.potatojw_intl = function() {
         return true;
       if ($$(element).children("td:eq(7)").html() == "已选")
         return true;
-      $$(element).children("td:eq(7)").click();
+      $$(element).children("td:eq(7)")[0].click();
       class_list_auto_triggered = true;
     };
 
@@ -537,7 +537,7 @@ window.potatojw_intl = function() {
 </div>
   `;
   const about_this_project = `
-  potatojw_upgraded v0.1.0.2 &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  potatojw_upgraded v0.1.0.3 &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
   const main_page_toolbar_html = `
@@ -545,12 +545,13 @@ window.potatojw_intl = function() {
     <h5>Tips</h5>
     <ul><li>这个工具栏挡到什么东西了？试着双击来隐藏它。</li></ul>
     <br>
-    <h5>v0.1.0.2 更新日志</h5>
+    <h5>v0.1.0.3 更新日志</h5>
     <ul>
-      <li>+> 增加自动刷新频率调整</li>
+      <li>^> 修复专业选课的自动选课问题</li>
     </ul><br>
-    <h5>v0.1 更新日志</h5>
+    <h5>近期更新</h5>
     <ul>
+    <li>+> 增加自动刷新频率调整</li>
     <li>+> 增加专业选课功能，可以根据课程名和教师名设定过滤器</li>
     <li>+> 现在可以按照教师名过滤课程</li>
     <li>+> 增加校内网jQuery源备用</li>
