@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1.1
+// @version      0.1.1.1
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -12,7 +12,7 @@
 
 window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.1.1 by Limosity");
+  console.log("potatojw_upgraded v0.1.1.1 by Limosity");
   console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -510,7 +510,6 @@ window.potatojw_intl = function() {
     $$(document).ready(function() {
       showFilter("grade");
       showFilter("major");
-      $$(".filter_full_class").css("display", "none");
       $$("#filter_switch").css("display", "none");
       $$("#potatojw_upgraded_toolbar > label:eq(0)").css("display", "none");
     });
@@ -544,7 +543,7 @@ window.potatojw_intl = function() {
 </div>
   `;
   const about_this_project = `
-  <span style="user-select: text;">potatojw_upgraded v0.1.1</span> &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  <span style="user-select: text;">potatojw_upgraded v0.1.1.1</span> &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
   const main_page_toolbar_html = `
@@ -552,11 +551,9 @@ window.potatojw_intl = function() {
     <h5>Tips</h5>
     <ul><li>这个工具栏挡到什么东西了？试着双击来隐藏它。</li></ul>
     <br>
-    <h5>v0.1.1 更新日志</h5>
+    <h5>v0.1.1.1 更新日志</h5>
     <ul>
-      <li>+> 现在可以在专业选课中预先选择年级和专业</li>
-      <li>^> 用户界面更新</li>
-      <li>^> 更新自动刷新频率机制，使刷新更为自然</li>
+      <li>^> 过滤器“空余课程”功能错误修复</li>
     </ul><br>
     <h5>近期更新</h5>
     <ul>
@@ -599,8 +596,8 @@ window.potatojw_intl = function() {
 <div id="potatojw_mask"></div>
 <div id="potatojw_filter_setting_frame">
   <section id="filter_full_class" class="filter_section">
-    <input type="checkbox" id="filter_full_class" checked="checked">
-    <label for="filter_full_class">仅显示空余课程</label>
+    <input type="checkbox" id="is_filter_full_class" checked="checked">
+    <label for="is_filter_full_class">仅显示空余课程</label>
   </section>
   <section id="filter_optional" class="filter_section">
     <input type="checkbox" id="filter_optional_class">
@@ -710,6 +707,7 @@ window.potatojw_intl = function() {
       $$("#potatojw_filter_setting_frame input").each(function() {
         filter_settings[$$(this).attr("id")] = $$(this).val();
       });
+      filter_settings["is_filter_full_class"] = $$('#is_filter_full_class').is(":checked");
       applyFilter();
       $$("#potatojw_mask").css("display", "none");
       $$("#potatojw_filter_setting_frame").css("display", "none");
@@ -859,7 +857,7 @@ window.potatojw_intl = function() {
     window.filterClass = function(element) {
       if ($$("#filter_switch").prop("checked") == false)
         return true;
-      if (filter_settings.filter_full_class == "on")
+      if (filter_settings.is_filter_full_class == true)
         if (isClassFull(element))
           return false;
       if (typeof(class_time_index[mode]) != "undefined") {
