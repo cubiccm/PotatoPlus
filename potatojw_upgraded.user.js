@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1.2
+// @version      0.1.2.1
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
@@ -12,7 +12,7 @@
 
 window.potatojw_intl = function() {
   var $$ = jQuery.noConflict();
-  console.log("potatojw_upgraded v0.1.2 by Limosity");
+  console.log("potatojw_upgraded v0.1.2.1 by Limosity");
   console.log("jQuery version " + $$.fn.jquery);
   $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
   var reg_gym = /gymClassList.do/i;
@@ -95,8 +95,8 @@ window.potatojw_intl = function() {
       }
     };
   } else if (mode == "all_course_list") {
-    if ($$("option[value=20192]").length == 0)
-      $$("#termList > option:eq(0)").after('<option value="20192">*2019-2020学年第二学期</option>');
+    if ($$("option[value=20201]").length == 0)
+      $$("#termList > option:eq(0)").after('<option value="20201">*2020-2021学年第一学期</option>');
     $$("#termList > option:eq(0)").remove();
     $$("#academySelect > option:eq(0)").after('<option value="00">*全部课程</option>');
     $$("#academySelect > option:eq(0)").remove();
@@ -558,7 +558,7 @@ window.potatojw_intl = function() {
 </div>
   `;
   const about_this_project = `
-  <span style="user-select: text;">potatojw_upgraded v0.1.2</span> &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  <span style="user-select: text;">potatojw_upgraded v0.1.2.1</span> &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
   const main_page_toolbar_html = `
@@ -566,13 +566,13 @@ window.potatojw_intl = function() {
     <h5>Tips</h5>
     <ul><li>这个工具栏挡到什么东西了？试着双击来隐藏它。</li></ul>
     <br>
-    <h5>v0.1.2 更新日志</h5>
+    <h5>v0.1.2.1 更新日志</h5>
     <ul>
-      <li>+> 增加登录时验证码自动识别功能</li>
+      <li>+> 支持查看2020-1新学期课程</li>
     </ul><br>
     <h5>近期更新</h5>
     <ul>
-      <li>^> 过滤器“空余课程”功能错误修复</li>
+      <li>+> 增加登录时验证码自动识别功能/li>
     </ul><br>
     <span class="about_proj"></span>
     </div>
