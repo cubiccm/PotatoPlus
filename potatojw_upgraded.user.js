@@ -1,18 +1,19 @@
 // ==UserScript==
 // @name         potatojw_upgraded
 // @namespace    https://cubiccm.ddns.net
-// @version      0.1.3
+// @version      0.1.4
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
 // @match        *://219.219.120.46/jiaowu/*
 // @grant        none
 // @run-at       document-start
-// @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/store.js/2.0.12/store.everything.min.js
 // ==/UserScript==
 
 var potatojw_preset = function(jq_source) {
-  window.version_string = "0.1.3";
+  window.version_string = "0.1.4";
   window.$$ = jQuery.noConflict();
   window.jq_source = jq_source;
   if (/student\/studentinfo\/achievementinfo.do/i.test(window.location.href)) {
@@ -762,7 +763,10 @@ var potatojw_intl = function() {
       "open": 5
     };
 
-    window.filter_settings = {};
+    if (typeof(store.get("filter_settings_" + mode)) == "undefined")
+      window.filter_settings = {};
+    else
+      window.filter_settings = store.get("filter_settings_" + mode);
 
     $$(document).ready(function() {
       if (typeof(class_name_index[mode]) != "undefined")
@@ -791,6 +795,7 @@ var potatojw_intl = function() {
       applyFilter();
       $$("#potatojw_mask").css("display", "none");
       $$("#potatojw_filter_setting_frame").css("display", "none");
+      store.set("filter_settings_" + mode, window.filter_settings);
     };
   }
 
@@ -1667,7 +1672,7 @@ C.第一周 旷课; 每学期开学_____，学生必须办理报到注册手续;
 
 (function() {
   if (typeof(jQuery) == "function"){
-    potatojw_preset("external source");
+    potatojw_preset("Bootcdn");
   } else {
     function loadScript(url, callback) {
       var script = document.createElement('script');
