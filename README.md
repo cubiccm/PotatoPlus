@@ -15,9 +15,11 @@
 
 请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)等可以执行Userscript的插件，之后从下面链接获取脚本。
 
-[安装稳定版本](https://cubiccm.github.io/potatojw_upgraded.user.js)
+[安装稳定版本](https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js)
 
-[安装最新版本](https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js)
+[安装测试版本](  https://github.com/cubiccm/potatojw_upgraded/raw/beta/potatojw_upgraded.user.js)
+
+
 
 “最新版本”中可能包含未经测试的功能，请优先安装稳定版本。
 
