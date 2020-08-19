@@ -80,8 +80,8 @@ var potatojw_intl = function() {
 <br>
 <h5>v` + version_string + ` 更新日志</h5>
 <ul>
-  <li>+> 使用本地存储来记住过滤器选项及登录信息</li>
-  <li>^> 优化验证码识别算法</li>
+  <li>+> 使用本地存储来记住登录信息及过滤器选项（Beta）</li>
+  <li>^> 优化验证码识别算法，以及跳过难以识别的验证码</li>
 </ul><br>
 <h5>近期更新</h5>
 <ul>
