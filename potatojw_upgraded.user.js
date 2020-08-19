@@ -20,7 +20,7 @@ var potatojw_preset = function(jq_source) {
   } else if (/(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i.test(window.location.href)) {
     alert = function(x) {window.alert_data = x;}
   }
-  $$("head").append($$(google_analystics_js));
+  // $$("head").append($$(google_analystics_js));
   $$(document).ready(potatojw_intl);
 };
 
@@ -175,6 +175,8 @@ var potatojw_intl = function() {
   <span class="potatojw_mini_button" onclick="hideFilterSetting();">应用设置并关闭</span>
   <br><br>
   <span>注：自动选课打开后，potatojw将按照此处设置的过滤器选课</span>
+  <br>
+  <span>上课时间过滤器暂不能储存</span>
   <br>
   <span>选课提示框已关闭 字体美化已启用 浏览器F12 - Console可查看输出信息</span>
   <br>
@@ -845,6 +847,11 @@ var potatojw_intl = function() {
     window.showFilterSetting = function() {
       $$("#potatojw_mask").css("display", "block");
       $$("#potatojw_filter_setting_frame").css("display", "block");
+      $$("#is_filter_full_class").prop("checked", filter_settings.is_filter_full_class);
+      $$("#potatojw_filter_setting_frame input").each(function() {
+        if ($$(this).attr("id") in filter_settings)
+          $$(this).val(filter_settings[$$(this).attr("id")]);
+      });
     };
 
     window.hideFilterSetting = function() {
