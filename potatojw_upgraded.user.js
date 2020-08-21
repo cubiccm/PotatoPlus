@@ -19,10 +19,10 @@ var potatojw_preset = function(jq_source) {
   } else if (/(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i.test(window.location.href)) {
     alert = function(x) {window.alert_data = x;}
   }
-  if (store.get("feedback") == null || store.get("feedback") != false) {
-    store.set("feedback", true);
-    $$("head").append($$(google_analytics_js));
-  }
+  // if (store.get("feedback") == null || store.get("feedback") != false) {
+  //   store.set("feedback", true);
+  //   $$("head").append($$(google_analytics_js));
+  // }
   $$(document).ready(potatojw_intl);
 };
 
