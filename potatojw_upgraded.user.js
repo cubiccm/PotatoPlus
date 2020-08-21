@@ -79,7 +79,6 @@ var potatojw_intl = function() {
       <h5>v` + pjw_version + ` 更新说明</h5>
       <ul>
         <li>^> 工具栏改进</li>
-        <li>+> 可选信息统计功能</li>
       </ul><br>
       <h5>近期更新</h5>
       <ul>
