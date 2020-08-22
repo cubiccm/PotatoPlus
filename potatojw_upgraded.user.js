@@ -1,17 +1,16 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.1.4.1
+// @version      0.1.4.2
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu/*
 // @match        *://219.219.120.46/jiaowu/*
-// @grant        none
 // @run-at       document-start
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js
 // ==/UserScript==
 
 var potatojw_preset = function(jq_source) {
-  window.pjw_version = "0.1.4.1";
+  window.pjw_version = "0.1.4.2";
   window.$$ = jQuery.noConflict();
   window.jq_source = jq_source;
   if (/student\/studentinfo\/achievementinfo.do/i.test(window.location.href)) {
@@ -19,10 +18,10 @@ var potatojw_preset = function(jq_source) {
   } else if (/(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i.test(window.location.href)) {
     alert = function(x) {window.alert_data = x;}
   }
-  // if (store.get("feedback") == null || store.get("feedback") != false) {
-  //   store.set("feedback", true);
-  //   $$("head").append($$(google_analytics_js));
-  // }
+  if (store.get("feedback") == null || store.get("feedback") != false) {
+    store.set("feedback", true);
+    $$("head").append($$(google_analytics_js));
+  }
   $$(document).ready(potatojw_intl);
 };
 
