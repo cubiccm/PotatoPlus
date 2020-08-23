@@ -1,64 +1,64 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.1.4.1
+// @version      0.1.4.2
 // @description  土豆改善工程！
 // @author       Limosity
-// @match        *://*.nju.edu.cn/jiaowu/*
-// @match        *://219.219.120.46/jiaowu/*
-// @grant        none
+// @match        *://*.nju.edu.cn/jiaowu*
+// @match        *://219.219.120.46/jiaowu*
 // @run-at       document-start
+// @grant        none
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js
 // ==/UserScript==
 
 var potatojw_preset = function(jq_source) {
-  window.pjw_version = "0.1.4.1";
+  window.pjw_version = "0.1.4.2";
   window.$$ = jQuery.noConflict();
   window.jq_source = jq_source;
-  if (/student\/studentinfo\/achievementinfo.do/i.test(window.location.href)) {
+
+  var modes_reg = {
+    major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
+    gym: /gymClassList.do/i, // 体育补选
+    read: /readRenewCourseList.do/i, // 经典导读读书班补选
+    dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
+    open: /openRenewCourse/i, // 跨专业补选
+    common: /commonCourseRenewList/i, // 通修课补选
+
+    freshmen_exam: /student\/exam\/index.do/i, // 新生测试
+    course_eval: /evalcourse\/courseEval.do\?method=currentEvalCourse/i, // 课程评估
+
+    all_course_list: /teachinginfo\/allCourseList.do\?method=getTermAcademy/i, // 全校课程
+    grade_info: /student\/studentinfo\/achievementinfo.do/i, // 成绩查看
+
+    main_page: /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i, // 主页
+    login_page: /(\/jiaowu\/exit.do|\/jiaowu$|\/jiaowu\/$|\/jiaowu\/index.jsp)/i // 登录页
+  }
+  window.mode = "";
+  for (const mode_name in modes_reg) {
+    if (modes_reg[mode_name].test(window.location.href) == true) {
+      mode = mode_name;
+      break;
+    }
+  }
+  if (mode == "") return;
+
+  if (mode == "grade_info") {
     $$("table.TABLE_BODY").css("display", "none");
-  } else if (/(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i.test(window.location.href)) {
+  } else if (mode == "main_page") {
     alert = function(x) {window.alert_data = x;}
   }
-  // if (store.get("feedback") == null || store.get("feedback") != false) {
-  //   store.set("feedback", true);
-  //   $$("head").append($$(google_analytics_js));
-  // }
+
+  if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
+    $$("head").append($$(google_analytics_js));
+  }
+  head_metadata = `<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">`;
+  $$("head").prepend(head_metadata);
+
   $$(document).ready(potatojw_intl);
 };
 
 var potatojw_intl = function() {
   window.$$ = jQuery.noConflict();
-  $$("head").append('<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">');
-  var reg_gym = /gymClassList.do/i;
-  var reg_read = /readRenewCourseList.do/i;
-  var reg_dis = /discussRenewCourseList/i;
-  var reg_open = /openRenewCourse/i;
-  var reg_common = /commonCourseRenewList/i;
-  var reg_freshmen_exam = /student\/exam\/index.do/i;
-  var reg_all_course_list = /teachinginfo\/allCourseList.do\?method=getTermAcademy/i;
-  var reg_eval_course = /evalcourse\/courseEval.do\?method=currentEvalCourse/i;
-  var reg_major_course = /student\/elective\/specialityCourseList.do/i;
-  var reg_grade_info = /student\/studentinfo\/achievementinfo.do/i;
-  var reg_main_page = /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i;
 
-  var mode = "";
-  if (reg_gym.test(window.location.href)) mode = "gym"; // 体育补选
-  else if (reg_read.test(window.location.href)) mode = "read"; // 经典导读读书班补选
-  else if (reg_dis.test(window.location.href)) mode = "dis"; // 导学、研讨、通识课补选
-  else if (reg_open.test(window.location.href)) mode = "open"; // 跨专业补选
-  else if (reg_common.test(window.location.href)) mode = "common"; // 通修课补选
-  else if (reg_freshmen_exam.test(window.location.href)) mode = "freshmen_exam"; // 新生测试
-  else if (reg_all_course_list.test(window.location.href)) mode = "all_course_list"; // 全校课程
-  else if (reg_eval_course.test(window.location.href)) mode = "eval_course"; // 课程评估
-  else if (reg_major_course.test(window.location.href)) mode = "major_course"; // 专业选课
-  else if (reg_grade_info.test(window.location.href)) mode = "grade_info"; // 成绩查看
-  else {
-    if ($$("#ValidateImg").length)
-      mode = "login_page"; // 登录页
-    else if (reg_main_page.test(window.location.href))
-      mode = "main_page"; // 主页
-    else return;
-  };
   console.log("potatojw_upgraded v" + pjw_version + " by Limosity");
   console.log("jQuery version " + $$.fn.jquery + " from " + jq_source);
   console.log(mode + " mode activated");
@@ -71,21 +71,21 @@ var potatojw_intl = function() {
       <span class="pjw-mini-button" onclick="autoSolve();">执行自动答题模块</span>
       <br><span>若答题停止请再次点击执行按钮 浏览器F12 - Console可查看输出信息</span>
     `,
-    eval_course: `
+    course_eval: `
       <span class="pjw-mini-button" onclick="toggleAutoEval();" id="toggle_auto_eval_button">启用自动评价模式</span>
       <span>启用后，点一下对应课程即自动五星好评，手动修改请先停用 浏览器F12 - Console可查看输出信息</span>
     `,
     main_page: `
       <h5>v` + pjw_version + ` 更新说明</h5>
       <ul>
-        <li>^> 工具栏改进</li>
+        <li>+> 可选的提交统计信息选项（统计版本更新情况，基于Google Analytics）</li>
+        <li>^> 成绩查询改进</li>
       </ul><br>
       <h5>近期更新</h5>
       <ul>
+        <li>^> 工具栏改进</li>
         <li>+> 使用本地存储来记住登录信息及过滤器选项（Beta）</li>
         <li>^> 优化验证码识别算法，以及跳过难以识别的验证码</li>
-        <li>+> 查询专业课程时可以自动填充年级和专业</li>
-        <li>+> 查看成绩时，成绩将默认隐藏</li>
       </ul>
     `,
     login_page: `
@@ -93,6 +93,13 @@ var potatojw_intl = function() {
       <label for="store_login_info">记住登录信息</label>
       <input type="checkbox" id="solve_captcha" class="login_settings" checked="checked">
       <label for="solve_captcha">验证码识别</label>
+      <input type="checkbox" id="share_stats" class="login_settings" checked="checked">
+      <label for="share_stats">发送匿名统计数据</label>
+    `,
+    grade_info: `
+      <input type="checkbox" id="hide_grade" class="grade_info_settings" checked="checked">
+      <label for="hide_grade">默认隐藏成绩</label>
+      <button id="show_all_grade">显示全部成绩</button>
     `,
     filter: `
       <input type="checkbox" id="filter_switch">
@@ -109,7 +116,7 @@ var potatojw_intl = function() {
       <input type="checkbox" id="auto_select">
       <label for="auto_select" style="font-weight: bold;">自动选课</label>
     `,
-    default: `<span>Activated on this page.</span>`
+    default: `<span>正在此页面上运行。</span>`
   };
 
   const about_this_project = `
@@ -187,7 +194,7 @@ var potatojw_intl = function() {
 
   if (mode == "main_page") {
     $$("div#TopLink").append("<span style='display:inline-block; width: 15px;'></span><a href='https://wx.nju.edu.cn/homepage/wap/default/home' target='_blank'>i南大信息门户</a><span style='display:inline-block; width: 15px;'></span><a href='https://jw.nju.edu.cn' target='_blank'>南京大学教务处</a>");
-  } else if (mode == "eval_course") {
+  } else if (mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
       document.getElementById("td" + g_evlId).innerHTML = quick_eval_mode_enabled ? "已自动五星好评" : "已评";
@@ -756,31 +763,51 @@ var potatojw_intl = function() {
       fillCAPTCHA();
     });
   } else if (mode == "grade_info") {
-    var targ = $$("table.TABLE_BODY:eq(0) > tbody > tr:gt(0)").find("td:eq(6) > ul");
-    targ.each(function() {
-      var t = $$(this);
-      t.attr("data-grade", t.html());
-      t.attr("data-grade-color", t.css("color"));
-      t.attr("class", "grade-label");
-      t.html("***");
-      t.css("color", "black");
-      t.css("cursor", "pointer");
-      t.css("user-select", "none");
-      t.on("click", function() {
-        t.html(t.attr("data-grade"));
-        t.css("color", t.attr("data-grade-color"));
-        t.css("cursor", "auto");
-        t.css("font-weight", "bold");
-        t.css("user-select", "auto");
+    function hideGrade() {
+      var targ = $$("table.TABLE_BODY:eq(0) > tbody > tr:gt(0)").find("td:eq(6) > ul");
+      targ.each(function() {
+        var t = $$(this);
+        t.attr("data-grade", t.html());
+        t.attr("data-grade-color", t.css("color"));
+        t.attr("class", "grade-label");
+        t.html("***");
+        t.css("color", "black");
+        t.css("cursor", "pointer");
+        t.css("user-select", "none");
+        t.on("click", function() {
+          t.html(t.attr("data-grade"));
+          t.css("color", t.attr("data-grade-color"));
+          t.css("cursor", "auto");
+          t.css("font-weight", "bold");
+          t.css("user-select", "auto");
+        });
       });
-    });
-    $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").css("cursor", "pointer");
-    $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").on("click", function() {
-      $$(".grade-label").trigger("click");
-      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").css("cursor", "auto");
-    });
+      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").css("cursor", "pointer");
+      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").on("click", function() {
+        $$(".grade-label").trigger("click");
+        $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").css("cursor", "auto");
+      });
 
-    $$("table:eq(0) > tbody > tr:eq(1) > td:eq(3) > div:eq(0)").append(`<p style="margin: 0;">成绩已被隐藏</p><p style="margin: 0; color: gray;">单击以显示，或单击表格头部“总评”显示全部。</p>`);
+      $$("table:eq(0) > tbody > tr:eq(1) > td:eq(3) > div:eq(0)").append(`<p style="margin: 0;">成绩已被隐藏</p><p style="margin: 0; color: gray;">单击以显示，或单击表格头部“总评”显示全部。</p>`);
+    }
+    function showGrade() {
+      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").trigger("click");
+    }
+    if (store.get("grade_info_settings") == null) {
+      store.set("grade_info_settings", true);
+    }
+    if (store.get("grade_info_settings") == true) {
+      hideGrade();
+    } else {
+      $$("#hide_grade").prop("checked", false);
+      $$("#show_all_grade").css("display", "none");
+    }
+    $$("#hide_grade").on("change", function() {
+      store.set("grade_info_settings", $$("#hide_grade").prop("checked"));
+    });
+    $$("#show_all_grade").on("click", function() {
+      showGrade();
+    });
     $$("table.TABLE_BODY").css("display", "table");
   } else return;
 
@@ -1136,7 +1163,6 @@ var potatojw_intl = function() {
   padding: 7px 7px 7px 7px;
   opacity: 0.8;
   transition: left .3s ease-out, opacity .3s ease-out;
-  user-select: none;
 }
 #pjw-toolbar-content {
   margin-left: 53px;
