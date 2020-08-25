@@ -15,13 +15,7 @@
 
 请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)等可以执行Userscript的插件，之后从下面链接获取脚本。
 
-[安装稳定版本](https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js)
-
-[安装测试版本](  https://github.com/cubiccm/potatojw_upgraded/raw/beta/potatojw_upgraded.user.js)
-
-
-
-“最新版本”中可能包含未经测试的功能，请优先安装稳定版本。
+[获取最新版pjw+](https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js)
 
 安装后，脚本会依照插件的设定自动更新，您可以在插件的菜单中配置自动更新。
 
@@ -30,7 +24,7 @@
 [更多信息](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
 
 <br><br>
-_以下列表截至v0.1.4.1_
+_以下列表截至v0.1.4.3_
 <br>
 ## 目前已知Bug
 手动或自动刷新课程列表时，上课时间筛选器会更新，原有筛选被清除
