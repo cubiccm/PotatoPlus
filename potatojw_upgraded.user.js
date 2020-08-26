@@ -1207,17 +1207,21 @@ body {
 }
 .pjw-mini-button {
   font-size: 14px; font-weight: bold;
-  border: 0; border-radius: 5px;
+  border: 0; border-radius: 7px;
   background-color: white; color: #63065f;
   user-select: none; cursor: pointer;
   padding: 1px 7px; margin: 5px;
   transition: all .1s ease-in;
 }
 .pjw-mini-button:hover {
-  color: #FF9B19;
-  border-radius: 8px;
+  color: rgba(255, 155, 25, 1);
+  border-radius: 10px;
   padding: 1px 10px;
   margin: 2px;
+}
+.pjw-mini-button:active {
+  color: #c1c1c1;
+  background-color: rgba(255, 255, 255, .8);
 }
 #pjw-toolbar-collapse-bg {
   position: absolute;
