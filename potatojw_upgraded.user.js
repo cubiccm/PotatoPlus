@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.1.4.3
+// @version      0.1.4.4
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -11,35 +11,9 @@
 // ==/UserScript==
 
 var potatojw_preset = function(jq_source) {
-  window.pjw_version = "0.1.4.3";
+  window.pjw_version = "0.1.4.4";
   window.$$ = jQuery.noConflict();
   window.jq_source = jq_source;
-
-  var modes_reg = {
-    major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
-    gym: /gymClassList.do/i, // 体育补选
-    read: /readRenewCourseList.do/i, // 经典导读读书班补选
-    dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
-    open: /openRenewCourse/i, // 跨专业补选
-    common: /commonCourseRenewList/i, // 通修课补选
-
-    freshmen_exam: /student\/exam\/index.do/i, // 新生测试
-    course_eval: /evalcourse\/courseEval.do\?method=currentEvalCourse/i, // 课程评估
-
-    all_course_list: /teachinginfo\/allCourseList.do\?method=getTermAcademy/i, // 全校课程
-    grade_info: /student\/studentinfo\/achievementinfo.do\?method=searchTermList/i, // 成绩查看
-
-    main_page: /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i, // 主页
-    login_page: /(\/jiaowu\/exit.do|\/jiaowu$|\/jiaowu\/$|\/jiaowu\/index.jsp)/i // 登录页
-  }
-  window.mode = "";
-  for (const mode_name in modes_reg) {
-    if (modes_reg[mode_name].test(window.location.href) == true) {
-      mode = mode_name;
-      break;
-    }
-  }
-  if (mode == "") return;
 
   if (mode == "grade_info") {
     $$("table.TABLE_BODY").css("display", "none");
@@ -67,27 +41,25 @@ var potatojw_intl = function() {
   filter_mode_list = subclass_mode_list;
 
   const custom_toolbar_html = {
-    freshmen_exam: `
-      <span class="pjw-mini-button" onclick="autoSolve();">执行自动答题模块</span>
-      <br>
-      <span>若答题停止请再次点击执行按钮 打开开发者界面（F12 / Command + Shift + I）的控制台（Console）可查看输出信息</span>
-    `,
-    course_eval: `
-      <span class="pjw-mini-button" onclick="toggleAutoEval();" id="toggle_auto_eval_button">开启自动评价</span>
-      <br>
-      <span>开启后，点一下对应课程即自动五星好评 打开开发者界面（F12 / Command + Shift + I）的控制台（Console）可查看输出信息</span>
-    `,
     main_page: `
       <h5>v` + pjw_version + ` 更新说明</h5>
       <ul>
         <li>^> 令人愉快的小改进</li>
-      </ul><br>
+      </ul>
       <h5>近期更新</h5>
       <ul>
         <li>+> 可选的提交统计信息选项</li>
         <li>^> 成绩查询及工具栏改进</li>
         <li>^> 几项登录优化及存储器更新</li>
       </ul>
+    `,
+    freshmen_exam: `
+      <span class="pjw-mini-button" onclick="autoSolve();">开始自动答题</span>
+      <span>若答题意外停止，请再次点击自动答题按钮。</span>
+    `,
+    course_eval: `
+      <span class="pjw-mini-button" onclick="toggleAutoEval();" id="toggle_auto_eval_button">开启自动评价</span>
+      <span>开启后，点一下对应课程即自动五星好评。</span>
     `,
     login_page: `
       <input type="checkbox" id="store_login_info" class="login_settings" checked="checked">
@@ -100,29 +72,34 @@ var potatojw_intl = function() {
     grade_info: `
       <input type="checkbox" id="hide_grade" class="grade_info_settings" checked="checked">
       <label for="hide_grade">默认隐藏成绩</label>
-      <button id="show_all_grade">显示全部成绩</button>
+      <span id="show_all_grade" class="pjw-mini-button">显示全部成绩</span>
     `,
     filter: `
-      <input type="checkbox" id="filter_switch">
-      <label for="filter_switch">课程过滤器</label>
-      <span class="pjw-mini-button" id="show_filter_setting" onclick="showFilterSetting();">配置课程过滤器</span>
-
-      <input type="checkbox" id="auto_refresh">
-      <label for="auto_refresh" style="font-weight: bold;">自动刷新</label>
-
-      <span style="color: #c1c1c1; font-size: 11px;">标准</span>
-      <input type="range" id="auto_refresh_frequency" style="width: 50px; height: 15px;" value="0" onchange="frequencyUpdate();">
-      <span style="color: #c1c1c1; font-size: 11px;">封号退学</span>
-
-      <input type="checkbox" id="auto_select">
-      <label for="auto_select" style="font-weight: bold;">自动选课</label>
+      <div id="filter-control-bar">
+        <section>
+          <input type="checkbox" id="filter_switch">
+          <label for="filter_switch">课程过滤器</label>
+          <span class="pjw-mini-button" id="show_filter_setting" onclick="showFilterSettings();">配置过滤器</span>
+        </section>
+        <section>
+          <input type="checkbox" id="auto_refresh">
+          <label for="auto_refresh" style="font-weight: bold; margin-right: 8px;">自动刷新</label>
+          <span style="color: #dedede; font-size: 11px;">标准</span>
+          <input type="range" id="auto_refresh_frequency" style="width: 50px; height: 15px;" value="0" onchange="frequencyUpdate();">
+          <span style="color: #dedede; font-size: 11px;">封号退学</span>
+        </section>
+        <section>
+          <input type="checkbox" id="auto_select" disabled="disabled">
+          <label for="auto_select" style="font-weight: bold;">自动选课</label>
+        </section>
+      </div>
     `,
     default: `<span>正在此页面上运行。</span>`
   };
 
   const about_this_project = `
-  <span style="user-select: text;">potatojw_upgraded v` + pjw_version + `</span> &nbsp; <a style="color: white;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
-  <a style="color: white;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
+  <span style="user-select: text;">potatojw_upgraded v` + pjw_version + `</span> &nbsp; <a style="color: #dedede;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  <a style="color: #dedede;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
 
   if (mode in filter_mode_list) {
@@ -153,30 +130,30 @@ var potatojw_intl = function() {
         </section>
         <section id="filter_teacher_name" class="filter_section">
           <h3>教师过滤</h3>
-          <h5>仅显示含有以下关键字教师的课程。</h5>
+          <h5>仅显示含有该教师的课程。</h5>
           <input type="text" id="filter_teacher_name_text">
         </section>
         <section id="filter_time" class="filter_section">
           <h3>上课时间过滤</h3>
         </section>
         <br>
-        <span class="pjw-mini-button" onclick="hideFilterSetting();">完成设置</span>
+        <span class="pjw-mini-button" onclick="hideFilterSettings();">完成设置</span>
         <br><br>
-        <span>注：自动选课打开后，potatojw将按照此处设置的过滤器选课</span>
+        <span>自动选课打开后，potatojw将按照此处设置的过滤器选课。</span>
         <br>
-        <span>上课时间过滤器暂不能储存</span>
+        <span>上课时间过滤器暂不能储存，刷新页面后会消失。</span>
         <br>
         <span>打开开发者界面（F12 / Command + Shift + I）的控制台（Console）可查看输出信息</span>
         <br>
-        <span class="about_proj"></span>
+        <div class="about-proj"></div>
       </div>
     `;
     $$("body").append(filter_setting_html);
   }
   if (mode != "")
-    $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` + 
+    $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` +
         custom_toolbar_html[(mode in filter_mode_list ? "filter" : (mode in custom_toolbar_html ? mode : "default"))]
-    + `<br><span class="about_proj"></span></div></div>`);
+    + `<div class="about-proj"></div></div></div>`);
 
   const toolbar_button_html = `
   <div id="pjw-toolbar-collapse-bg"><canvas id="pjw-toolbar-collapse" width="30px" height="30px"></canvas></div>
@@ -213,12 +190,12 @@ var potatojw_intl = function() {
 
   if (mode == "main_page") {
     if (typeof(window.alert_data) != "undefined") {
-      $$("#pjw-toolbar-content").prepend("<h5>来自教务网的提醒</h5><span>" + window.alert_data + "</span><br>");
+      $$("#pjw-toolbar-content").prepend("<h5>教务网通知</h5><span>" + window.alert_data + "</span><br>");
     }
   } else if (mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
-      document.getElementById("td" + g_evlId).innerHTML = quick_eval_mode_enabled ? "已自动五星好评" : "已评";
+      document.getElementById("td" + g_evlId).innerHTML = quick_eval_mode_enabled ? "已自动评价" : "已评";
       $('evalDetail').innerHTML = "谢谢您的评估！";
     }
     window.quickSubmitEval = function() {
@@ -342,7 +319,7 @@ var potatojw_intl = function() {
         type: "POST",
         success: function(res) {
           window.aux_data = $$(res);
-          var stu_grade = aux_data.find("div#d11 > form > table > tbody > tr:eq(4) > td:eq(3)").html();        
+          var stu_grade = aux_data.find("div#d11 > form > table > tbody > tr:eq(4) > td:eq(3)").html();
           var stu_dept = aux_data.find("div#d11 > form > table > tbody > tr:eq(3) > td:eq(1)").html();
           var stu_major = aux_data.find("div#d11 > form > table > tbody > tr:eq(3) > td:eq(3)").html();
           store.set("stu_info", {grade: stu_grade, department: stu_dept, major: stu_major, last_update: Date.now()});
@@ -895,7 +872,7 @@ var potatojw_intl = function() {
       $$("#filter_" + filter_name).css("display", "block");
     }
 
-    window.showFilterSetting = function() {
+    window.showFilterSettings = function() {
       $$("#potatojw_mask").css("display", "block");
       $$("#potatojw_filter_setting_frame").css("display", "block");
       $$("#is_filter_full_class").prop("checked", filter_settings.is_filter_full_class);
@@ -905,7 +882,7 @@ var potatojw_intl = function() {
       });
     };
 
-    window.hideFilterSetting = function() {
+    window.hideFilterSettings = function() {
       $$("#potatojw_filter_setting_frame input").each(function() {
         filter_settings[$$(this).attr("id")] = $$(this).val();
       });
@@ -914,6 +891,8 @@ var potatojw_intl = function() {
       $$("#potatojw_mask").css("display", "none");
       $$("#potatojw_filter_setting_frame").css("display", "none");
       store.set("filter_settings_" + mode, window.filter_settings);
+      $$("#filter_switch").prop("checked", true);
+      $$("#filter_switch").trigger("change");
     };
   }
 
@@ -924,10 +903,7 @@ var potatojw_intl = function() {
       });
     };
 
-    $$("#filter_switch").change(function() {
-      applyFilter();
-    });
-
+    // Register control bar event
     window.auto_refresh_interval_id = -1;
     $$("#auto_refresh").change(function() {
       $$("#auto_refresh").prop("checked") ? (function() {
@@ -937,18 +913,22 @@ var potatojw_intl = function() {
       } ());
     });
 
+    $$("#filter_switch").change(function() {
+      applyFilter();
+      $$("#auto_select").prop("disabled", false);
+      $$("#auto_select").trigger("change");
+    });
+
     window.auto_select_switch = false;
     $$("#auto_select").change(function() {
-      if (JSON.stringify(filter_settings) == "{}") {
-        showFilterSetting();
-        $$("#auto_select").click();
-      }
-      else window.auto_select_switch = $$("#auto_select").prop("checked");
+      window.auto_select_switch = $$("#auto_select").prop("checked");
     });
 
     window.stopAuto = function(){
-      if ($$("#auto_refresh").prop("checked")) $$("#auto_refresh").click();
-      if ($$("#auto_select").prop("checked"))  $$("#auto_select").click();
+      $$("#auto_refresh").prop("checked", false);
+      $$("#auto_refresh").trigger("change");
+      $$("#auto_select").prop("checked", false);
+      $$("#auto_select").trigger("change");
     }
 
     window.getAllClassDOM = function() {
@@ -975,11 +955,10 @@ var potatojw_intl = function() {
       return u * c;
     }
 
-    window.auto_refresh_frequency = 1.0, 
+    window.auto_refresh_frequency = 1.0,
     window.auto_refresh_loss_rate = 0.1;
 
-    // Update class list automatically
-    // 自动更新
+    // Auto-update class list
     window.startAutoRefresh = function() {
       initClassList(function() {doAutoClassSelect();});
       window.auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
@@ -1008,8 +987,7 @@ var potatojw_intl = function() {
       }
     }
 
-    // Select qualified class automatically
-    // 自动选择符合过滤器的课程
+    // Select class automatically based on filter
     window.doAutoClassSelect = function() {
       if (auto_select_switch == false) return;
       getAllClassDOM().each(function() {
@@ -1091,7 +1069,7 @@ var potatojw_intl = function() {
   }
 
   // Initiate toolbar
-  $$(".about_proj").html(about_this_project);
+  $$(".about-proj").html(about_this_project);
 
   // Draw collapse button
   (function() {
@@ -1122,44 +1100,46 @@ var potatojw_intl = function() {
     ctx.closePath();
   })();
 
-  // Collapse toolbar
-  function switchToolBar() {
-    if (store.get("is_toolbar_collapsed") == true) expandToolBar();
-    else collapseToolBar();
-  }
-  function collapseToolBar() {
-    $$("#pjw-toolbar").css("left", "-100%");
-    $$("#pjw-toolbar-collapse-bg").css("background-color", "");
-    $$("#pjw-toolbar-collapse").css({
-      "position": "fixed",
-      "left": "30px",
-      "bottom": "30px",
-      "top": "calc(100% - 60px)",
-      "transform": "rotate(180deg)"
-    });
-    store.set("is_toolbar_collapsed", true);
-  }
-  if (store.get("is_toolbar_collapsed") == null)
-    store.set("is_toolbar_collapsed", false);
-  else if (store.get("is_toolbar_collapsed") == true)
-    collapseToolBar();
-  $$("#pjw-toolbar-collapse-bg").on("click", switchToolBar);
-  $$("#pjw-toolbar-collapse").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
-  $$("#pjw-toolbar-collapse-bg").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
+  // Collapse / Expand toolbar
+  (function() {
+    function switchToolBar() {
+      if (store.get("is_toolbar_collapsed") == true) expandToolBar();
+      else collapseToolBar();
+    }
+    function collapseToolBar() {
+      $$("#pjw-toolbar").css("left", "-100%");
+      $$("#pjw-toolbar-collapse-bg").css("background-color", "");
+      $$("#pjw-toolbar-collapse").css({
+        "position": "fixed",
+        "left": "30px",
+        "bottom": "30px",
+        "top": "calc(100% - 60px)",
+        "transform": "rotate(180deg)"
+      });
+      store.set("is_toolbar_collapsed", true);
+    }
+    if (store.get("is_toolbar_collapsed") == null)
+      store.set("is_toolbar_collapsed", false);
+    else if (store.get("is_toolbar_collapsed") == true)
+      collapseToolBar();
+    $$("#pjw-toolbar-collapse-bg").on("click", switchToolBar);
+    $$("#pjw-toolbar-collapse").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
+    $$("#pjw-toolbar-collapse-bg").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
 
-  // Show toolbar
-  function expandToolBar() {
-    $$("#pjw-toolbar").css("left", "");
-    $$("#pjw-toolbar").css("opacity", "");
-    $$("#pjw-toolbar-collapse").css({
-      "position": "",
-      "left": "",
-      "bottom": "",
-      "top": "",
-      "transform": ""
-    });
-    store.set("is_toolbar_collapsed", false);
-  }
+    // Show toolbar
+    function expandToolBar() {
+      $$("#pjw-toolbar").css("left", "");
+      $$("#pjw-toolbar").css("opacity", "");
+      $$("#pjw-toolbar-collapse").css({
+        "position": "",
+        "left": "",
+        "bottom": "",
+        "top": "",
+        "transform": ""
+      });
+      store.set("is_toolbar_collapsed", false);
+    }
+  })();
 
   const css = `
 #potatojw_mask {
@@ -1205,15 +1185,29 @@ var potatojw_intl = function() {
 #pjw-toolbar-content {
   margin-left: 53px;
 }
+.about-proj {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #c1c1c1;
+  clear: both;
+}
 .filter_section {
   display: none;
+}
+#filter-control-bar {
+  user-select: none;
+}
+#filter-control-bar > section {
+  float: left;
+  margin-right: 25px;
+  margin-bottom: 5px;
 }
 body {
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 .pjw-mini-button {
-  font-size: 14px;
-  border-radius: 5px; font-weight: bold;
+  font-size: 14px; font-weight: bold;
+  border: 0; border-radius: 5px;
   background-color: white; color: #63065f;
   user-select: none; cursor: pointer;
   padding: 1px 7px; margin: 5px;
@@ -1422,7 +1416,7 @@ function CAPTCHAPlugin() {
   function corrode(img) {
     for (var j = 1; j < img.length - 1; j++)
       for (var k = 1; k < img[j].length - 1; k++)
-        if (img[j][k] == 1 && 
+        if (img[j][k] == 1 &&
             img[j-1][k]+img[j+1][k]+img[j][k-1]+img[j][k+1]+
             img[j-1][k-1]+img[j-1][k+1]+img[j+1][k-1]+img[j+1][k+1] == 0)
           img[j][k] = 0;
@@ -1458,7 +1452,7 @@ function CAPTCHAPlugin() {
     var part_info = new Array();
     var status = false, split_index = 0, partial_weight = 0;
     // Traverse image by pixel
-    for (var k = 0; k < img[0].length && split_index < split_count; k++) { 
+    for (var k = 0; k < img[0].length && split_index < split_count; k++) {
       var column_sum = 0;
       for (var j = 0; j < img.length; j++)
         column_sum += img[j][k]; // Add up column weight
@@ -1482,21 +1476,21 @@ function CAPTCHAPlugin() {
       return split_array;
     } else if (split_index == split_count - 1) {
       part_info.sort(function (a, b) { return b[0] - a[0]; });
-      var split_list = splitPartsBasedOnColor(part_info[0][2], 
+      var split_list = splitPartsBasedOnColor(part_info[0][2],
           color_avg.slice(part_info[0][2], part_info[0][3]), 2);
     } else if (split_index == split_count - 2) {
       part_info.sort(function (a, b) { return b[0] - a[0]; });
       if (part_info[0][0] / part_info[1][0] <= part_adj_max_mul) {
-        var split_list = splitPartsBasedOnColor(part_info[0][2], 
+        var split_list = splitPartsBasedOnColor(part_info[0][2],
             color_avg.slice(part_info[0][2], part_info[0][3]), 2);
-        split_list = split_list.concat(splitPartsBasedOnColor(part_info[1][2], 
+        split_list = split_list.concat(splitPartsBasedOnColor(part_info[1][2],
             color_avg.slice(part_info[1][2], part_info[1][3]), 2));
       } else {
-        var split_list = splitPartsBasedOnColor(part_info[0][2], 
+        var split_list = splitPartsBasedOnColor(part_info[0][2],
             color_avg.slice(part_info[0][2], part_info[0][3]), 3);
       }
     } else {
-      var split_list = splitPartsBasedOnColor(part_info[0][2], 
+      var split_list = splitPartsBasedOnColor(part_info[0][2],
             color_avg.slice(part_info[0][2], part_info[0][3]), 4);
     }
     part_info.sort(function (a, b) { return a[2] - b[2]; });
@@ -1965,6 +1959,32 @@ var google_analytics_js = `
 `;
 
 (function() {
+  var modes_reg = {
+    major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
+    gym: /gymClassList.do/i, // 体育补选
+    read: /readRenewCourseList.do/i, // 经典导读读书班补选
+    dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
+    open: /openRenewCourse/i, // 跨专业补选
+    common: /commonCourseRenewList/i, // 通修课补选
+
+    freshmen_exam: /student\/exam\/index.do/i, // 新生测试
+    course_eval: /evalcourse\/courseEval.do\?method=currentEvalCourse/i, // 课程评估
+
+    all_course_list: /teachinginfo\/allCourseList.do\?method=getTermAcademy/i, // 全校课程
+    grade_info: /student\/studentinfo\/achievementinfo.do\?method=searchTermList/i, // 成绩查看
+
+    main_page: /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i, // 主页
+    login_page: /(\/jiaowu\/exit.do|\/jiaowu$|\/jiaowu\/$|\/jiaowu\/index.jsp)/i // 登录页
+  }
+  window.mode = "";
+  for (const mode_name in modes_reg) {
+    if (modes_reg[mode_name].test(window.location.href) == true) {
+      mode = mode_name;
+      break;
+    }
+  }
+  if (mode == "") return;
+
   if (typeof(jQuery) == "function") {
     potatojw_preset("cdn.bootcdn.net");
   } else {
