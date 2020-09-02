@@ -620,7 +620,7 @@ var potatojw_intl = function() {
           if (item.type == "odd") classes += " sel-odd-class";
           else if (item.type == "even") classes += " sel-even-class";
           for (var i = item.start; i <= item.end; i++)
-            target.find(".pjw-class-weekly-calendar > div:eq(" + (item.weekday - 1) + ") > span:eq(" + (i - 1) + ")").addClass("selected");
+            target.find(".pjw-class-weekly-calendar > div:eq(" + (item.weekday - 1) + ") > span:eq(" + (i - 1) + ")").addClass(classes);
         }
       }
 
