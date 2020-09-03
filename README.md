@@ -17,6 +17,8 @@
 
 [获取最新版pjw+](https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js)
 
+[获取测试版pjw+](https://github.com/cubiccm/potatojw_upgraded/raw/beta/potatojw_upgraded.user.js)
+
 安装后，脚本会依照插件的设定自动更新，您可以在插件的菜单中配置自动更新。
 
 ## More Info

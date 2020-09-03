@@ -927,7 +927,7 @@ var potatojw_intl = function() {
             lesson_time: res.lesson_time,
             class_weeknum: res.class_weeknum,
             selection_status: "Available",
-            selection_info: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(8)").html()}`],
+            selection_info: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
             comment_score: (Math.random() * 10).toFixed(1)
           };
           list.add(data);
@@ -1033,7 +1033,7 @@ var potatojw_intl = function() {
           lesson_time: res.lesson_time,
           class_weeknum: res.class_weeknum,
           selection_status: "Available",
-          selection_info: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(8)").html()}`, `专业意向：${$$(val).children("td:eq(9)").html()}`],
+          selection_info: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`, `专业意向：${$$(val).children("td:eq(9)").html()}`],
           comment_score: (Math.random() * 10).toFixed(1)
         };
         list.add(data);
@@ -1047,6 +1047,7 @@ var potatojw_intl = function() {
         list.dom.remove();
         delete list;
       }
+      $$("div#course").css("display", "none");
       
       window.list = new PJWOpenClass($$("#courseList"));
       $$.ajax({
@@ -1768,7 +1769,7 @@ main {
 }
 
 .pjw-class-container {
-  padding: 14px 30px;
+  padding: 10px 30px;
   border-radius: 20px;
   margin-left: 5%;
   width: 90%;
@@ -1782,8 +1783,8 @@ main {
 }
 
 .pjw-class-container--compressed {
-  padding: 8px 30px;
-  margin-bottom: -10px;
+  padding: 5px 30px;
+  margin-bottom: 0;
   background-image: linear-gradient(10deg, rgba(211, 251, 251, 0.6), rgba(251, 221, 151, 0.6));
 }
 
@@ -1802,7 +1803,7 @@ main {
 }
 
 .pjw-class-sub > div {
-  margin: 0 5px;
+  margin: 0 10px;
 }
 
 /* Basic Class Info */
@@ -2114,7 +2115,7 @@ main {
 
 /* Mobile */
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 1150px) {
   .pjw-class-info {
     max-width: 100%;
   }
