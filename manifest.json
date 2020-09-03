@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "potatoplus",
+  "version": "0.2",
+  "description": "土豆改善工程！",
+  "icons": {
+    "16": "img/logo.png",
+    "48": "img/logo.png",
+    "128": "img/logo.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.nju.edu.cn/jiaowu*"],
+      "js": ["js/inject.js"],
+      "css": ["css/material-components-web.min.css", "css/pjw.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    "js/*"
+  ]
+}

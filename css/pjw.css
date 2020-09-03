@@ -1,0 +1,513 @@
+#potatojw_mask {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  opacity: 0.5;
+  z-index: 9000;
+}
+#potatojw_filter_setting_frame {
+  display: none;
+  position: fixed;
+  left: 15%;
+  top: 15%;
+  bottom: 5px;
+  width: 70%;
+  height: auto;
+  z-index: 9001;
+  background-color: #63065f;
+  border-radius: 8px;
+  padding: 15px;
+  color: white;
+  overflow: auto;
+}
+#pjw-toolbar {
+  font-size: 13px;
+  position: fixed;
+  left: 5%;
+  bottom: 20px;
+  width: 90%;
+  height: auto;
+  background-color: #63065f;
+  border-radius: 18px;
+  color: white;
+  padding: 7px 7px 7px 7px;
+  opacity: 0.8;
+  transition: left .3s ease-out, opacity .3s ease-out;
+}
+#pjw-toolbar-content {
+  margin-left: 53px;
+}
+.about-proj {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #c1c1c1;
+  clear: both;
+}
+.filter_section {
+  display: none;
+}
+#filter-control-bar {
+  user-select: none;
+}
+#filter-control-bar > section {
+  float: left;
+  margin-right: 25px;
+  margin-bottom: 5px;
+}
+body {
+  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+}
+.pjw-mini-button {
+  font-size: 14px; font-weight: bold;
+  border: 0; border-radius: 7px;
+  background-color: white; color: #63065f;
+  user-select: none; cursor: pointer;
+  padding: 1px 7px; margin: 5px;
+  transition: all .1s ease-in;
+}
+.pjw-mini-button:hover {
+  color: rgba(255, 155, 25, 1);
+  border-radius: 10px;
+  padding: 1px 10px;
+  margin: 2px;
+}
+.pjw-mini-button:active {
+  color: #c1c1c1;
+  background-color: rgba(255, 255, 255, .8);
+}
+#pjw-toolbar-collapse-bg {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  height: 100%;
+  width: 50px;
+  margin: 0;
+  padding: 0;
+  background-color: #63065f;
+  border-radius: 18px 0 0 18px;
+  transition: background-color .2s ease-out;
+  cursor: pointer;
+}
+#pjw-toolbar-collapse-bg:hover {
+  background-color: rgba(255, 255, 255, .6);
+}
+#pjw-toolbar-collapse {
+  background-color: white;
+  cursor: pointer;
+  border: 2px solid #63065f;
+  position: absolute;
+  margin: 0 10px;
+  width: 30px;
+  height: 30px;
+  left: 0;
+  top: calc(50% - 17px);
+  border-radius: 50%;
+  padding: 0;
+  transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
+}
+
+@font-face {
+  font-family: 'Material Icons Round';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialiconsround/v24/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmPq_HTTw.woff2) format('woff2');
+}
+
+.material-icons-round {
+  font-family: 'Material Icons Round' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
+body {
+  display: block !important;
+}
+
+#courseList {
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+.pjw-class-text {
+  margin: 0;
+  color: rgba(0, 0, 0, .75);
+}
+
+.pjw-class-text-primary {
+  color: rgba(0, 0, 0, .9);
+  margin: 0;
+}
+
+.pjw-class-container {
+  padding: 10px 30px;
+  border-radius: 20px;
+  margin-left: 5%;
+  width: 90%;
+  position: relative;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  margin-top: 0;
+  margin-bottom: 0;
+  background-image: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));
+}
+
+.pjw-class-container--compressed {
+  padding: 5px 30px;
+  margin-bottom: 0;
+  background-image: linear-gradient(10deg, rgba(211, 251, 251, 0.6), rgba(251, 221, 151, 0.6));
+}
+
+.pjw-class-main {
+  display: flex;
+  flex-direction: row;
+}
+
+.pjw-class-main > div {
+  margin: 0 10px;
+}
+
+.pjw-class-sub {
+  display: flex;
+  flex-direction: row;
+}
+
+.pjw-class-sub > div {
+  margin: 0 10px;
+}
+
+/* Basic Class Info */
+
+.pjw-class-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 30%;
+}
+
+.pjw-class-container--compressed .pjw-class-info {
+  max-width: 50%;
+}
+
+.pjw-class-container--compressed .pjw-class-info-additional {
+  display: none;
+}
+
+.pjw-class-info-important > p {
+  color: rgba(0, 0, 0, .6);
+}
+
+.pjw-class-info-additional > p {
+  color: rgba(0, 0, 0, .6);
+}
+
+.pjw-class-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.pjw-class-teacher {
+  font-size: 16px;
+}
+
+.pjw-class-name-initial {
+  font-size: 18px;
+}
+
+/* Weekly Calendar */
+
+.pjw-class-weekly {
+  display: flex;
+  flex-direction: row;
+  user-select: none;
+  border-radius: 14px;
+  background-color: rgba(0, 0, 0, .05);
+  padding: 6px;
+}
+
+.pjw-class-container--compressed .pjw-class-weekly {
+  background-color: transparent;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.pjw-class-weekly-heading {
+  border: 2px solid rgba(0, 0, 0, .3);
+  border-radius: 18px;
+  width: 34px;
+  padding: 5px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.pjw-class-container--compressed .pjw-class-weekly-heading {
+  height: 34px; width: auto;
+  flex-direction: row;
+  padding: 0 5px;
+}
+
+.pjw-class-weekly-heading-day {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 12px;
+  line-height: 30px;
+  font-weight: bold;
+  height: 30px;
+  width: 30px;
+  margin: 0;
+  border-radius: 15px;
+}
+
+.pjw-class-weekly-heading-day.selected {
+  color: white;
+  background-color: rgba(30, 107, 235, 1);
+  margin: 2px 0;
+}
+
+.pjw-class-container--compressed .pjw-class-weekly-heading-day.selected {
+  margin: 0 2px;
+}
+
+.pjw-class-weekly-calendar {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 7px 0;
+}
+
+.pjw-class-container--compressed .pjw-class-weekly-calendar {
+  display: none;
+}
+
+.pjw-class-weekly-calendar-day {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+}
+
+.pjw-class-weekly-calendar-day.selected {
+  display: flex;
+  flex-direction: row;
+  margin: 2px 0;
+}
+
+.pjw-class-weekly-calendar-day > span {
+  color: rgba(0, 0, 0, .6);
+  font-size: 11px;
+  font-family: 'Helvetica Neue', 'DengXian', 'Microsoft YaHei', sans-serif;
+  width: 17px;
+  height: 17px;
+  line-height: 17px;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid rgba(0, 0, 0, .2);
+  border-radius: 9px;
+  margin: 6px 2px;
+}
+
+.pjw-class-weekly-calendar-day > span.selected {
+  border: 0;
+  border-radius: 0;
+  color: white;
+  font-weight: bold;
+  background-color: rgba(23, 83, 182, 1);
+  width: 23px;
+  margin: 7px 0;
+}
+
+.pjw-class-weekly-calendar-day > span.selected.sel-start {
+  border-top-left-radius: 9px;
+  border-bottom-left-radius: 9px;
+  width: 21px;
+  margin-left: 2px;
+}
+
+.pjw-class-weekly-calendar-day > span.selected.sel-end {
+  border-top-right-radius: 9px;
+  border-bottom-right-radius: 9px;
+  width: 21px;
+  margin-right: 2px;
+}
+
+.pjw-class-weekly-calendar-day > span.selected.sel-odd-class::after {
+  content: "单";
+  vertical-align: sub;
+  font-size: 8px;
+}
+
+.pjw-class-weekly-calendar-day > span.selected.sel-even-class::after {
+  content: "双";
+  vertical-align: sub;
+  font-size: 8px;
+}
+
+/* Class Info (Numbers Part) */
+
+.pjw-class-advanced-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.pjw-class-weeknum-bar {
+  height: 16px;
+  width: 200px;
+  border: 1px solid rgba(0, 0, 0, .2);
+  border-radius: 9px;
+  position: relative;
+}
+
+.pjw-class-container--compressed .pjw-class-weeknum-bar {
+  width: 180px;
+}
+
+.pjw-class-weeknum-bar__fill {
+  position: absolute;
+  height: 16px;
+  border-radius: 9px;
+  background-image: linear-gradient(-85deg, #3ab3b0, #55367d);
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.pjw-class-num-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.pjw-class-container--compressed .pjw-class-num-info {
+  justify-content: center;
+}
+
+.pjw-class-bignum {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.pjw-class-container--compressed .pjw-class-bignum {
+  margin: 0 10px;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0;
+}
+
+.pjw-class-bignum > .num {
+  font-size: 40px;
+  font-weight: bold;
+  color: black;
+}
+
+.pjw-class-container--compressed .pjw-class-bignum > .num {
+  font-size: 24px;
+  line-height: 24px;
+  margin: 0 2px;
+}
+
+.pjw-class-bignum > .label {
+  color: rgba(0, 0, 0, .6);
+}
+
+.pjw-class-container--compressed .pjw-class-bignum > .label {
+  font-size: 12px;
+}
+
+/* Class Actions */
+
+.pjw-class-action {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.pjw-class-container--compressed .pjw-class-action {
+  flex-direction: row;
+  padding: 0 10px;
+}
+
+.pjw-class-select-button {
+  min-width: 120px;
+  background-image: linear-gradient(114deg, #3ab3b0, #55367d);
+}
+
+.pjw-class-comment-button {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  background-image: linear-gradient(45deg, #facc22, #f83600);
+  padding: 0;
+}
+
+.pjw-class-action > button {
+  border-radius: 25px;
+  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+  height: 50px;
+}
+
+.pjw-class-container--compressed .pjw-class-action > button {
+  margin: 0 5px;
+}
+
+.pjw-class-select-button__container {
+  margin-left: 20px;
+}
+
+.pjw-class-select-button__label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.pjw-class-select-button__status {
+  font-size: 10px;
+}
+
+.pjw-class-comment-button__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.pjw-class-comment-button__status {
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+/* Mobile */
+
+@media screen and (max-width: 1150px) {
+  .pjw-class-info {
+    max-width: 100%;
+  }
+  .pjw-class-sub {
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
+}
