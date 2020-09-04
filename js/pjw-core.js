@@ -4,7 +4,7 @@ var potatojw_intl = function() {
   window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
-  console.log("potatojw_upgraded v" + pjw_version + " by Limosity");
+  console.log("potatoplus v" + pjw_version + " by Limosity");
   console.log(pjw_mode + " mode activated");
 
   var head_metadata = `
@@ -24,13 +24,7 @@ var potatojw_intl = function() {
     main_page: `
       <h5>v` + pjw_version + ` 更新说明</h5>
       <ul>
-        <li>^> 错误修复</li>
-      </ul>
-      <h5>近期更新</h5>
-      <ul>
-        <li>+> 可选的提交统计信息选项</li>
-        <li>^> 成绩查询及工具栏改进</li>
-        <li>^> 几项登录优化及存储器更新</li>
+        <li>^> 全新课程列表</li>
       </ul>
     `,
     freshmen_exam: `
@@ -78,7 +72,7 @@ var potatojw_intl = function() {
   };
 
   const about_this_project = `
-  <span style="user-select: text;">potatojw_upgraded v` + pjw_version + `</span> &nbsp; <a style="color: #dedede;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
+  <span style="user-select: text;">potatoplus v` + pjw_version + `</span> &nbsp; <a style="color: #dedede;" href="https://github.com/cubiccm/potatojw_upgraded" target="_blank">[GitHub]</a> &nbsp;
   <a style="color: #dedede;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
 
@@ -544,7 +538,7 @@ var potatojw_intl = function() {
     };
 
     $$(document).ready(function() {
-      $$("#comment").html("[potatojw_upgraded Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatojw_upgraded<br><br>" + $$("#comment").html());
+      $$("#comment").html("[potatoplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatoplus<br><br>" + $$("#comment").html());
     });
   } else if (pjw_mode == "common") {
     window.initClassList = function(success_func = function() {}) {
