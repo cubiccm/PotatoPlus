@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "potatoplus",
-  "version": "0.2",
+  "version": "0.2.0.1",
   "description": "土豆改善工程！",
   "icons": {
     "16": "img/logo.png",

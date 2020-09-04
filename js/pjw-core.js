@@ -270,8 +270,13 @@ var potatojw_intl = function() {
           }],
           lesson_time: res.lesson_time,
           class_weeknum: res.class_weeknum,
-          selection_status: "Hidden",
-          comment_score: (Math.random() * 10).toFixed(1)
+          select_button: {
+            status: false
+          },
+          comment_button: {
+            status: true,
+            text: (Math.random() * 10).toFixed(1)
+          }
         };
         list.add(data);
       });
@@ -624,9 +629,15 @@ var potatojw_intl = function() {
             }],
             lesson_time: res.lesson_time,
             class_weeknum: res.class_weeknum,
-            selection_status: "Available",
-            selection_info: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
-            comment_score: (Math.random() * 10).toFixed(1)
+            select_button: {
+              status: "Available",
+              text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+              action: (() => {})
+            },
+            comment_button: {
+              status: true,
+              text: (Math.random() * 10).toFixed(1)
+            }
           };
           list.add(data);
         });
@@ -730,9 +741,15 @@ var potatojw_intl = function() {
           }],
           lesson_time: res.lesson_time,
           class_weeknum: res.class_weeknum,
-          selection_status: "Available",
-          selection_info: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`, `专业意向：${$$(val).children("td:eq(9)").html()}`],
-          comment_score: (Math.random() * 10).toFixed(1)
+          select_button: {
+            status: "Available",
+            text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`, `专业意向：${$$(val).children("td:eq(9)").html()}`],
+            action: (() => {})
+          },
+          comment_button: {
+            status: true,
+            text: (Math.random() * 10).toFixed(1)
+          }
         };
         list.add(data);
       });

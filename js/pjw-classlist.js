@@ -1,6 +1,40 @@
 function ClassListPlugin() {
   window.total_weeks = 17;
 
+  /* 
+    Class data format:
+    data = {
+      title: <String>,
+      teachers: [<String>, ...],
+      info: [<String>, ...], 
+      additional_info: [<String>, ...],
+      num_info: [{
+        num: <Integer>,
+        label: <String>
+      }, ...],
+      lesson_time: [{
+        start: <Integer>,
+        end: <Integer>,
+        type: <String>, // "normal", "odd", "even"
+        weekday: <Integer>
+      }, ...],
+      class_weeknum: [{
+        start: <Integer>,
+        end: <Integer>
+      }, ...],
+      select_button: {
+        status: <String>, // "Available", "Full", "Selected", false
+        text: [<String>, ...],
+        action: <Function>
+      }
+      comment_button: {
+        status: <Bool>, // true, false
+        text: <String>,
+        action: <Function>
+      }
+    };
+  */
+
   window.PJWClass = class {
     setTeacher(data, target) {
       var is_first = true;
@@ -62,17 +96,19 @@ function ClassListPlugin() {
     }
 
     updateSelButton(data, target) {
+      if (data === false) {
+        target.hide();
+      } else {
+        target.show();
+      }
       if (data == "Available") {
         target.css("display", "flex");
         target.prop("disabled", false);
-        target.find(".material-icons-round").html("add_task");
+        target.children(".material-icons-round").html("add_task");
         target.find(".pjw-class-select-button__label").html("选择");
-      } else if (data == "Hidden") {
-        target.css("display", "none");
       } else {
-        target.css("display", "flex");
         target.prop("disabled", true);
-        target.find(".material-icons-round").html("block");
+        target.children(".material-icons-round").html("block");
         var text;
         if (data == "Full")
           text = "已满";
@@ -84,14 +120,10 @@ function ClassListPlugin() {
       }
     }
 
-    setSelInfo(data, target) {
+    setSelText(data, target) {
       target.find(".pjw-class-select-button__status").remove();
       for (var item of data)
         target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`)
-    }
-
-    setCommentButton(data, target) {
-      target.attr("data-url", data);
     }
 
     setCommentScore(data, target) {
@@ -101,21 +133,31 @@ function ClassListPlugin() {
 
     update(data) {
       var info_top = this.info.children(".pjw-class-info-top");
-      if (typeof(data["title"]) != "undefined") info_top.children(".pjw-class-title").html(data.title);
-      if (typeof(data["teachers"]) != "undefined") this.setTeacher(data.teachers, info_top.children(".pjw-class-teacher"));
+      if ("title" in data) info_top.children(".pjw-class-title").html(data.title);
+      if ("teachers" in data) this.setTeacher(data.teachers, info_top.children(".pjw-class-teacher"));
 
       var info_bottom = this.info.children(".pjw-class-info-bottom");
-      if (typeof(data["info"]) != "undefined") this.setClassInfo(data.info, info_bottom.children(".pjw-class-info-important"));
-      if (typeof(data["additional_info"]) != "undefined") this.setClassInfo(data.additional_info, info_bottom.children(".pjw-class-info-additional"));
+      if ("info" in data) this.setClassInfo(data.info, info_bottom.children(".pjw-class-info-important"));
+      if ("additional_info" in data) this.setClassInfo(data.additional_info, info_bottom.children(".pjw-class-info-additional"));
 
-      if (typeof(data["num_info"]) != "undefined") this.setNumInfo(data.num_info, this.sideinfo.children(".pjw-class-num-info"));
-      if (typeof(data["lesson_time"]) != "undefined") this.setLessonTime(data.lesson_time, this.weekcal);
-      if (typeof(data["class_weeknum"]) != "undefined") this.setWeekNum(data.class_weeknum, this.sideinfo.children(".pjw-class-weeknum-bar"));
+      if ("num_info" in data) this.setNumInfo(data.num_info, this.sideinfo.children(".pjw-class-num-info"));
+      if ("lesson_time" in data) this.setLessonTime(data.lesson_time, this.weekcal);
+      if ("class_weeknum" in data) this.setWeekNum(data.class_weeknum, this.sideinfo.children(".pjw-class-weeknum-bar"));
 
-      if (typeof(data["selection_status"]) != "undefined") this.updateSelButton(data.selection_status, this.select_button);
-      if (typeof(data["selection_info"]) != "undefined") this.setSelInfo(data.selection_info, this.select_button.children(".pjw-class-select-button__container"));
-      if (typeof(data["comment_url"]) != "undefined") this.setCommentButton(data.comment_url, this.comment_button);
-      if (typeof(data["comment_score"]) != "undefined") this.setCommentScore(data.comment_score, this.comment_button.children(".pjw-class-comment-button__container"));
+      if ("select_button" in data) {
+        var sel_data = data["select_button"];
+        if ("status" in sel_data) this.updateSelButton(sel_data.status, this.select_button);
+        if ("text" in sel_data) this.setSelText(sel_data.text, this.select_button.children(".pjw-class-select-button__container"));
+        if ("action" in sel_data) this.select_button.on("click", sel_data.action);
+      }
+
+      if ("comment_button" in data) {
+        var com_data = data["comment_button"];
+        if ("status" in com_data)
+          com_data.status ? this.comment_button.show() : this.comment_button.hide();
+        if ("text" in com_data) this.setCommentScore(com_data.text, this.comment_button.children(".pjw-class-comment-button__container"));
+        if ("action" in com_data) this.comment_button.on("click", com_data.action);
+      }
     }
 
     constructor(parent) {
@@ -190,11 +232,6 @@ function ClassListPlugin() {
           });
           t.css("opacity", "1");
         }, 10);
-      });
-
-      this.comment_button.on("click", (e) => {
-        if (jQuery(e.delegateTarget).attr("data-url"))
-          window.location.href = jQuery(e.delegateTarget).attr("data-url");
       });
     }
   };
