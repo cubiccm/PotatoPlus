@@ -66,5 +66,6 @@ function injectStyleFromString(str) {
 
   injectScript("js/pjw-lib.js");
   injectScript("js/pjw-captcha.js");
+  injectScript("js/pjw-classlist.js");
   injectScript("js/pjw-core.js");
 })();

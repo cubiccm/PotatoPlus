@@ -145,34 +145,22 @@ body {
   overflow: hidden !important;
 }
 
-.pjw-class-text {
-  margin: 0;
-  color: rgba(0, 0, 0, .75);
-}
-
-.pjw-class-text-primary {
-  color: rgba(0, 0, 0, .9);
-  margin: 0;
-}
-
 .pjw-class-container {
   padding: 10px 30px;
   border-radius: 20px;
-  margin-left: 5%;
+  margin: 5px 5%;
   width: 90%;
   position: relative;
   justify-content: space-between;
   flex-wrap: nowrap;
   flex-direction: row;
-  margin-top: 0;
-  margin-bottom: 0;
   background-image: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));
+  opacity: 1;
 }
 
 .pjw-class-container--compressed {
-  padding: 5px 30px;
-  margin-bottom: 0;
-  background-image: linear-gradient(10deg, rgba(211, 251, 251, 0.6), rgba(251, 221, 151, 0.6));
+  padding: 6px 25px;
+  background-image: linear-gradient(10deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
 }
 
 .pjw-class-main {
@@ -221,10 +209,16 @@ body {
 .pjw-class-title {
   font-size: 20px;
   font-weight: bold;
+  color: rgba(0, 0, 0, .9);
 }
 
 .pjw-class-teacher {
   font-size: 16px;
+  color: rgba(0, 0, 0, .75);
+}
+
+.pjw-class-info-top > p {
+  margin: 0;
 }
 
 .pjw-class-name-initial {
@@ -233,7 +227,7 @@ body {
 
 /* Weekly Calendar */
 
-.pjw-class-weekly {
+.pjw-class-weekcal {
   display: flex;
   flex-direction: row;
   user-select: none;
@@ -242,13 +236,13 @@ body {
   padding: 6px;
 }
 
-.pjw-class-container--compressed .pjw-class-weekly {
+.pjw-class-container--compressed .pjw-class-weekcal {
   background-color: transparent;
   flex-direction: column;
   justify-content: space-around;
 }
 
-.pjw-class-weekly-heading {
+.pjw-class-weekcal-heading {
   border: 2px solid rgba(0, 0, 0, .3);
   border-radius: 18px;
   width: 34px;
@@ -259,13 +253,14 @@ body {
   justify-content: space-around;
 }
 
-.pjw-class-container--compressed .pjw-class-weekly-heading {
+.pjw-class-container--compressed .pjw-class-weekcal-heading {
   height: 34px; width: auto;
   flex-direction: row;
   padding: 0 5px;
+  margin: 10px 0;
 }
 
-.pjw-class-weekly-heading-day {
+.pjw-class-weekcal-heading-day {
   text-align: center;
   vertical-align: middle;
   font-size: 12px;
@@ -277,40 +272,40 @@ body {
   border-radius: 15px;
 }
 
-.pjw-class-weekly-heading-day.selected {
+.pjw-class-weekcal-heading-day.selected {
   color: white;
   background-color: rgba(30, 107, 235, 1);
   margin: 2px 0;
 }
 
-.pjw-class-container--compressed .pjw-class-weekly-heading-day.selected {
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected {
   margin: 0 2px;
 }
 
-.pjw-class-weekly-calendar {
+.pjw-class-weekcal-calendar {
   margin-left: 10px;
   display: flex;
   flex-direction: column;
   padding: 7px 0;
 }
 
-.pjw-class-container--compressed .pjw-class-weekly-calendar {
+.pjw-class-container--compressed .pjw-class-weekcal-calendar {
   display: none;
 }
 
-.pjw-class-weekly-calendar-day {
+.pjw-class-weekcal-calendar-day {
   display: flex;
   flex-direction: row;
   margin: 0;
 }
 
-.pjw-class-weekly-calendar-day.selected {
+.pjw-class-weekcal-calendar-day.selected {
   display: flex;
   flex-direction: row;
   margin: 2px 0;
 }
 
-.pjw-class-weekly-calendar-day > span {
+.pjw-class-weekcal-calendar-day > span {
   color: rgba(0, 0, 0, .6);
   font-size: 11px;
   font-family: 'Helvetica Neue', 'DengXian', 'Microsoft YaHei', sans-serif;
@@ -324,7 +319,7 @@ body {
   margin: 6px 2px;
 }
 
-.pjw-class-weekly-calendar-day > span.selected {
+.pjw-class-weekcal-calendar-day > span.selected {
   border: 0;
   border-radius: 0;
   color: white;
@@ -334,27 +329,27 @@ body {
   margin: 7px 0;
 }
 
-.pjw-class-weekly-calendar-day > span.selected.sel-start {
+.pjw-class-weekcal-calendar-day > span.selected.sel-start {
   border-top-left-radius: 9px;
   border-bottom-left-radius: 9px;
   width: 21px;
   margin-left: 2px;
 }
 
-.pjw-class-weekly-calendar-day > span.selected.sel-end {
+.pjw-class-weekcal-calendar-day > span.selected.sel-end {
   border-top-right-radius: 9px;
   border-bottom-right-radius: 9px;
   width: 21px;
   margin-right: 2px;
 }
 
-.pjw-class-weekly-calendar-day > span.selected.sel-odd-class::after {
+.pjw-class-weekcal-calendar-day > span.selected.sel-odd-class::after {
   content: "单";
   vertical-align: sub;
   font-size: 8px;
 }
 
-.pjw-class-weekly-calendar-day > span.selected.sel-even-class::after {
+.pjw-class-weekcal-calendar-day > span.selected.sel-even-class::after {
   content: "双";
   vertical-align: sub;
   font-size: 8px;
@@ -362,7 +357,7 @@ body {
 
 /* Class Info (Numbers Part) */
 
-.pjw-class-advanced-info {
+.pjw-class-sideinfo {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -438,9 +433,9 @@ body {
   font-size: 12px;
 }
 
-/* Class Actions */
+/* Class Operations */
 
-.pjw-class-action {
+.pjw-class-operation {
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -448,7 +443,7 @@ body {
   align-items: center;
 }
 
-.pjw-class-container--compressed .pjw-class-action {
+.pjw-class-container--compressed .pjw-class-operation {
   flex-direction: row;
   padding: 0 10px;
 }
@@ -466,13 +461,13 @@ body {
   padding: 0;
 }
 
-.pjw-class-action > button {
+.pjw-class-operation > button {
   border-radius: 25px;
   font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
   height: 50px;
 }
 
-.pjw-class-container--compressed .pjw-class-action > button {
+.pjw-class-container--compressed .pjw-class-operation > button {
   margin: 0 5px;
 }
 

@@ -1,10 +1,20 @@
 // import { CAPTCHAPlugin } from './captcha.js';
 
 var potatojw_intl = function() {
+  window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
   console.log("potatojw_upgraded v" + pjw_version + " by Limosity");
   console.log(pjw_mode + " mode activated");
+
+  var head_metadata = `
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+  `;
+  $$("head").prepend(head_metadata);
+
+  if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
+    $$("head").append($$(google_analytics_js));
+  }
 
   var subclass_mode_list = {"gym": 1, "read": 2, "common": 3, "dis": 4, "open": 5, "major_course": 6};
   var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true};
@@ -130,270 +140,8 @@ var potatojw_intl = function() {
   `;
   $$("#pjw-toolbar").prepend(toolbar_button_html);
 
-  if (pjw_mode in pjw_classlist_mode_list) {
-    window.total_weeks = 17;
-
-    window.PJWClass = class {
-      setTeacher(data, target) {
-        target.html("");
-        var is_first = true;
-        for (var str of data) {
-          if (!is_first) target.append("，");
-          is_first = false;
-          target.append(`<span class="pjw-class-name-initial">` + str[0] + `</span>` + str.slice(1));
-        }
-      }
-
-      setClassInfo(data, target) {
-        target.html("");
-        for (var text of data)
-          target.append(`<p class="pjw-class-text">` + text + `</p>`);
-      }
-
-      setNumInfo(data, target) {
-        target.html("");
-        for (var item of data)
-          target.append(`<div class="pjw-class-bignum"><span class="num">` + item.num + `</span><span class="label">` + item.label + `</span></div>`);
-      }
-
-      setLessonTime(data, target) {
-        target.find(".pjw-class-weekly .selected").removeClass("selected");
-        target.find(".pjw-class-weekly-calendar .sel-start").removeClass("sel-start");
-        target.find(".pjw-class-weekly-calendar .sel-end").removeClass("sel-end");
-        for (var item of data) {
-          target.find(".pjw-class-weekly-heading > div:eq(" + (item.weekday - 1) + ")").addClass("selected");
-          target.find(".pjw-class-weekly-calendar > div:eq(" + (item.weekday - 1) + ")").addClass("selected");
-          target.find(".pjw-class-weekly-calendar > div:eq(" + (item.weekday - 1) + ") > span:eq(" + (item.start - 1) + ")").addClass("sel-start");
-          target.find(".pjw-class-weekly-calendar > div:eq(" + (item.weekday - 1) + ") > span:eq(" + (item.end - 1) + ")").addClass("sel-end");
-          var classes = "selected";
-          if (item.type == "odd") classes += " sel-odd-class";
-          else if (item.type == "even") classes += " sel-even-class";
-          for (var i = item.start; i <= item.end; i++)
-            target.find(".pjw-class-weekly-calendar > div:eq(" + (item.weekday - 1) + ") > span:eq(" + (i - 1) + ")").addClass(classes);
-        }
-      }
-
-      setWeekNum(data, target) {
-        target.html("");
-        for (var item of data) {
-          var res;
-          if (item.start != item.end)
-            res = $$(`<div class="pjw-class-weeknum-bar__fill" >${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`).appendTo(target);
-          else
-            res = $$(`<div class="pjw-class-weeknum-bar__fill" >${item.start}</div>`).appendTo(target);
-          res.css({
-            left: String((item.start - 1) / total_weeks * 100) + "%",
-            width: String((item.end - item.start + 1) / total_weeks * 100) + "%"
-          });
-        }
-      }
-
-      updateSelButton(data, target) {
-        if (data == "Available") {
-          target.css("display", "flex");
-          target.prop("disabled", false);
-          target.find(".material-icons-round").html("add_task");
-          target.find(".pjw-class-select-button__label").html("选择");
-        } else if (data == "Hidden") {
-          target.css("display", "none");
-        } else {
-          target.css("display", "flex");
-          target.prop("disabled", true);
-          target.find(".material-icons-round").html("block");
-          var text;
-          if (data == "Full")
-            text = "已满";
-          else if (data == "Selected")
-            text = "已选";
-          else
-            text = "选择";
-          target.find(".pjw-class-select-button__label").html(text);
-        }
-      }
-
-      setSelInfo(data, target) {
-        target.find(".pjw-class-select-button__status").remove();
-        for (var item of data)
-          target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`)
-      }
-
-      setCommentButton(data, target) {
-        target.attr("data-url", data);
-      }
-
-      setCommentScore(data, target) {
-        target.find(".pjw-class-comment-button__status").remove();
-        target.append(`<div class="mdc-button__label pjw-class-comment-button__status">` + data + `</div>`);
-      }
-
-      update(data) {
-        if (typeof(data["title"]) != "undefined") this.dom.find(".pjw-class-info .pjw-class-title").html(data.title);
-        if (typeof(data["teachers"]) != "undefined") this.setTeacher(data.teachers, this.dom.find(".pjw-class-info .pjw-class-teacher"));
-        if (typeof(data["info"]) != "undefined") this.setClassInfo(data.info, this.dom.find(".pjw-class-info .pjw-class-info-important"));
-        if (typeof(data["additional_info"]) != "undefined") this.setClassInfo(data.additional_info, this.dom.find(".pjw-class-info .pjw-class-info-additional"));
-        if (typeof(data["num_info"]) != "undefined") this.setNumInfo(data.num_info, this.dom.find(".pjw-class-num-info"));
-        if (typeof(data["lesson_time"]) != "undefined") this.setLessonTime(data.lesson_time, this.dom.find(".pjw-class-weekly"));
-        if (typeof(data["class_weeknum"]) != "undefined") this.setWeekNum(data.class_weeknum, this.dom.find(".pjw-class-weeknum-bar"));
-        if (typeof(data["selection_status"]) != "undefined") this.updateSelButton(data.selection_status, this.dom.find(".pjw-class-select-button"));
-        if (typeof(data["selection_info"]) != "undefined") this.setSelInfo(data.selection_info, this.dom.find(".pjw-class-select-button__container"));
-        if (typeof(data["comment_url"]) != "undefined") this.setCommentButton(data.comment_url, this.dom.find(".pjw-class-comment-button"));
-        if (typeof(data["comment_score"]) != "undefined") this.setCommentScore(data.comment_score, this.dom.find(".pjw-class-comment-button__container"));
-      }
-
-      constructor(parent) {
-        const class_html = `
-            <div class="mdc-card pjw-class-container pjw-class-container--compressed">
-              <div class="pjw-class-info">
-                <div>
-                  <p class="pjw-class-text-primary pjw-class-title"></p>
-                  <p class="pjw-class-teacher pjw-class-text"></p>
-                </div>
-                <div>
-                  <div class="pjw-class-info-important"></div>
-                  <div class="pjw-class-info-additional"></div>
-                </div>
-              </div>
-              <div class="pjw-class-main">
-                <div class="pjw-class-sub">
-                  <div class="pjw-class-weekly">
-                    <div class="pjw-class-weekly-heading">
-                      <div class="pjw-class-weekly-heading-day">MO</div>
-                      <div class="pjw-class-weekly-heading-day">TU</div>
-                      <div class="pjw-class-weekly-heading-day">WE</div>
-                      <div class="pjw-class-weekly-heading-day">TH</div>
-                      <div class="pjw-class-weekly-heading-day">FR</div>
-                    </div>
-                    <div class="pjw-class-weekly-calendar"></div>
-                  </div>
-                  <div class="pjw-class-advanced-info">
-                    <div class="pjw-class-weeknum-bar"></div>
-                    <div class="pjw-class-num-info"></div>
-                  </div>
-                </div>
-                <div class="pjw-class-action">
-                  <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-select-button">
-                    <div class="material-icons-round">add_task</div>
-                    <div class="pjw-class-select-button__container">
-                      <div class="mdc-button__label pjw-class-select-button__label" style="letter-spacing: 2px">选择</div>
-                    </div>
-                  </button>
-                  <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-comment-button">
-                    <div class="pjw-class-comment-button__container"><div class="material-icons-round">bar_chart</div></div>
-                  </button>
-                </div>
-              </div>
-            </div>`;
-        this.dom = $$(class_html).appendTo(parent);
-
-        var calendar_html = ``;
-        var calendar_html_day = ``;
-        for (var i = 1; i <= 11; i++)
-          calendar_html_day += `<span>` + i + `</span>`;
-        for (var j = 0; j < 5; j++)
-          calendar_html += `<div class="pjw-class-weekly-calendar-day">` + calendar_html_day + `</div>`;
-        this.dom.find(".pjw-class-weekly-calendar").append(jQuery(calendar_html));
-
-        jQuery(".pjw-class-sub").on("mouseenter", (e) => {
-          jQuery(e.delegateTarget).parent().parent().removeClass("pjw-class-container--compressed");
-        });
-        jQuery(".pjw-class-container").on("mouseleave", (e) => {
-          jQuery(e.delegateTarget).addClass("pjw-class-container--compressed");
-        });
-        jQuery(".pjw-class-comment-button").on("click", (e) => {
-          if (jQuery(e.delegateTarget).attr("data-url"))
-            window.location.href = jQuery(e.delegateTarget).attr("data-url");
-        });
-      }
-    };
-
-    window.PJWClassList = class {
-      add(data) {
-        var item = new PJWClass(this.dom);
-        item.update(data);
-        this.chdom_list.push(item.dom);
-      }
-
-      constructor(parent) {
-        const list_html = `<div class="pjw-classlist"></div>`;
-        this.dom = $$(list_html).appendTo(parent);
-        this.class_data = [];
-        this.chdom_list = [];
-      }
-    };
-
-    window.parseTeacherNames = function(text) {
-      if (text == "") return [];
-      return text.split(/[,，]\s/g);
-    }
-
-    window.parseClassTime = function(text) {
-      var classes = text.split("<br>");
-      const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
-
-      var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      var ans = [];
-
-      for (var item of classes) {
-        var words = item.split(" ");
-        var weekday = 0;
-        var is_odd = false, is_even = false;
-        var has_week_info = true;
-
-        for (var jtem of words) {
-          if (has_week_info == false)
-            for (var i = 1; i <= total_weeks; i++)
-              weeks[i] = 1;
-          has_week_info = false;
-          if (jtem[0] == "周") {
-            weekday = weekday_to_num[jtem[1]];
-          } else if (jtem[jtem.length - 1] == "周") {
-            has_week_info = true;
-            if (jtem[jtem.length - 2] == "单") {
-              for (var i = 1; i <= total_weeks; i += 2)
-                weeks[i] = 1;
-              ans[ans.length - 1].type = "odd";
-            } else if (jtem[jtem.length - 2] == "双") {
-              for (var i = 2; i <= total_weeks; i += 2)
-                weeks[i] = 1;
-              ans[ans.length - 1].type = "even";
-            } else {
-              var num_arr = jtem.match(/(\d+)+/g);
-              if (num_arr.length == 1)
-                weeks[parseInt(num_arr[0])] = 1;
-              else if (num_arr.length == 2)
-                for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
-                  weeks[i] = 1;
-            }
-          } else if (jtem[jtem.length - 1] == "节") {
-            var num_arr = jtem.match(/(\d+)+/g);
-            if (num_arr.length == 1)
-              num_arr.push(num_arr[0]);
-
-            if (weekday != 0 && num_arr.length)
-              ans.push({
-                weekday: weekday,
-                start: parseInt(num_arr[0]),
-                end: parseInt(num_arr[1]),
-                type: "normal"
-              });
-          }
-        }
-      }
-
-      var ans_weeks = [];
-      for (var i = 1; i <= total_weeks + 1; i++) {
-        if (weeks[i] == 1 && weeks[i-1] == 0) {
-          ans_weeks.push({
-            start: i,
-            end: i
-          });
-        } else if (weeks[i] == 0 && weeks[i-1] == 1) {
-          ans_weeks[ans_weeks.length - 1].end = i-1;
-        }
-      }
-      return {lesson_time: ans, class_weeknum: ans_weeks};
-    }
-  }
+  if (pjw_mode in pjw_classlist_mode_list)
+    ClassListPlugin();
 
 
   // Local storage
@@ -1586,19 +1334,7 @@ var google_analytics_js = `
 `;
 
 (function() {
-  window.pjw_version = "0.2 beta";
-  window.$$ = jQuery.noConflict();
-
-  var head_metadata = `
-    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-  `;
-  $$("head").prepend(head_metadata);
-
-  if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
-    $$("head").append($$(google_analytics_js));
-  }
-
-  $$(window).on("load", potatojw_intl);
+  window.addEventListener("load", potatojw_intl);
 })();
 
 
