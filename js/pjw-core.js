@@ -255,10 +255,12 @@ var potatojw_intl = function() {
         data = {
           title: $$(val).children("td:eq(1)").html().split('<br>')[0],
           teachers: parseTeacherNames($$(val).children("td:eq(7)").html()),
-          info: [`开课院系：${$$(val).children('td:eq(3)').html()}`],
+          info: [
+            `课程编号：${$$(val).children('td:eq(0)').html()}`
+          ],
           additional_info: [
-            `课程编号：${$$(val).children('td:eq(0)').html()}`,
             `课程性质：${$$(val).children('td:eq(2)').html()}`,
+            `开课院系：${$$(val).children('td:eq(3)').html()}`,
             `校区：${$$(val).children('td:eq(6)').html()}`
           ],
           num_info: [{

@@ -145,22 +145,83 @@ body {
   overflow: hidden !important;
 }
 
+.pjw-classlist-heading {
+  margin: 12px 5%;
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pjw-classlist-heading > * {
+  margin: 0 10px;
+}
+
+.pjw-class-filter-button {
+  background-image: linear-gradient(220deg, #3ab3b0, #55367d);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 60px;
+  padding: 5px 25px;
+  border-radius: 30px 0 0 30px;
+  margin: 0;
+}
+
+.pjw-class-filter-button__container {
+  margin-left: 16px;
+}
+
+.pjw-class-filter-switch-button {
+  border-radius: 0 30px 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 60px;
+  padding: 5px 25px;
+  border-radius: 0 30px 30px 0;
+  margin: 0;
+}
+
+.pjw-class-filter-switch-button.on {
+  background-image: linear-gradient(140deg, rgba(58, 179, 176, 1), rgba(85, 54, 125, 1));
+}
+
+.pjw-class-filter-switch-button.off {
+  background-image: none;
+  background-color: rgb(30, 30, 30);
+}
+
+.pjw-class-search-field {
+  width: 350px;
+}
+
 .pjw-class-container {
   padding: 10px 30px;
   border-radius: 20px;
-  margin: 5px 5%;
+  margin: 6px 5%;
   width: 90%;
   position: relative;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: nowrap;
   flex-direction: row;
   background-image: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));
-  opacity: 1;
+  transition: background-color .1s ease-out;
 }
 
 .pjw-class-container--compressed {
   padding: 6px 25px;
-  background-image: linear-gradient(10deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
+  background-color: rgba(0, 0, 0, 0.05);
+  background-image: none;
+}
+
+.pjw-class-container--compressed:hover {
+  background-color: white;
+  background-image: none;
 }
 
 .pjw-class-main {
@@ -229,7 +290,7 @@ body {
 
 .pjw-class-weekcal {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   user-select: none;
   border-radius: 14px;
   background-color: rgba(0, 0, 0, .05);
@@ -238,25 +299,21 @@ body {
 
 .pjw-class-container--compressed .pjw-class-weekcal {
   background-color: transparent;
-  flex-direction: column;
   justify-content: space-around;
 }
 
 .pjw-class-weekcal-heading {
   border: 2px solid rgba(0, 0, 0, .3);
   border-radius: 18px;
-  width: 34px;
-  padding: 5px 0;
+  height: 34px;
+  padding: 0 5px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: space-around;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading {
-  height: 34px; width: auto;
-  flex-direction: row;
-  padding: 0 5px;
   margin: 10px 0;
 }
 
@@ -275,18 +332,13 @@ body {
 .pjw-class-weekcal-heading-day.selected {
   color: white;
   background-color: rgba(30, 107, 235, 1);
-  margin: 2px 0;
-}
-
-.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected {
   margin: 0 2px;
 }
 
 .pjw-class-weekcal-calendar {
-  margin-left: 10px;
   display: flex;
-  flex-direction: column;
-  padding: 7px 0;
+  flex-direction: row;
+  padding: 0 7px;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-calendar {
@@ -295,14 +347,13 @@ body {
 
 .pjw-class-weekcal-calendar-day {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   margin: 0;
 }
 
 .pjw-class-weekcal-calendar-day.selected {
   display: flex;
-  flex-direction: row;
-  margin: 2px 0;
+  margin: 0 2px;
 }
 
 .pjw-class-weekcal-calendar-day > span {
@@ -316,7 +367,7 @@ body {
   vertical-align: middle;
   border: 1px solid rgba(0, 0, 0, .2);
   border-radius: 9px;
-  margin: 6px 2px;
+  margin: 2px 6px;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected {
@@ -325,22 +376,22 @@ body {
   color: white;
   font-weight: bold;
   background-color: rgba(23, 83, 182, 1);
-  width: 23px;
-  margin: 7px 0;
+  height: 23px;
+  margin: 0 7px;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-start {
   border-top-left-radius: 9px;
-  border-bottom-left-radius: 9px;
-  width: 21px;
-  margin-left: 2px;
+  border-top-right-radius: 9px;
+  height: 21px;
+  margin-top: 2px;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-end {
-  border-top-right-radius: 9px;
+  border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
-  width: 21px;
-  margin-right: 2px;
+  height: 21px;
+  margin-bottom: 2px;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-odd-class::after {
@@ -369,6 +420,7 @@ body {
   border: 1px solid rgba(0, 0, 0, .2);
   border-radius: 9px;
   position: relative;
+  margin: 6px 0;
 }
 
 .pjw-class-container--compressed .pjw-class-weeknum-bar {
@@ -496,7 +548,7 @@ body {
 
 /* Mobile */
 
-@media screen and (max-width: 1150px) {
+@media screen and (max-width: 900px) {
   .pjw-class-info {
     max-width: 100%;
   }

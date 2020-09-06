@@ -6,7 +6,7 @@ function ClassListPlugin() {
     data = {
       title: <String>,
       teachers: [<String>, ...],
-      info: [<String>, ...], 
+      info: [<String>, ...],
       additional_info: [<String>, ...],
       num_info: [{
         num: <Integer>,
@@ -217,13 +217,13 @@ function ClassListPlugin() {
       this.sub.on("mouseenter", (e) => {
         var t = jQuery(e.delegateTarget).parent().parent();
         t.removeClass("pjw-class-container--compressed");
-        t.css({ "margin-top": "0", "margin-bottom": "0" });
       });
       this.dom.on("mouseleave", (e) => {
         var t = jQuery(e.delegateTarget);
+        if (t.hasClass("pjw-class-container--compressed")) return;
         var comp_height = t.height();
-        t.addClass("pjw-class-container--compressed");
         t.css("opacity", "0");
+        t.addClass("pjw-class-container--compressed");
         window.setTimeout( () => {
           comp_height = (comp_height - t.height()) / 2;
           t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
@@ -240,15 +240,81 @@ function ClassListPlugin() {
     add(data) {
       var item = new PJWClass(this.dom);
       item.update(data);
-      this.chdom_list.push(item.dom);
-      this.class_data.push(data);
+      this.class_data.push({
+        data: data,
+        obj: item,
+        display: true
+      });
+    }
+
+    switchFilter() { 
+      if (this.heading.children(".pjw-class-filter-switch-button").hasClass("on")) {
+        this.filter_switch_button.removeClass("on");
+        this.filter_switch_button.addClass("off");
+        this.filter_switch_button.children(":eq(0)").html("toggle_off");
+        this.filter_switch_button.children(":eq(1)").html("关");
+      } else {
+        this.filter_switch_button.removeClass("off");
+        this.filter_switch_button.addClass("on");
+        this.filter_switch_button.children(":eq(0)").html("toggle_on");
+        this.filter_switch_button.children(":eq(1)").html("开");
+      }
+
     }
 
     constructor(parent) {
-      const list_html = `<div class="pjw-classlist"></div>`;
+      const list_html = `
+      <div class="pjw-classlist">
+        <div class="pjw-classlist-heading">
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-filter-button">
+            <div class="material-icons-round">filter_alt</div>
+            <div class="mdc-button__label pjw-class-filter-button__label" style="letter-spacing: 2px">课程筛选</div>
+          </button>
+
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-filter-switch-button off">
+            <div class="material-icons-round">toggle_off</div>
+            <div class="mdc-button__label pjw-class-filter-button__label" style="letter-spacing: 2px">关</div>
+          </button>
+
+          <!--<div class="mdc-switch" data-mdc-auto-init="MDCSwitch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="basic-switch" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>-->
+
+          <label class="mdc-text-field mdc-text-field--outlined pjw-class-search-field" data-mdc-auto-init="MDCTextField">
+            <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input">
+            <span class="mdc-notched-outline">
+              <span class="mdc-notched-outline__leading"></span>
+              <span class="mdc-notched-outline__notch">
+                <span class="mdc-floating-label" id="pjw-class-search-input"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+              </span>
+              <span class="mdc-notched-outline__trailing"></span>
+            </span>
+          </label>
+        </div>
+      </div>`;
       this.dom = $$(list_html).appendTo(parent);
+      this.heading = this.dom.children(".pjw-classlist-heading");
+      this.filter_switch_button = this.heading.children(".pjw-class-filter-switch-button");
+      this.filter_switch_button.on("click", (e) => {
+        var t = $$(e.delegateTarget);
+        if (t.hasClass("on")) {
+          t.removeClass("on");
+          t.addClass("off");
+          t.children(":eq(0)").html("toggle_off");
+          t.children(":eq(1)").html("关");
+        } else {
+          t.removeClass("off");
+          t.addClass("on");
+          t.children(":eq(0)").html("toggle_on");
+          t.children(":eq(1)").html("开");
+        }
+      });
       this.class_data = [];
-      this.chdom_list = [];
+      window.mdc.autoInit();
     }
   };
 
