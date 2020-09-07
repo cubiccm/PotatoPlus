@@ -51,6 +51,9 @@ function injectStyleFromString(str) {
 
   if (pjw_mode == "") return;
 
+  // @injectStyle("css/material-components-web.min.css");
+  // @injectStyle("css/pjw.css");
+
   injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");
   injectScript("js/material-components-web.min.js");
