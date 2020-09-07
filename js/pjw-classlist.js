@@ -145,6 +145,8 @@ function ClassListPlugin() {
       target.append(`<div class="mdc-button__label pjw-class-comment-button__status">` + data + `</div>`);
     }
 
+    refresh() {}
+
     update(data) {
       var info_top = this.info.children(".pjw-class-info-top");
       if ("title" in data) info_top.children(".pjw-class-title").html(data.title);
@@ -162,7 +164,7 @@ function ClassListPlugin() {
         var sel_data = data["select_button"];
         if ("status" in sel_data) this.updateSelButton(sel_data.status, this.select_button);
         if ("text" in sel_data) this.setSelText(sel_data.text, this.select_button.children(".pjw-class-select-button__container"));
-        if ("action" in sel_data) this.select_button.on("click", sel_data.action);
+        if ("action" in sel_data) this.select_button.click({target: this, button_target: this.select_button}, sel_data.action);
       }
 
       if ("comment_button" in data) {
@@ -241,24 +243,29 @@ function ClassListPlugin() {
         window.setTimeout( () => {
           comp_height = (comp_height - t.height()) / 2;
           t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
-          t.animate({ "margin-top": "6px", "margin-bottom": "6px" }, 200, (x) => {
+          t.animate({ "margin-top": "6px", "margin-bottom": "6px" }, 100, (x) => {
             return 1 - Math.cos(x * Math.PI / 2);
           });
           t.css("opacity", "1");
-        }, 10);
+        }, 5);
       });
     }
   };
 
   window.PJWClassList = class {
     add(data) {
-      var item = new PJWClass(this.dom);
+      var item = new PJWClass(this.body);
       item.update(data);
       this.class_data.push({
         data: data,
         obj: item,
         display: true
       });
+    }
+
+    clear() {
+      this.class_data = [];
+      this.body.html("");
     }
 
     switchFilter() { 
@@ -273,58 +280,71 @@ function ClassListPlugin() {
         this.filter_switch_button.children(":eq(0)").html("toggle_on");
         this.filter_switch_button.children(":eq(1)").html("开");
       }
-
     }
 
     constructor(parent) {
       const list_html = `
       <div class="pjw-classlist">
         <div class="pjw-classlist-heading">
-          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-filter-button">
-            <div class="material-icons-round">filter_alt</div>
-            <div class="mdc-button__label pjw-class-filter-button__label" style="letter-spacing: 2px">课程筛选</div>
-          </button>
+          <section id="autoreload-control-section">
+            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
+              <div class="material-icons-round">autorenew</div>
+              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">刷新</div>
+            </button>
 
-          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-filter-switch-button off">
-            <div class="material-icons-round">toggle_off</div>
-            <div class="mdc-button__label pjw-class-filter-button__label" style="letter-spacing: 2px">关</div>
-          </button>
+            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
+              <div class="material-icons-round">toggle_off</div>
+              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
+            </button>
+          </section>
 
-          <!--<div class="mdc-switch" data-mdc-auto-init="MDCSwitch">
-            <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" id="basic-switch" class="mdc-switch__native-control" role="switch" aria-checked="false">
-            </div>
-          </div>-->
+          <section id="filter-control-section">
+            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
+              <div class="material-icons-round">filter_alt</div>
+              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
+            </button>
 
-          <label class="mdc-text-field mdc-text-field--outlined pjw-class-search-field" data-mdc-auto-init="MDCTextField">
-            <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input">
-            <span class="mdc-notched-outline">
-              <span class="mdc-notched-outline__leading"></span>
-              <span class="mdc-notched-outline__notch">
-                <span class="mdc-floating-label" id="pjw-class-search-input"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
+              <div class="material-icons-round">toggle_off</div>
+              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
+            </button>
+          </section>
+
+          <section>
+            <label class="mdc-text-field mdc-text-field--outlined pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
+              <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input">
+              <span class="mdc-notched-outline">
+                <span class="mdc-notched-outline__leading"></span>
+                <span class="mdc-notched-outline__notch">
+                  <span class="mdc-floating-label" id="pjw-class-search-input"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+                </span>
+                <span class="mdc-notched-outline__trailing"></span>
               </span>
-              <span class="mdc-notched-outline__trailing"></span>
-            </span>
-          </label>
+            </label>
+          </section>
         </div>
+        <div class="pjw-classlist-body"></div>
       </div>`;
       this.dom = $$(list_html).appendTo(parent);
       this.heading = this.dom.children(".pjw-classlist-heading");
-      this.filter_switch_button = this.heading.children(".pjw-class-filter-switch-button");
-      this.filter_switch_button.on("click", (e) => {
+      this.body = this.dom.children(".pjw-classlist-body");
+      this.autoreload_button = this.heading.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
+      this.heading_switch_button = this.heading.children("section").children(".pjw-classlist-heading-switch-button");
+      this.autoreload_button.on("click", (e) => {
+        list.refresh();
+      });
+      this.heading_switch_button.on("click", (e) => {
         var t = $$(e.delegateTarget);
         if (t.hasClass("on")) {
           t.removeClass("on");
           t.addClass("off");
           t.children(":eq(0)").html("toggle_off");
-          t.children(":eq(1)").html("关");
+          t.children(":eq(1)").html(t.children(":eq(1)").attr("data-off"));
         } else {
           t.removeClass("off");
           t.addClass("on");
           t.children(":eq(0)").html("toggle_on");
-          t.children(":eq(1)").html("开");
+          t.children(":eq(1)").html(t.children(":eq(1)").attr("data-on"));
         }
       });
       this.class_data = [];
@@ -345,7 +365,7 @@ function ClassListPlugin() {
     var ans = [];
 
     for (var item of classes) {
-      var words = item.split(" ");
+      var words = item.split(/\s|\&nbsp;/g);
       var weekday = 0;
       var is_odd = false, is_even = false;
       var has_week_info = false;

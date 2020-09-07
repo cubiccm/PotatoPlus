@@ -140,6 +140,10 @@ body {
   display: block !important;
 }
 
+.mdc-button {
+  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+}
+
 #courseList {
   height: auto !important;
   overflow: hidden !important;
@@ -158,11 +162,14 @@ body {
   justify-content: flex-end;
 }
 
-.pjw-classlist-heading > * {
-  margin: 0 10px;
+.pjw-classlist-heading > section {
+  margin: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.pjw-class-filter-button {
+.pjw-classlist-heading-button {
   background-image: linear-gradient(220deg, #3ab3b0, #55367d);
   display: flex;
   flex-direction: column;
@@ -174,11 +181,7 @@ body {
   margin: 0;
 }
 
-.pjw-class-filter-button__container {
-  margin-left: 16px;
-}
-
-.pjw-class-filter-switch-button {
+.pjw-classlist-heading-switch-button {
   border-radius: 0 30px 30px 0;
   display: flex;
   flex-direction: column;
@@ -191,16 +194,16 @@ body {
   border-left: 2px solid white;
 }
 
-.pjw-class-filter-switch-button.on {
+.pjw-classlist-heading-switch-button.on {
   background-image: linear-gradient(140deg, rgba(58, 179, 176, 1), rgba(85, 54, 125, 1));
 }
 
-.pjw-class-filter-switch-button.off {
+.pjw-classlist-heading-switch-button.off {
   background-image: none;
   background-color: rgb(30, 30, 30);
 }
 
-.pjw-class-search-field {
+.pjw-classlist-search-field {
   width: 350px;
 }
 
@@ -211,7 +214,7 @@ body {
   width: 90%;
   position: relative;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   flex-wrap: nowrap;
   flex-direction: row;
   background-image: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));
@@ -416,7 +419,7 @@ body {
 .pjw-class-sideinfo {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
 
 .pjw-class-weeknum-bar {
