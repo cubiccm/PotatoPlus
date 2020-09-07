@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.1.4.6
+// @version      0.1.4.7
 // @description  土豆改善工程！
 // @author       Limosity
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -12,7 +12,7 @@
 // ==/UserScript==
 
 var potatojw_preset = function(jq_source) {
-  window.pjw_version = "0.1.4.6";
+  window.pjw_version = "0.1.4.7";
   window.$$ = jQuery.noConflict();
   window.jq_source = jq_source;
 
@@ -535,7 +535,7 @@ var potatojw_intl = function() {
       console.log("Select: " + class_ID);
       var g_campus = $$('#campusList')[0].options[$$('#campusList')[0].selectedIndex].value;
       $$.ajax({
-        url: "/jiaowu/student/elective/courseList.do?method=submitDiscussRenew&classId=" + classId + "&campus=" + g_campus,
+        url: "/jiaowu/student/elective/courseList.do?method=submitDiscussRenew&classId=" + class_ID + "&campus=" + g_campus,
         type: "GET",
         success: function(res) {
           console.log("Success!");
@@ -838,7 +838,7 @@ var potatojw_intl = function() {
       "gym": 5,
       "read": 6,
       "common": 9,
-      "dis": 10,
+      "dis": 9,
       "open": 9
     };
 
@@ -1003,13 +1003,15 @@ var potatojw_intl = function() {
     window.doAutoClassSelect = function() {
       if (auto_select_switch == false) return;
       getAllClassDOM().each(function() {
+        if (auto_select_switch == false) return;
         if (mode == "major_course") {
           checkCourse(this); return;
         }
         if (!filterClass(this)) return;
         if (typeof(isClassFull) == "function" && !isClassFull(this)) {
           $$(this).children("td:eq(" + select_class_button_index[mode] + ")").children("a")[0].click();
-          console.log("Class Selected: " + $$(this).children("td:eq(" + class_name_index[mode] + ")".html()));
+          console.log("Class Selected: " + $$(this).children("td:eq(" + class_name_index[mode] + ")").html());
+          stopAuto();
         }
       });
     };
