@@ -1284,7 +1284,7 @@ var potatojw_intl = function() {
       "gym": 5,
       "read": 6,
       "common": 9,
-      "dis": 10,
+      "dis": 9,
       "open": 9
     };
 

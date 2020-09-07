@@ -6,8 +6,11 @@ function ClassListPlugin() {
     data = {
       title: <String>,
       teachers: [<String>, ...],
-      info: [<String>, ...],
-      additional_info: [<String>, ...],
+      info: [{
+        key: <String>,
+        val: <String>,
+        hidden: <Boolean>
+      }, ...],
       num_info: [{
         num: <Integer>,
         label: <String>
@@ -28,7 +31,7 @@ function ClassListPlugin() {
         action: <Function>
       }
       comment_button: {
-        status: <Bool>, // true, false
+        status: <Boolean>, // true, false
         text: <String>,
         action: <Function>
       }
@@ -47,11 +50,22 @@ function ClassListPlugin() {
       target.html(accu);
     }
 
-    setClassInfo(data, target) {
-      var accu = "";
-      for (var item of data)
-        accu += `<p>${item}</p>`;
-      target.html(accu);
+    setClassInfo(data, hidden_target, target) {
+      var target_accu = "";
+      var hidden_accu = "";
+      for (var item of data) {
+        if ("key" in item) {
+          if (item.val == "") continue;
+          if (!item.hidden)
+            target_accu += `<p>${item.key}：${item.val}</p>`;
+          else
+            hidden_accu += `<p>${item.key}：${item.val}</p>`;
+        } else {
+          target_accu += `<p>${item}</p>`;
+        }
+      }
+      target.html(target_accu);
+      hidden_target.html(hidden_accu);
     }
 
     setNumInfo(data, target) {
@@ -137,8 +151,8 @@ function ClassListPlugin() {
       if ("teachers" in data) this.setTeacher(data.teachers, info_top.children(".pjw-class-teacher"));
 
       var info_bottom = this.info.children(".pjw-class-info-bottom");
-      if ("info" in data) this.setClassInfo(data.info, info_bottom.children(".pjw-class-info-important"));
-      if ("additional_info" in data) this.setClassInfo(data.additional_info, info_bottom.children(".pjw-class-info-additional"));
+      if ("info" in data)
+        this.setClassInfo(data.info, info_bottom.children(".pjw-class-info-additional"), info_bottom.children(".pjw-class-info-important"));
 
       if ("num_info" in data) this.setNumInfo(data.num_info, this.sideinfo.children(".pjw-class-num-info"));
       if ("lesson_time" in data) this.setLessonTime(data.lesson_time, this.weekcal);
@@ -334,13 +348,10 @@ function ClassListPlugin() {
       var words = item.split(" ");
       var weekday = 0;
       var is_odd = false, is_even = false;
-      var has_week_info = true;
+      var has_week_info = false;
+      var has_lesson_time_info = false;
 
       for (var jtem of words) {
-        if (has_week_info == false)
-          for (var i = 1; i <= total_weeks; i++)
-            weeks[i] = 1;
-        has_week_info = false;
         if (jtem[0] == "周") {
           weekday = weekday_to_num[jtem[1]];
         } else if (jtem[jtem.length - 1] == "周") {
@@ -365,16 +376,21 @@ function ClassListPlugin() {
           var num_arr = jtem.match(/(\d+)+/g);
           if (num_arr.length == 1)
             num_arr.push(num_arr[0]);
-
-          if (weekday != 0 && num_arr.length)
+          if (weekday != 0 && num_arr.length) {
+            has_lesson_time_info = true;
             ans.push({
               weekday: weekday,
               start: parseInt(num_arr[0]),
               end: parseInt(num_arr[1]),
               type: "normal"
             });
+          }
         }
       }
+
+      if (has_week_info == false && has_lesson_time_info == true)
+        for (var i = 1; i <= total_weeks; i++)
+          weeks[i] = 1;
     }
 
     var ans_weeks = [];
