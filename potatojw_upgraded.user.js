@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.2
+// @version      0.2 Userscript Beta 1
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -1772,7 +1772,7 @@ function ClassListPlugin() {
 
 /* js/pjw-core.js */
 var potatojw_intl = function() {
-  window.pjw_version = "0.2 beta";
+  window.pjw_version = "0.2 Userscript Beta 1";
   window.$$ = jQuery.noConflict();
 
   console.log("potatoplus v" + pjw_version + " by Limosity");
@@ -2352,6 +2352,7 @@ var potatojw_intl = function() {
         type: "GET",
         success: function(res) {
           console.log("Success!");
+          list.refresh();
         }
       });
     }
@@ -2512,7 +2513,7 @@ var potatojw_intl = function() {
     window.showCourseDetailInfo = function(classId, courseNumber){
       window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
     };
-    
+
     window.selectedClass = function(class_ID, name) {
       return class_ID;
     };
