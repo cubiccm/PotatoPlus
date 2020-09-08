@@ -309,6 +309,7 @@ var potatojw_intl = function() {
         url: url
       }).done(function(data) {
         parse(data);
+        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
@@ -653,6 +654,7 @@ var potatojw_intl = function() {
         type: "GET"
       }).done(function(data) {
         parse(data);
+        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
@@ -726,6 +728,7 @@ var potatojw_intl = function() {
         }
       }).done(function(data) {
         parse(data);
+        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
@@ -824,6 +827,7 @@ var potatojw_intl = function() {
         }
       }).done(function(data) {
         parse(data);
+        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
@@ -897,6 +901,7 @@ var potatojw_intl = function() {
         }
       }).done(function(data) {
         parse(data);
+        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
