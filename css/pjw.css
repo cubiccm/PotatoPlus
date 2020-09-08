@@ -140,6 +140,10 @@ body {
   display: block !important;
 }
 
+.hidden {
+  display: none;
+}
+
 .mdc-button {
   font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
 }
@@ -207,6 +211,11 @@ body {
   width: 350px;
 }
 
+.pjw-classlist-body {
+  display: flex;
+  flex-direction: column;
+}
+
 .pjw-class-container {
   padding: 10px 30px;
   border-radius: 20px;
@@ -217,6 +226,7 @@ body {
   align-items: stretch;
   flex-wrap: nowrap;
   flex-direction: row;
+  order: 0;
   background-image: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));
   transition: background-color .1s ease-out;
 }
@@ -519,6 +529,10 @@ body {
   max-width: 50px;
   background-image: linear-gradient(45deg, #facc22, #f83600);
   padding: 0;
+}
+
+.pjw-class-comment-icon {
+  font-size: 20px;
 }
 
 .pjw-class-operation > button {

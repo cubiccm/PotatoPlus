@@ -602,6 +602,7 @@ var potatojw_intl = function() {
           var res = parseClassTime($$(val).children("td:eq(4)").html());
           if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
           else select_status = "Full";
+          var class_ID = $$(val).children("td:eq(9)").children("input").val();
           data = {
             title: $$(val).children("td:eq(2)").html(),
             teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
@@ -623,7 +624,7 @@ var potatojw_intl = function() {
             select_button: {
               status: select_status,
               text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-              action: () => {selectClass($$(val).children("td:eq(9)").children("input").val())}
+              action: () => { selectClass(class_ID); }
             },
             comment_button: {
               status: true,
