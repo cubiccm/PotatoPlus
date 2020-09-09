@@ -49,8 +49,6 @@ function injectStyleFromString(str) {
     }
   }
 
-  if (pjw_mode == "") return;
-
   // @injectStyle("css/material-components-web.min.css");
   // @injectStyle("css/pjw.css");
 

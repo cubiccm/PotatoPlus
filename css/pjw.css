@@ -58,9 +58,7 @@
   margin-right: 25px;
   margin-bottom: 5px;
 }
-body {
-  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
-}
+
 .pjw-mini-button {
   font-size: 14px; font-weight: bold;
   border: 0; border-radius: 7px;
@@ -136,12 +134,16 @@ body {
   font-feature-settings: 'liga';
 }
 
-body {
-  display: block !important;
+:root {
+  --white: rgba(255, 255, 255, .9);
+  --black: rgba(0, 0, 0, .9);
+  --gray: rgba(255, 255, 255, .5);
 }
 
-.hidden {
-  display: none;
+body {
+  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+  display: block !important;
+  background: rgba(0, 0, 0, .05) !important;
 }
 
 .mdc-button {
@@ -152,6 +154,118 @@ body {
   height: auto !important;
   overflow: hidden !important;
 }
+
+#UserInfo {
+  color: var(--white) !important;
+}
+
+#Header {
+  background: linear-gradient(73deg, rgba(99,6,95,.9) 0%, rgba(206,103,255,.9) 73%, rgba(255,71,152,.9) 100%) !important;
+
+  height: auto !important;
+}
+
+#Nav {
+  position: static !important;
+  margin-top: 10px !important;
+}
+
+#Nav > ul {
+  display: flex;
+}
+
+#Nav > ul > li {
+  border-radius: 18px 18px 0 0;
+  background: none !important;
+  display: block;
+}
+
+#Nav > ul > li:hover {
+  border-color: var(--gray);
+  background: rgba(255, 255, 255, .3) !important;
+}
+
+#Nav > ul > li:active {
+  background: rgba(255, 255, 255, .6) !important;
+}
+
+#Nav > ul > li > a {
+  color: rgba(255, 255, 255, .65) !important;
+  transition: all .1s ease-out;
+  font-weight: normal !important;
+  font-size: 105%;
+}
+
+#Nav > ul > li > a:hover {
+  color: var(--white) !important;
+  font-size: 120%;
+  font-weight: bold !important;
+  background: none !important;
+}
+
+#Nav > ul > li > a:active {
+  color: rgba(0, 0, 0, .3) !important;
+  font-size: 110%;
+}
+
+#Header > #Logo {
+  position: relative;
+  left: 5px; top: 5px;
+  opacity: 0.9;
+}
+
+#Header > #Logo > a {
+  content: url("https://www.nju.edu.cn/_upload/tpl/01/36/310/template310/images/logo.png");
+  height: 55px;
+}
+
+#Header > #Logo:after {
+  content: "教务系统 Educational Administration System";
+  color: var(--white);
+  font-size: 20px;
+  position: relative;
+  top: -10px;
+  left: -5px;
+  font-style: italic;
+}
+
+#TopLink > a,span {
+  /*color: var(--white) !important;*/
+  font-weight: normal !important;
+}
+
+#pjw-user-info {
+  display: flex;
+  padding: 4px 8px;
+  margin-top: 10px;
+  background-color: rgba(255, 255, 255, .2);
+  font-size: 14px;
+  border-radius: 12px;
+  transition: all .1s ease-out;
+  cursor: pointer;
+}
+
+#pjw-user-info:hover {
+  color: rgba(0, 0, 0, .5);
+  background-color: rgba(255, 255, 255, .9);
+}
+
+#pjw-user-type {
+  background-color: rgba(30, 107, 235, 1);
+  font-size: 11px;
+  border-radius: 7px;
+  padding: 1px 3px;
+  vertical-align: middle;
+  text-align: center;
+  margin: 2px 3px;
+  color: var(--white) !important;
+}
+
+#Function {
+
+}
+
+/* PJW ClassList */
 
 .pjw-classlist {
   text-align: left;
@@ -207,8 +321,12 @@ body {
   background-color: rgb(30, 30, 30);
 }
 
-.pjw-classlist-search-field {
+#pjw-classlist-search-field {
   width: 350px;
+}
+
+#pjw-class-search-input {
+  padding: 12px 24px 14px;
 }
 
 .pjw-classlist-body {
@@ -227,14 +345,15 @@ body {
   flex-wrap: nowrap;
   flex-direction: row;
   order: 0;
-  background-image: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));
+  background: rgba(255, 255, 255, .9);
+  /*background: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));*/
+  background: linear-gradient(200deg, rgba(99,6,95,.2) 0%, rgba(206,103,255,.2) 73%, rgba(255,71,152,.2) 100%);
   transition: background-color .1s ease-out;
 }
 
 .pjw-class-container--compressed {
   padding: 6px 25px;
-  background-color: rgba(0, 0, 0, 0.05);
-  background-image: none;
+  background: rgba(255, 255, 255, .6);
 }
 
 .pjw-class-container--compressed:hover {
@@ -309,15 +428,16 @@ body {
 .pjw-class-weekcal {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   user-select: none;
   border-radius: 14px;
   background-color: rgba(0, 0, 0, .05);
   padding: 6px;
+  justify-content: space-around;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal {
   background-color: transparent;
-  justify-content: space-around;
 }
 
 .pjw-class-weekcal-heading {
@@ -539,6 +659,7 @@ body {
   border-radius: 25px;
   font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
   height: 50px;
+  margin: 6px 0;
 }
 
 .pjw-class-container--compressed .pjw-class-operation > button {

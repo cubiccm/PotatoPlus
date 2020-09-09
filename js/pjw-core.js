@@ -2,20 +2,32 @@ var potatojw_intl = function() {
   window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
-  console.log("potatoplus v" + pjw_version + " by Limosity");
-  console.log(pjw_mode + " mode activated");
-
   var head_metadata = `
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
   `;
   $$("head").prepend(head_metadata);
 
+  // UI Improvement
+  if ($$("#UserInfo").length) {
+    $$("#UserInfo").html(`
+      <div id="pjw-user-info" onclick="window.location.href='/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse'">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
+        <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
+      </div>
+    `);
+    $$("#TopLink").children("a").addClass("pjw-mini-button");
+    $$("#TopLink").children("img").remove();
+  }
+
+  if (pjw_mode == "") return;
+
+  console.log("potatoplus v" + pjw_version + " by Limosity");
+  console.log(pjw_mode + " mode activated");
+
   if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
     $$("head").append($$(google_analytics_js));
   }
 
-  var subclass_mode_list = {"gym": 1, "read": 2, "common": 3, "dis": 4, "open": 5, "major_course": 6};
-  subclass_mode_list = {};
+  var subclass_mode_list = {};
   var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true};
   var filter_mode_list = subclass_mode_list;
 
@@ -150,7 +162,7 @@ var potatojw_intl = function() {
     }
   }
   if ($$("div#TopLink").length > 0)
-    $$("div#TopLink").prepend(`<span style="color: rgba(74, 140, 53, .6); cursor: pointer;" onclick="resetStorage();" id="reset_storage">重置pjw+存储</span>&nbsp;&nbsp;&nbsp;&nbsp;`);
+    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="cursor: pointer;" onclick="resetStorage();" id="reset_storage">重置pjw+存储</span>&nbsp;&nbsp;&nbsp;&nbsp;`);
 
   function checkStorageVersion() {
     if (store.get("version") == null || store.get("version") != pjw_version)
@@ -296,7 +308,7 @@ var potatojw_intl = function() {
       if (typeof(list) != "undefined") {
         list.clear();
       } else {
-        window.list = new PJWAllClass($$("#iframeTable").parent());
+        window.list = new PJWAllClassList($$("#iframeTable").parent());
       }
 
       $$("#iframeTable").css("display", "none");
@@ -309,13 +321,12 @@ var potatojw_intl = function() {
         url: url
       }).done(function(data) {
         parse(data);
-        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWAllClass extends PJWClassList {
+    class PJWAllClassList extends PJWClassList {
       refresh() {
         loadClassList();
       }
@@ -579,8 +590,13 @@ var potatojw_intl = function() {
         url: "/jiaowu/student/elective/courseList.do?method=submitDiscussRenew&classId=" + class_ID + "&campus=" + g_campus,
         type: "GET",
         success: function(res) {
-          console.log("Success!");
-          list.refresh();
+          res = res.slice(res.search("function initSelectedList()"));
+          var start = res.search(/\"*\"/);
+          var end = res.search(/\"\)/);
+          res = res.slice(start + 1, end);
+          console.log(res);
+          if (res.search("成功！") != -1)
+            list.refresh();
         }
       });
     }
@@ -642,7 +658,7 @@ var potatojw_intl = function() {
       if (typeof(list) != "undefined") {
         list.clear();
       } else {
-        window.list = new PJWDisClass($$("body > div[align=center]"));
+        window.list = new PJWDisClassList($$("body > div[align=center]"));
       }
 
       $$.ajax({
@@ -654,13 +670,12 @@ var potatojw_intl = function() {
         type: "GET"
       }).done(function(data) {
         parse(data);
-        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWDisClass extends PJWClassList {
+    class PJWDisClassList extends PJWClassList {
       refresh() {
         initList();
       }
@@ -716,7 +731,7 @@ var potatojw_intl = function() {
       if (typeof(list) != "undefined") {
         list.clear();
       } else {
-        window.list = new PJWDisClass($$("#courseList"));
+        window.list = new PJWDisClassList($$("#courseList"));
       }
 
       $$.ajax({
@@ -728,13 +743,12 @@ var potatojw_intl = function() {
         }
       }).done(function(data) {
         parse(data);
-        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWDisClass extends PJWClassList {
+    class PJWDisClassList extends PJWClassList {
       refresh() {
         initList();
       }
@@ -813,7 +827,7 @@ var potatojw_intl = function() {
       if (typeof(list) != "undefined") {
         list.clear();
       } else {
-        window.list = new PJWOpenClass($$("#iframeTable").parent());
+        window.list = new PJWOpenClassList($$("#iframeTable").parent());
         $$("#iframeTable").html("");
       }
       
@@ -827,7 +841,6 @@ var potatojw_intl = function() {
         }
       }).done(function(data) {
         parse(data);
-        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
@@ -835,7 +848,7 @@ var potatojw_intl = function() {
     
     window.campusChange = window.searchCourseList = loadClassList;
 
-    class PJWOpenClass extends PJWClassList {
+    class PJWOpenClassList extends PJWClassList {
       refresh() {
         loadClassList();
       }
@@ -888,7 +901,7 @@ var potatojw_intl = function() {
         list.clear();
       } else {
         $$("div#course").css("display", "none");
-        window.list = new PJWOpenClass($$("#courseList"));
+        window.list = new PJWOpenClassList($$("#courseList"));
       }
       
       $$.ajax({
@@ -901,13 +914,12 @@ var potatojw_intl = function() {
         }
       }).done(function(data) {
         parse(data);
-        list.search(list.search_input.val());
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWOpenClass extends PJWClassList {
+    class PJWOpenClassList extends PJWClassList {
       refresh() {
         loadClassList();
       }

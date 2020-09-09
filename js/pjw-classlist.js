@@ -1,5 +1,5 @@
 function ClassListPlugin() {
-  window.total_weeks = 17;
+  const total_weeks = 17;
 
   /* 
     Class data format:
@@ -52,194 +52,199 @@ function ClassListPlugin() {
     }
 
     setPriority(priority) {
+      if (priority === false) { this.hide(); return; }
       if (this.priority == priority) return;
       this.priority = priority;
       this.dom.css("order", -priority);
     }
 
-    setTeacher(data, target) {
-      var is_first = true;
-      var accu = "";
-      for (var str of data) {
-        if (!is_first) accu += "，";
-        is_first = false;
-        accu += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
+    getHTML(data, attr) {
+      function getTeachers(content) {
+        var is_first = true; var accu = "";
+        for (var str of content) {
+          if (!is_first) accu += "，";
+          is_first = false;
+          accu += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
+        }
+        return accu;
       }
-      target.html(accu);
-    }
 
-    setClassInfo(data, hidden_target, target) {
-      var target_accu = "";
-      var hidden_accu = "";
-      for (var item of data) {
-        if ("key" in item) {
-          if (item.val == "") continue;
-          if (!item.hidden)
-            target_accu += `<p>${item.key}：${item.val}</p>`;
+      function getClassInfo(content) {
+        var appear_accu = "", hidden_accu = "";
+        for (var item of content) {
+          if ("key" in item) {
+            if (item.val == "") continue;
+            if (!item.hidden)
+              appear_accu += `<p>${item.key}：${item.val}</p>`;
+            else
+              hidden_accu += `<p>${item.key}：${item.val}</p>`;
+          } else {
+            appear_accu += `<p>${item}</p>`;
+          }
+        }
+        return `<div class="pjw-class-info-important">${appear_accu}</div><div class="pjw-class-info-additional">${hidden_accu}</div>`;
+      }
+
+      function getNumInfo(content) {
+        var accu = "";
+        for (var item of content)
+          accu += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
+        return accu;
+      }
+
+      function getWeekNum(data) {
+        var accu = "";
+        for (var item of data) {
+          var style = `left: ${String((item.start - 1) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1) / total_weeks * 100) + "%"}`;
+          if (item.start != item.end)
+            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
           else
-            hidden_accu += `<p>${item.key}：${item.val}</p>`;
-        } else {
-          target_accu += `<p>${item}</p>`;
+            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
+        return accu;
       }
-      target.html(target_accu);
-      hidden_target.html(hidden_accu);
-    }
 
-    setNumInfo(data, target) {
-      var accu = "";
-      for (var item of data)
-        accu += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
-      target.html(accu);
-    }
+      function getLessonTime(data) {
+        var heading_html = ``;
+        var body_html = ``;
 
-    setLessonTime(data, target) {
-      var weekend_flag = false;
-      for (var item of data) {
-        if (item.weekday > 5 && weekend_flag == false) {
-            this.weekcal.children(".pjw-class-weekcal-heading").append(`<div class="pjw-class-weekcal-heading-day">SA</div><div class="pjw-class-weekcal-heading-day">SU</div>`);
-            this.weekcal.children(".pjw-class-weekcal-calendar").append(`<div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div><div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div>`);
+        var weekend_flag = false;
+        var has_class = [false, false, false, false, false, false, false, false];
+        var class_class = [
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", ""]
+        ];
+
+        for (var item of data) {
+          if (item.weekday > 5 && weekend_flag == false)
             weekend_flag = true;
+
+          has_class[item.weekday] = true;
+
+          var cssclass = "selected";
+          if (item.type == "odd") cssclass += " sel-odd-class";
+          else if (item.type == "even") cssclass += " sel-even-class";
+          for (var i = item.start; i <= item.end; i++)
+            class_class[item.weekday][i] = cssclass;
+          class_class[item.weekday][item.start] += " sel-start";
+          class_class[item.weekday][item.end] += " sel-end";
         }
-        target.children(".pjw-class-weekcal-heading").children("div:eq(" + (item.weekday - 1) + ")").addClass("selected");
-        var target_day = target.children(".pjw-class-weekcal-calendar").children(`div:eq(${(item.weekday - 1)})`);
-        target_day.addClass("selected");
-        target_day.children(`span:eq(${(item.start - 1)})`).addClass("sel-start");
-        target_day.children(`span:eq(${(item.end - 1)})`).addClass("sel-end");
-        var classes = "selected";
-        if (item.type == "odd") classes += " sel-odd-class";
-        else if (item.type == "even") classes += " sel-even-class";
-        target_day = target.children(".pjw-class-weekcal-calendar").children(`div:eq(${(item.weekday - 1)})`);
-        for (var i = item.start; i <= item.end; i++)
-          target_day.children(`span:eq(${(i - 1)})`).addClass(classes);
+
+        const weekday_display_name = ["", "MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+
+        for (var i = 1; i <= 7; i++) {
+          if (i > 5 && weekend_flag == false) break;
+
+          heading_html += `<div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">${weekday_display_name[i]}</div>`;
+
+          var body_html_span = "";
+          
+          for (var j = 1; j <= 11; j++) {
+            if (class_class[i][j] != "")
+              body_html_span += `<span class="${class_class[i][j]}">${j}</span>`;
+            else
+              body_html_span += `<span>${j}</span>`;
+          }
+
+          body_html += `<div class="pjw-class-weekcal-calendar-day` + (has_class[i] ? " selected" : "") + `">${body_html_span}</div>`;
+        }
+
+        return `<div class="pjw-class-weekcal-heading">${heading_html}</div><div class="pjw-class-weekcal-calendar">${body_html}</div>`;
+      }
+
+      function getSelectButton(data) {
+        if (!data.status) return "";
+        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-select-button"><div class="material-icons-round">add_task</div><div class="pjw-class-select-button__container"><div class="mdc-button__label pjw-class-select-button__label" style="letter-spacing: 2px">选择</div></div></button>`;
+      }
+
+      function getCommentButton(data) {
+        var text = "";
+        if (data.text) text = data.text;
+        if (!data.status) return "";
+        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-comment-button">
+          <div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">forum</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
+      }
+
+      switch(attr) {
+        case "title":
+          if ("title" in data)
+            return data.title;
+          else return "";
+
+        case "teachers":
+          if ("teachers" in data)
+            return getTeachers(data.teachers);
+          else return "";
+
+        case "info":
+          if ("info" in data)
+            return getClassInfo(data.info);
+          else return "";
+
+        case "numinfo":
+          if ("num_info" in data)
+            return getNumInfo(data.num_info);
+          else return "";
+
+        case "weeknum":
+          if ("class_weeknum" in data)
+            return getWeekNum(data.class_weeknum);
+          else return "";
+
+        case "lessontime":
+          if ("lesson_time" in data && data.lesson_time.length > 0)
+            return getLessonTime(data.lesson_time);
+          else return `<div class="pjw-class-weekcal-heading">自由时间</div>`;
+
+        case "selectbutton":
+          if ("select_button" in data)
+            return getSelectButton(data.select_button);
+          else return "";
+
+        case "commentbutton":
+          if ("comment_button" in data)
+            return getCommentButton(data.comment_button);
+          else return "";
       }
     }
 
-    setWeekNum(data, target) {
-      for (var item of data) {
-        var res;
-        if (item.start != item.end)
-          res = $$(`<div class="pjw-class-weeknum-bar__fill" >${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`).appendTo(target);
-        else
-          res = $$(`<div class="pjw-class-weeknum-bar__fill" >${item.start}</div>`).appendTo(target);
-        res.css({
-          left: String((item.start - 1) / total_weeks * 100) + "%",
-          width: String((item.end - item.start + 1) / total_weeks * 100) + "%"
-        });
-      }
-    }
-
-    updateSelButton(data, target) {
-      if (data === false) {
-        target.remove(); // Not recoverable
-        return;
-      }
-      var select_label = target.children(".pjw-class-select-button__container").children(".pjw-class-select-button__label");
-      if (data == "Available") {
-        target.prop("disabled", false);
-        target.children(".material-icons-round").html("add_task");
-        select_label.html("选择");
-      } else {
-        target.prop("disabled", true);
-        target.children(".material-icons-round").html("block");
-        var text;
-        if (data == "Full")
-          text = "已满";
-        else if (data == "Selected")
-          text = "已选";
-        else
-          text = "选择";
-        select_label.html(text);
-      }
-    }
-
-    setSelText(data, target) {
-      target.children(".pjw-class-select-button__status").remove();
-      for (var item of data)
-        target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`)
-    }
-
-    setCommentScore(data, target) {
-      target.children(".pjw-class-comment-button__status").remove();
-      target.append(`<div class="mdc-button__label pjw-class-comment-button__status">` + data + `</div>`);
-    }
-
-    update(data) {
-      var info_top = this.info.children(".pjw-class-info-top");
-      if ("title" in data) info_top.children(".pjw-class-title").html(data.title);
-      if ("teachers" in data) this.setTeacher(data.teachers, info_top.children(".pjw-class-teacher"));
-
-      var info_bottom = this.info.children(".pjw-class-info-bottom");
-      if ("info" in data)
-        this.setClassInfo(data.info, info_bottom.children(".pjw-class-info-additional"), info_bottom.children(".pjw-class-info-important"));
-
-      if ("num_info" in data) this.setNumInfo(data.num_info, this.sideinfo.children(".pjw-class-num-info"));
-      if ("lesson_time" in data) this.setLessonTime(data.lesson_time, this.weekcal);
-      if ("class_weeknum" in data) this.setWeekNum(data.class_weeknum, this.sideinfo.children(".pjw-class-weeknum-bar"));
-
-      if ("select_button" in data) {
-        var sel_data = data["select_button"];
-        if ("status" in sel_data) this.updateSelButton(sel_data.status, this.select_button);
-        if ("text" in sel_data) this.setSelText(sel_data.text, this.select_button.children(".pjw-class-select-button__container"));
-        if ("action" in sel_data) this.select_button.click({target: this, button_target: this.select_button}, sel_data.action);
-      }
-
-      if ("comment_button" in data) {
-        var com_data = data["comment_button"];
-        if ("status" in com_data)
-          if (!com_data.status) this.comment_button.hide();
-        if ("text" in com_data)
-          this.setCommentScore(com_data.text, this.comment_button.children(".pjw-class-comment-button__container"));
-        if ("action" in com_data) this.comment_button.on("click", com_data.action);
-      }
-    }
-
-    constructor(parent) {
-      const class_html = `
-        <div class="mdc-card pjw-class-container pjw-class-container--compressed">
-          <div class="pjw-class-info">
-            <div class="pjw-class-info-top">
-              <p class="pjw-class-title"></p>
-              <p class="pjw-class-teacher"></p>
-            </div>
-            <div class="pjw-class-info-bottom">
-              <div class="pjw-class-info-important"></div>
-              <div class="pjw-class-info-additional"></div>
+    set(data) {
+      var class_html = `
+        <div class="pjw-class-info">
+          <div class="pjw-class-info-top">
+            <p class="pjw-class-title">${this.getHTML(data, "title")}</p>
+            <p class="pjw-class-teacher">${this.getHTML(data, "teachers")}</p>
+          </div>
+          <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
+        </div>
+        <div class="pjw-class-main">
+          <div class="pjw-class-sub">
+            <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
+            <div class="pjw-class-sideinfo">
+              <div class="pjw-class-weeknum-bar">${this.getHTML(data, "weeknum")}</div>
+              <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
             </div>
           </div>
-          <div class="pjw-class-main">
-            <div class="pjw-class-sub">
-              <div class="pjw-class-weekcal">
-                <div class="pjw-class-weekcal-heading">
-                  <div class="pjw-class-weekcal-heading-day">MO</div>
-                  <div class="pjw-class-weekcal-heading-day">TU</div>
-                  <div class="pjw-class-weekcal-heading-day">WE</div>
-                  <div class="pjw-class-weekcal-heading-day">TH</div>
-                  <div class="pjw-class-weekcal-heading-day">FR</div>
-                </div>
-                <div class="pjw-class-weekcal-calendar"><div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div><div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div><div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div><div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div><div class="pjw-class-weekcal-calendar-day"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div>
-                </div>
-              </div>
-              <div class="pjw-class-sideinfo">
-                <div class="pjw-class-weeknum-bar"></div>
-                <div class="pjw-class-num-info"></div>
-              </div>
-            </div>
-            <div class="pjw-class-operation">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-select-button">
-                <div class="material-icons-round">add_task</div>
-                <div class="pjw-class-select-button__container">
-                  <div class="mdc-button__label pjw-class-select-button__label" style="letter-spacing: 2px">选择</div>
-                </div>
-              </button>
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-comment-button">
-                <div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">forum</div></div>
-              </button>
-            </div>
+          <div class="pjw-class-operation">
+            ${this.getHTML(data, "selectbutton")}
+            ${this.getHTML(data, "commentbutton")}
           </div>
         </div>
       `;
+      this.dom.html(class_html);
+    }
+
+    constructor(parent, data) {
+      var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed"></div>`;
       this.dom = $$(class_html).appendTo(parent);
+      this.set(data);
+
       this.info = this.dom.children(".pjw-class-info");
       this.main = this.dom.children(".pjw-class-main");
       this.sub = this.main.children(".pjw-class-sub");
@@ -248,6 +253,31 @@ function ClassListPlugin() {
       this.operation = this.main.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
+
+
+      var target = this.select_button;
+      var select_label = target.children(".pjw-class-select-button__container").children(".pjw-class-select-button__label");
+      if (data.select_button.status == "Available") {
+        target.prop("disabled", false);
+        target.children(".material-icons-round").html("add_task");
+        select_label.html("选择");
+      } else {
+        target.prop("disabled", true);
+        target.children(".material-icons-round").html("block");
+        var text;
+        if (data.select_button.status == "Full")
+          text = "已满";
+        else if (data.select_button.status == "Selected")
+          text = "已选";
+        else
+          text = "选择";
+        select_label.html(text);
+      }
+      target.click({target: this, button_target: this.select_button}, data.select_button.action);
+      target = target.children(".pjw-class-select-button__container");
+      if (data.select_button.text)
+      for (var item of data.select_button.text)
+        target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`);
 
       this.display = true;
       this.priority = 0;
@@ -283,8 +313,9 @@ function ClassListPlugin() {
 
   window.PJWClassList = class {
     add(data) {
-      var item = new PJWClass(this.body);
-      item.update(data);
+      var priority = this.checkFilter(data);
+      var item = new PJWClass(this.body, data);
+      item.setPriority(priority);
       this.class_data.push({
         data: data,
         obj: item
@@ -314,24 +345,29 @@ function ClassListPlugin() {
       return 100.0 * (matched_num / pattern_num);
     }
 
-    search(search_str) {
-      for (var item of this.class_data) {
-        if (search_str == "") {
-          item.obj.setPriority(0);
-          item.obj.show();
-          continue;
-        }
-        var priority = 0;
-        priority += 3 * this.matchDegree(search_str, item.data.title);
-        priority += 2 * this.matchDegree(search_str, item.data.teachers);
-        // priority += 1 * this.matchDegree(search_str, item.data.info);
-        if (priority == 0) {
-          item.obj.hide();
-        } else {
-          item.obj.show();
-          item.obj.setPriority(parseInt(priority));
-        }
+    search(data, search_str) {
+      if (search_str == "") {
+        return 0;
       }
+      var priority = 0.0;
+      priority += 3 * this.matchDegree(search_str, data.title);
+      priority += 2 * this.matchDegree(search_str, data.teachers);
+      // priority += 1 * this.matchDegree(search_str, data.info);
+      if (priority == 0) {
+        return false;
+      } else {
+        return priority;
+      }
+    }
+
+    checkFilter(data) {
+      var priority = 0.0;
+      /* Load filter modules... */
+
+      var search_priority = this.search(data, this.search_string);
+      if (search_priority === false) return false;
+      priority += search_priority;
+      return priority;
     }
 
     switchFilter() { 
@@ -345,6 +381,18 @@ function ClassListPlugin() {
         this.filter_switch_button.addClass("on");
         this.filter_switch_button.children(":eq(0)").html("toggle_on");
         this.filter_switch_button.children(":eq(1)").html("开");
+      }
+    }
+
+    update() {
+      for (var item of this.class_data) {
+        var priority = this.checkFilter(item.data);
+        if (priority === false) {
+          item.obj.hide();
+        } else {
+          item.obj.setPriority(priority);
+          item.obj.show();
+        }
       }
     }
 
@@ -377,7 +425,7 @@ function ClassListPlugin() {
           </section>
 
           <section id="search-section">
-            <label class="mdc-text-field mdc-text-field--outlined pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
+            <label class="mdc-text-field mdc-text-field--outlined" id="pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
               <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input__label" id="pjw-class-search-input">
               <span class="mdc-notched-outline">
                 <span class="mdc-notched-outline__leading"></span>
@@ -402,12 +450,14 @@ function ClassListPlugin() {
       this.search_input.on("input", null, {
         target: this
       }, (e) => {
-        e.data.target.search(this.search_input.val());
+        e.data.target.search_string = this.search_input.val();
+        e.data.target.update();
       });
 
       this.autoreload_button.on("click", (e) => {
         list.refresh();
       });
+
       this.heading_switch_button.on("click", (e) => {
         var t = $$(e.delegateTarget);
         if (t.hasClass("on")) {
@@ -422,7 +472,10 @@ function ClassListPlugin() {
           t.children(":eq(1)").html(t.children(":eq(1)").attr("data-on"));
         }
       });
+
       this.class_data = [];
+      this.search_string = "";
+
       window.mdc.autoInit();
     }
   };
