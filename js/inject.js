@@ -7,6 +7,14 @@ function injectScript(path, module = false, defer = false) {
   document.documentElement.appendChild(script);
 }
 
+function injectStyle(path) {
+  var stylesheet = document.createElement('link');
+  stylesheet.setAttribute('type', 'text/css');
+  stylesheet.setAttribute('rel', 'stylesheet');
+  stylesheet.setAttribute('href', chrome.extension.getURL(path));
+  document.documentElement.appendChild(stylesheet);
+}
+
 function injectScriptFromString(str) {
   var script = document.createElement('script');
   script.text = str;
@@ -26,8 +34,9 @@ function injectStyleFromString(str) {
     gym: /gymClassList.do/i, // 体育补选
     read: /readRenewCourseList.do/i, // 经典导读读书班补选
     dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
+    public: /publicRenewCourseList/i, // 公选课补选
     open: /openRenewCourse/i, // 跨专业补选
-    common: /commonCourseRenewList/i, // 通修课补选
+    common: /commonCourseRenewList|commonRenew.do/i, // 通修课补选
 
     dis_view: /elective\/freshman_discuss.do/i, // 导学、研讨、通识课初选
     open_view: /elective\/open.do/i, // 跨专业初选
@@ -49,8 +58,8 @@ function injectStyleFromString(str) {
     }
   }
 
-  // @injectStyle("css/material-components-web.min.css");
-  // @injectStyle("css/pjw.css");
+  injectStyle("css/material-components-web.min.css");
+  injectStyle("css/pjw.css");
 
   injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");

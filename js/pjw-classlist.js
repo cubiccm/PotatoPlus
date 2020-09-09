@@ -257,6 +257,7 @@ function ClassListPlugin() {
 
       var target = this.select_button;
       var select_label = target.children(".pjw-class-select-button__container").children(".pjw-class-select-button__label");
+      
       if (data.select_button.status == "Available") {
         target.prop("disabled", false);
         target.children(".material-icons-round").html("add_task");
@@ -276,8 +277,8 @@ function ClassListPlugin() {
       target.click({target: this, button_target: this.select_button}, data.select_button.action);
       target = target.children(".pjw-class-select-button__container");
       if (data.select_button.text)
-      for (var item of data.select_button.text)
-        target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`);
+        for (var item of data.select_button.text)
+          target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`);
 
       this.display = true;
       this.priority = 0;
@@ -299,6 +300,7 @@ function ClassListPlugin() {
         var comp_height = t.height();
         t.css("opacity", "0");
         t.addClass("pjw-class-container--compressed");
+
         window.setTimeout( () => {
           comp_height = (comp_height - t.height()) / 2;
           t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
@@ -328,17 +330,25 @@ function ClassListPlugin() {
     }
 
     matchDegree(pattern, str) {
+      function testString(keyword, str) {
+        if (str.search(keyword) != -1) {
+          return 1;
+        } else if (keyword.length == 2) {
+          if (str.search(keyword[1]) > str.search(keyword[0]) 
+            && str.search(keyword[0]) != -1)
+            return 1;
+        }
+        return 0;
+      }
       pattern = pattern.trim().split(" ");
       var pattern_num = pattern.length;
       var matched_num = 0;
       for (var keyword of pattern) {
         if (typeof(str) == "string") {
-          if (str.search(keyword) != -1)
-            matched_num++;
+          matched_num += testString(keyword, str);
         } else {
           for (var substr of str) {
-            if (substr.search(keyword) != -1)
-              matched_num++;
+            matched_num += testString(keyword, substr);
           }
         }
       }
@@ -400,52 +410,58 @@ function ClassListPlugin() {
       const list_html = `
       <div class="pjw-classlist">
         <div class="pjw-classlist-heading">
-          <section id="autoreload-control-section">
-            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
-              <div class="material-icons-round">autorenew</div>
-              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">刷新</div>
-            </button>
+          <div class="pjw-classlist-selectors">
+          </div>
+          <div class="pjw-classlist-controls">
+            <section id="autoreload-control-section">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
+                <div class="material-icons-round">autorenew</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">刷新</div>
+              </button>
 
-            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
-              <div class="material-icons-round">toggle_off</div>
-              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
-            </button>
-          </section>
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
+                <div class="material-icons-round">toggle_off</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
+              </button>
+            </section>
 
-          <section id="filter-control-section">
-            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
-              <div class="material-icons-round">filter_alt</div>
-              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
-            </button>
+            <section id="filter-control-section">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
+                <div class="material-icons-round">filter_alt</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
+              </button>
 
-            <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
-              <div class="material-icons-round">toggle_off</div>
-              <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
-            </button>
-          </section>
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
+                <div class="material-icons-round">toggle_off</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
+              </button>
+            </section>
 
-          <section id="search-section">
-            <label class="mdc-text-field mdc-text-field--outlined" id="pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
-              <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input__label" id="pjw-class-search-input">
-              <span class="mdc-notched-outline">
-                <span class="mdc-notched-outline__leading"></span>
-                <span class="mdc-notched-outline__notch">
-                  <span class="mdc-floating-label" id="pjw-class-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+            <section id="search-section">
+              <label class="mdc-text-field mdc-text-field--outlined" id="pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
+                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input__label" id="pjw-class-search-input">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__notch">
+                    <span class="mdc-floating-label" id="pjw-class-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+                  </span>
+                  <span class="mdc-notched-outline__trailing"></span>
                 </span>
-                <span class="mdc-notched-outline__trailing"></span>
-              </span>
-            </label>
-          </section>
+              </label>
+            </section>
+          </div>
         </div>
         <div class="pjw-classlist-body"></div>
       </div>`;
 
       this.dom = $$(list_html).appendTo(parent);
       this.heading = this.dom.children(".pjw-classlist-heading");
+      this.selectors = this.heading.children(".pjw-classlist-selectors");
+      this.controls = this.heading.children(".pjw-classlist-controls");
       this.body = this.dom.children(".pjw-classlist-body");
-      this.autoreload_button = this.heading.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
-      this.heading_switch_button = this.heading.children("section").children(".pjw-classlist-heading-switch-button");
-      this.search_input = this.heading.find("#pjw-class-search-input");
+      this.autoreload_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
+      this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
+      this.search_input = this.controls.find("#pjw-class-search-input");
 
       this.search_input.on("input", null, {
         target: this
@@ -479,6 +495,55 @@ function ClassListPlugin() {
       window.mdc.autoInit();
     }
   };
+
+  window.PJWSelect = class {
+    val() {
+      return this.obj.value;
+    }
+
+    text() {
+      return this.obj.selectedText_.innerHTML;
+    }
+
+    onchange(func) {
+      this.obj.listen('MDCSelect:change', func);
+    }
+
+    constructor(id, name, target, start = 1) {
+      var list = $$(`#${id}`)[0].options;
+      var list_html = "";
+      var is_first = true;
+      for (var item of list) {
+        if (start-- > 0) continue;
+        list_html += `<li data-value="${item.value}" class="mdc-list-item` +  (is_first ? " mdc-list-item--selected" : "") + `">${item.innerHTML}</li>`;
+        is_first = false;
+      }
+
+      var html = `<div class="mdc-select mdc-select--outlined" id="pjw-select-${id}" style="z-index: 10;">
+        <input type="hidden" id="pjw-select-${id}-input">
+        <div class="mdc-select__anchor" aria-labelledby="outlined-label">
+          <span class="mdc-select__dropdown-icon"></span>
+          <div id="pjw-select-${id}-selected-text" class="mdc-select__selected-text" aria-disabled="false" aria-expanded="false"></div>
+          <div class="mdc-notched-outline mdc-notched-outline--upgraded">
+            <div class="mdc-notched-outline__leading"></div>
+            <div class="mdc-notched-outline__notch" style="">
+              <label id="outlined-label" class="mdc-floating-label" style="">${name}</label>
+            </div>
+            <div class="mdc-notched-outline__trailing"></div>
+          </div>
+        </div>
+        <div class="mdc-select__menu mdc-menu mdc-menu-surface">
+          <ul class="mdc-list">${list_html}</ul>
+        </div>
+      </div>`;
+
+      this.id = id;
+      this.dom = $$(html).appendTo(target);
+      this.obj = new mdc.select.MDCSelect(this.dom[0]);
+
+      $$("#" + id).hide();
+    }
+  }
 
   window.parseTeacherNames = function(text) {
     if (text == "") return [];

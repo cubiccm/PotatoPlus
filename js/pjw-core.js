@@ -14,13 +14,30 @@ var potatojw_intl = function() {
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
-    $$("#TopLink").children("a").addClass("pjw-mini-button");
     $$("#TopLink").children("img").remove();
   }
 
-  if (pjw_mode == "") return;
+  var reset_storage_confirm = false;
+  window.resetStorage = function() {
+    if (reset_storage_confirm) {
+      store.clearAll();
+      reset_storage_confirm = false;
+      $$("#reset_storage").html("重置存储");
+    } else {
+      $$("#reset_storage").html("确定重置？");
+      reset_storage_confirm = true;
+    }
+  }
+  if ($$("div#TopLink").length > 0)
+    $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
+      <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatojw_upgraded')">GitHub</span>
+      <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/2019/09/potatojw-upgraded')">v${pjw_version}</span>
+      <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log("potatoplus v" + pjw_version + " by Limosity");
+
+  if (pjw_mode == "") return;
+
   console.log(pjw_mode + " mode activated");
 
   if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
@@ -28,7 +45,7 @@ var potatojw_intl = function() {
   }
 
   var subclass_mode_list = {};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true};
   var filter_mode_list = subclass_mode_list;
 
   const custom_toolbar_html = {
@@ -87,54 +104,6 @@ var potatojw_intl = function() {
   <a style="color: #dedede;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
 
-  if (pjw_mode in filter_mode_list) {
-    const filter_setting_html = `
-      <div id="potatojw_mask"></div>
-      <div id="potatojw_filter_setting_frame">
-        <section id="filter_full_class" class="filter_section">
-          <input type="checkbox" id="is_filter_full_class" checked="checked">
-          <label for="is_filter_full_class">仅显示空余课程</label>
-        </section>
-
-        <section id="filter_major" class="filter_section">
-          <h3>专业过滤</h3>
-          <h5>将会自动选择此专业。</h5>
-          <input type="text" id="filter_major_text">
-        </section>
-
-        <section id="filter_grade" class="filter_section">
-          <h3>年级过滤</h3>
-          <h5>将会自动选择此年级。</h5>
-          <input type="text" id="filter_grade_text">
-        </section>
-
-        <section id="filter_class_name" class="filter_section">
-          <h3>课名过滤</h3>
-          <h5>仅显示含有以下关键字的课程。</h5>
-          <input type="text" id="filter_class_name_text">
-        </section>
-        <section id="filter_teacher_name" class="filter_section">
-          <h3>教师过滤</h3>
-          <h5>仅显示含有该教师的课程。</h5>
-          <input type="text" id="filter_teacher_name_text">
-        </section>
-        <section id="filter_time" class="filter_section">
-          <h3>上课时间过滤</h3>
-        </section>
-        <br>
-        <span class="pjw-mini-button" onclick="hideFilterSettings();">完成设置</span>
-        <br><br>
-        <span>自动选课打开后，potatojw将按照此处设置的过滤器选课。</span>
-        <br>
-        <span>上课时间过滤器暂不能储存，刷新页面后会消失。</span>
-        <br>
-        <span>打开开发者界面（F12 / Command + Shift + I）的控制台（Console）可查看输出信息</span>
-        <br>
-        <div class="about-proj"></div>
-      </div>
-    `;
-    $$("body").append(filter_setting_html);
-  }
   if (pjw_mode != "")
     $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` +
         custom_toolbar_html[(pjw_mode in filter_mode_list ? "filter" : (pjw_mode in custom_toolbar_html ? pjw_mode : "default"))]
@@ -148,29 +117,13 @@ var potatojw_intl = function() {
   if (pjw_mode in pjw_classlist_mode_list)
     ClassListPlugin();
 
-
-  // Local storage
-  var reset_storage_confirm = false;
-  window.resetStorage = function() {
-    if (reset_storage_confirm) {
-      store.clearAll();
-      reset_storage_confirm = false;
-      $$("#reset_storage").html("重置pjw+存储");
-    } else {
-      $$("#reset_storage").html("确定重置？");
-      reset_storage_confirm = true;
-    }
-  }
-  if ($$("div#TopLink").length > 0)
-    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="cursor: pointer;" onclick="resetStorage();" id="reset_storage">重置pjw+存储</span>&nbsp;&nbsp;&nbsp;&nbsp;`);
-
+  // Storage upgrade
   function checkStorageVersion() {
     if (store.get("version") == null || store.get("version") != pjw_version)
       return false;
     return true;
   }
-
-  // Storage upgrade
+  
   if (!checkStorageVersion()) {
     store.set("is_toolbar_collapsed", false);
     store.set("version", pjw_version);
@@ -566,28 +519,114 @@ var potatojw_intl = function() {
       $$("#comment").html("[potatoplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatoplus<br><br>" + $$("#comment").html());
     });
   } else if (pjw_mode == "common") {
-    window.initClassList = function(success_func = function() {}) {
+    window.showCourseDetailInfo = function(classId, courseNumber){
+      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
+    };
+
+    window.selectedClass = function(class_ID, class_kind) {
+      return [class_ID, class_kind];
+    };
+
+    window.selectClass = function(class_ID, class_kind) {
       $$.ajax({
-        url: window.location.href,
+        url: "/jiaowu/student/elective/courseList.do?method=submitCommonRenew&classId=" + class_ID + "&courseKind=" + class_kind,
         type: "GET",
         success: function(res) {
-          $$("#tbCourseList").html($$(res).find("table").html());
-          updateFilterList();
-          applyFilter();
-          success_func();
+          res = res.slice(res.search("function initSelectedList()"));
+          var start = res.search(/\"*\"/);
+          var end = res.search(/\"\)/);
+          res = res.slice(start + 1, end);
+          console.log(res);
+          if (res.search("成功！") != -1)
+            list.refresh();
         }
+      });
+    }
+
+    window.parse = function(data) {
+      var table = $$(data).find("table > tbody");
+      table.find("tr:gt(0)").each((index, val) => {
+        var res = parseClassTime($$(val).children("td:eq(4)").html());
+        var class_ID = "0", class_kind = "13";
+        if ($$(val).children("td:eq(9)").html() != "") {
+          select_status = "Available";
+          var parse_class_res = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
+          class_ID = parse_class_res[0], class_kind = parse_class_res[1];
+        } else {
+          select_status = "Full";
+        }
+        
+        data = {
+          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+          teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+          info: [{
+            key: "课程编号",
+            val: $$(val).children('td:eq(0)').html()
+          }, {
+            key: "备注",
+            val: $$(val).children('td:eq(8)').html(),
+            hidden: true
+          }],
+          num_info: [{
+            num: parseInt($$(val).children("td:eq(3)").html()),
+            label: "学分"
+          }],
+          lesson_time: res.lesson_time,
+          class_weeknum: res.class_weeknum,
+          select_button: {
+            status: select_status,
+            text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
+            action: ((e) => { selectClass(class_ID, class_kind); })
+          },
+          comment_button: {
+            status: true,
+            text: (Math.random() * 10).toFixed(1)
+          }
+        };
+        list.add(data);
+      });
+      window.mdc.autoInit();
+    }
+
+    window.loadClassList = function() {
+      list.clear();
+      
+      $$.ajax({
+        type: "GET",
+        url: "http://elite.nju.edu.cn/jiaowu/student/elective/courseList.do",
+        data: {
+          method: "commonCourseRenewList",
+          courseKind: selectors.class_kind.val()
+        }
+      }).done(function(data) {
+        parse(data);
+      }).fail(function(data) {
+        console.log("Failed to request data: " + data);
       });
     };
 
-    window.isClassFull = function(element) {
-      return parseInt($$(element).children("td:eq(7)").html()) >= parseInt($$(element).children("td:eq(6)").html());
+    class PJWCommonClassList extends PJWClassList {
+      refresh() {
+        loadClassList();
+      }
+    }
+
+    window.list = new PJWCommonClassList($$("body > div[align=center]"));
+    window.selectors = {
+      class_kind: new PJWSelect("courseKindList", "课程类型", list.heading.children(".pjw-classlist-selectors"))
     };
-  } else if (pjw_mode == "dis") {
+    selectors.class_kind.onchange( (e) => {
+      loadClassList();
+    } );
+    $$("table#tbCourseList").hide();
+    $$("#courseKindList").parent().hide();
+    list.refresh();
+  } else if (pjw_mode == "dis" || pjw_mode == "public") {
     window.selectClass = function(class_ID) {
       console.log("Select: " + class_ID);
-      var g_campus = $$('#campusList')[0].options[$$('#campusList')[0].selectedIndex].value;
+      var campus = selectors.campus.val();
       $$.ajax({
-        url: "/jiaowu/student/elective/courseList.do?method=submitDiscussRenew&classId=" + class_ID + "&campus=" + g_campus,
+        url: "/jiaowu/student/elective/courseList.do?method=submit" + (pjw_mode == "dis" ? "Discuss" : "Public") + "Renew&classId=" + class_ID + "&campus=" + campus,
         type: "GET",
         success: function(res) {
           res = res.slice(res.search("function initSelectedList()"));
@@ -654,18 +693,14 @@ var potatojw_intl = function() {
       window.mdc.autoInit();
     }
 
-    window.initList = function(campus = $$("#campusList").val()) {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWDisClassList($$("body > div[align=center]"));
-      }
+    window.loadClassList = function() {
+      list.clear();
 
       $$.ajax({
         url: window.location.pathname,
         data: {
-          method: "discussRenewCourseList",
-          campus: campus
+          method: (pjw_mode == "dis" ? "discuss" : "public") + "RenewCourseList",
+          campus: selectors.campus.val()
         },
         type: "GET"
       }).done(function(data) {
@@ -677,12 +712,21 @@ var potatojw_intl = function() {
 
     class PJWDisClassList extends PJWClassList {
       refresh() {
-        initList();
+        loadClassList();
       }
     }
 
-    $$("table#tbCourseList").remove();
-    initList();
+    window.list = new PJWDisClassList($$("body > div[align=center]"));
+    window.selectors = {
+      campus: new PJWSelect("campusList", "校区", list.heading.children(".pjw-classlist-selectors"))
+    };
+    selectors.campus.onchange( (e) => {
+      loadClassList();
+    } );
+    $$("#campusList").parent().hide();
+    $$("table#tbCourseList").hide();
+    $$("body > div[align=center]").children("p").hide();
+    loadClassList();
   } else if (pjw_mode == "dis_view") {
     window.parse = function(data) {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
@@ -764,7 +808,7 @@ var potatojw_intl = function() {
     };
 
     window.selectClass = function(class_ID) {
-      var academy_ID = $$('#academyList').val();
+      var academy_ID = selectors.academy.val();
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + class_ID + "&academy=" + academy_ID,
         type: "GET",
@@ -780,7 +824,7 @@ var potatojw_intl = function() {
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(5)").html());
         var class_ID = "0";
-        if ($$(val).children("td:eq(9)").html() != "") {
+        if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
           select_status = "Available";
           class_ID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
         } else {
@@ -799,7 +843,7 @@ var potatojw_intl = function() {
             hidden: true
           }, {
             key: "开课院系",
-            val: $$(`#academyList option[value=${$$("#academyList").val()}]`).html(),
+            val: "test",//$$(`#academyList option[value=${$$("#academyList").val()}]`).html(),
             hidden: true
           }],
           num_info: [{
@@ -823,13 +867,8 @@ var potatojw_intl = function() {
       window.mdc.autoInit();
     }
 
-    window.loadClassList = function(academy = $$("#academyList").val()) {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWOpenClassList($$("#iframeTable").parent());
-        $$("#iframeTable").html("");
-      }
+    window.loadClassList = function() {
+      list.clear();
       
       $$.ajax({
         type: "GET",
@@ -837,7 +876,7 @@ var potatojw_intl = function() {
         data: {
           method: "openRenewCourse",
           campus: "全部校区",
-          academy: academy
+          academy: window.selectors.academy.val()
         }
       }).done(function(data) {
         parse(data);
@@ -845,14 +884,24 @@ var potatojw_intl = function() {
         console.log("Failed to request data: " + data);
       });
     };
-    
-    window.campusChange = window.searchCourseList = loadClassList;
 
     class PJWOpenClassList extends PJWClassList {
       refresh() {
         loadClassList();
       }
     }
+
+    window.list = new PJWOpenClassList($$("#iframeTable").parent());
+    window.selectors = {
+      academy: new PJWSelect("academyList", "院系", list.heading.children(".pjw-classlist-selectors"))
+    };
+    selectors.academy.onchange( (e) => {
+      loadClassList();
+    } );
+    list.refresh();
+    $$("#iframeTable").hide();
+    $$("#myForm").hide();
+    $$("#operationInfo").hide();
   } else if (pjw_mode == "open_view") {
     window.parse = function(data) {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
@@ -927,6 +976,7 @@ var potatojw_intl = function() {
 
     window.campusChange = loadClassList;
   } else if (pjw_mode == "major_course") {
+    /*
     window.hideCourseDetail = function(response){
       $('courseDetail').style.visibility = "hidden";
       if (auto_select_switch) doAutoClassSelect();
@@ -996,7 +1046,7 @@ var potatojw_intl = function() {
       showFilter("grade");
       showFilter("major");
       $$("#filter_switch").css("display", "none");
-    });
+    });*/
   } else if (pjw_mode == "login_page") {
     // Load login settings
     window.login_settings = {};
@@ -1132,254 +1182,6 @@ var potatojw_intl = function() {
       window.location.href = $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr:eq(2) > td > a").attr("href");
     }
   } else return;
-
-  if (pjw_mode in filter_mode_list) {
-    window.select_class_button_index = {
-      "gym": 5,
-      "read": 6,
-      "common": 9,
-      "dis": 10,
-      "open": 9
-    };
-
-    window.class_name_index = {
-      "gym": 0,
-      "read": 1,
-      "common": 2,
-      "dis": 2,
-      "open": 2,
-      "major_course": -1
-    };
-
-    window.teacher_name_index = {
-      "dis": 5,
-      "open": 6,
-      "common": 5,
-      "major_course": -1
-    };
-
-    window.class_time_index = {
-      "gym": 1,
-      "common": 4,
-      "dis": 4,
-      "open": 5
-    };
-
-    if (store.get("filter_settings_" + pjw_mode) == null 
-        || store.get("filter_settings_" + pjw_mode) == "")
-      window.filter_settings = {};
-    else
-      window.filter_settings = store.get("filter_settings_" + pjw_mode);
-
-    window.showFilter = function(filter_name) {
-      $$("#filter_" + filter_name).css("display", "block");
-    }
-
-    if (typeof(class_name_index[pjw_mode]) != "undefined")
-      showFilter("class_name");
-    if (typeof(teacher_name_index[pjw_mode]) != "undefined")
-      showFilter("teacher_name");
-    if (typeof(class_time_index[pjw_mode]) != "undefined")
-      showFilter("time");
-    if (typeof(isClassFull) != "undefined")
-      showFilter("full_class");
-
-    window.showFilterSettings = function() {
-      $$("#potatojw_mask").css("display", "block");
-      $$("#potatojw_filter_setting_frame").css("display", "block");
-      $$("#is_filter_full_class").prop("checked", filter_settings.is_filter_full_class);
-      $$("#potatojw_filter_setting_frame input").each(function() {
-        if ($$(this).attr("id") in filter_settings)
-          $$(this).val(filter_settings[$$(this).attr("id")]);
-      });
-    };
-
-    window.hideFilterSettings = function() {
-      $$("#potatojw_filter_setting_frame input").each(function() {
-        filter_settings[$$(this).attr("id")] = $$(this).val();
-      });
-      filter_settings["is_filter_full_class"] = $$('#is_filter_full_class').is(":checked");
-      applyFilter();
-      $$("#potatojw_mask").css("display", "none");
-      $$("#potatojw_filter_setting_frame").css("display", "none");
-      store.set("filter_settings_" + pjw_mode, window.filter_settings);
-      $$("#filter_switch").prop("checked", true);
-      $$("#filter_switch").trigger("change");
-    };
-  }
-
-  if (pjw_mode in subclass_mode_list) {
-    window.applyFilter = function() {
-      getAllClassDOM().each(function() {
-        $$(this).css("display", (filterClass(this) ? "table-row" : "none"));
-      });
-    };
-
-    // Register control bar event
-    window.auto_refresh_interval_id = -1;
-    $$("#auto_refresh").change(function() {
-      $$("#auto_refresh").prop("checked") ? (function() {
-        startAutoRefresh();
-      } ()) : (function() {
-        stopAutoRefresh();
-      } ());
-    });
-
-    $$("#filter_switch").change(function() {
-      applyFilter();
-      $$("#auto_select").prop("disabled", false);
-      $$("#auto_select").trigger("change");
-    });
-
-    window.auto_select_switch = false;
-    $$("#auto_select").change(function() {
-      window.auto_select_switch = $$("#auto_select").prop("checked");
-    });
-
-    window.stopAuto = function(){
-      $$("#auto_refresh").prop("checked", false);
-      $$("#auto_refresh").trigger("change");
-      $$("#auto_select").prop("checked", false);
-      $$("#auto_select").trigger("change");
-    }
-
-    window.getAllClassDOM = function() {
-      return (pjw_mode == "open" ? $$("div#tbCourseList > tbody > tr:gt(0)") : $$("table#tbCourseList:eq(0) > tbody > tr"));
-    }
-
-    window.getNumberInNormalDistribution = function(mean, std_dev, lower_limit, upper_limit) {
-      var res = Math.floor(mean + randomNormalDistribution() * std_dev);
-      if (res >= upper_limit) return upper_limit;
-      if (res >= mean) return res;
-      res = mean - (mean-res) * 0.8;
-      if (res < lower_limit) return lower_limit;
-      return res;
-    };
-
-    window.randomNormalDistribution = function() {
-      var u=0.0, v=0.0, w=0.0, c=0.0;
-      do {
-        u = Math.random()*2 - 1.0;
-        v = Math.random()*2 - 1.0;
-        w = u*u + v*v;
-      } while (w == 0.0 || w >= 1.0)
-      c = Math.sqrt((-2 * Math.log(w)) / w);
-      return u * c;
-    }
-
-    window.auto_refresh_frequency = 1.0,
-    window.auto_refresh_loss_rate = 0.1;
-
-    // Auto-update class list
-    window.startAutoRefresh = function() {
-      initClassList(function() {doAutoClassSelect();});
-      window.auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
-      var auto_check_times = 1;
-      console.log("First time refreshed.");
-      var random_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 600) + 1400, 800, 800, 3000);
-      window.auto_refresh_interval_id = window.setInterval(function() {
-        if (Math.random() < window.auto_refresh_loss_rate) return;
-        window.setTimeout(function() {
-          initClassList(function() {doAutoClassSelect();});
-          console.log((++auto_check_times) + " times refreshed.");
-        }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8));
-      }, random_interval);
-    };
-
-    window.stopAutoRefresh = function() {
-      window.clearInterval(window.auto_refresh_interval_id);
-      window.auto_refresh_interval_id = -1;
-    }
-
-    window.frequencyUpdate = function() {
-      window.auto_refresh_frequency = 1.0 / (1.0 + parseInt($$("#auto_refresh_frequency").val()) / 25);
-      if (window.auto_refresh_interval_id != -1) {
-        stopAutoRefresh();
-        startAutoRefresh();
-      }
-    }
-
-    // Select class automatically based on filter
-    window.doAutoClassSelect = function() {
-      if (auto_select_switch == false) return;
-      getAllClassDOM().each(function() {
-        if (pjw_mode == "major_course") {
-          checkCourse(this); return;
-        }
-        if (!filterClass(this)) return;
-        if (typeof(isClassFull) == "function" && !isClassFull(this)) {
-          $$(this).children("td:eq(" + select_class_button_index[pjw_mode] + ")").children("a")[0].click();
-          console.log("Class Selected: " + $$(this).children("td:eq(" + class_name_index[pjw_mode] + ")").html());
-          stopAuto();
-        }
-      });
-    };
-
-    // Get the time of a given class
-    // 获取课程上课时间
-    window.getClassTime = function(element) {
-      return $$(element).children("td:eq(" + class_time_index[pjw_mode] + ")").html();
-    };
-
-    window.time_list = new Array();
-    window.updateFilterList = function() {
-      time_list = [];
-      $$("section#filter_time > input").css("display", "none");
-      $$("section#filter_time > label").css("display", "none");
-      $$("section#filter_time > br").css("display", "none");
-      var date_num = 0;
-      getAllClassDOM().each(function() {
-        if (typeof(class_time_index[pjw_mode]) != "undefined") {
-          var current_time_val = getClassTime(this);
-          var str_array = current_time_val.split("<br>");
-          for (var i = 0; i < str_array.length; i++) {
-            if (time_list.includes(str_array[i])) return;
-            time_list.push(str_array[i]);
-            var filter_time_append_html = `
-              <input type="checkbox" class="filter_time_checkbox" id="filter_time_checkbox_` + date_num + `" checked="checked">
-              <label for="filter_time_checkbox_` + (date_num++) + `">` + str_array[i] + `</label><br>
-            `;
-            $$("section#filter_time").append(filter_time_append_html);
-          }
-        }
-      });
-    };
-    updateFilterList();
-
-    // Check if the given class satisfy the filter
-    // 检查课程是否符合过滤器
-    window.filterClass = function(element) {
-      if ($$("#filter_switch").prop("checked") == false || pjw_mode == "major_course")
-        return true;
-      if (filter_settings.is_filter_full_class == true)
-        if (typeof(isClassFull) == "function" && isClassFull(element))
-          return false;
-      if (typeof(class_time_index[pjw_mode]) != "undefined") {
-        var current_time_val = getClassTime(element);
-        var str_array = current_time_val.split("<br>");
-        for (var i = 0; i < str_array.length; i++)
-          if (time_list.indexOf(str_array[i]) >= 0 && $$("#filter_time_checkbox_" + time_list.indexOf(str_array[i])).prop("checked") == false)
-            return false;
-      }
-      if (typeof(class_name_index[pjw_mode]) != "undefined") {
-        var current_class_name = $$(element).children("td:eq(" + class_name_index[pjw_mode] + ")").html();
-        if (current_class_name.indexOf(filter_settings.filter_class_name_text) < 0)
-          return false;
-      }
-      if (typeof(teacher_name_index[pjw_mode]) != "undefined") {
-        var current_teacher_name = $$(element).children("td:eq(" + teacher_name_index[pjw_mode] + ")").html();
-        if (current_teacher_name.indexOf(filter_settings.filter_teacher_name_text) < 0)
-          return false;
-      }
-      return true;
-    };
-
-    // Rewrite refresh function
-    // 改写刷新按钮：刷新课程列表
-    window.refreshCourseList = function() {
-      initClassList();
-    };
-  }
 
   // Initiate toolbar
   $$(".about-proj").html(about_this_project);

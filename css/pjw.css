@@ -150,6 +150,11 @@ body {
   font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
 }
 
+.mdc-select__anchor {
+  display: flex;
+  width: 100%;
+}
+
 #courseList {
   height: auto !important;
   overflow: hidden !important;
@@ -198,14 +203,14 @@ body {
 
 #Nav > ul > li > a:hover {
   color: var(--white) !important;
-  font-size: 120%;
+  font-size: 125%;
   font-weight: bold !important;
   background: none !important;
 }
 
 #Nav > ul > li > a:active {
   color: rgba(0, 0, 0, .3) !important;
-  font-size: 110%;
+  font-size: 115%;
 }
 
 #Header > #Logo {
@@ -216,15 +221,15 @@ body {
 
 #Header > #Logo > a {
   content: url("https://www.nju.edu.cn/_upload/tpl/01/36/310/template310/images/logo.png");
-  height: 55px;
+  height: 50px;
 }
 
 #Header > #Logo:after {
   content: "教务系统 Educational Administration System";
   color: var(--white);
-  font-size: 20px;
+  font-size: 16px;
   position: relative;
-  top: -10px;
+  top: -8px;
   left: -5px;
   font-style: italic;
 }
@@ -261,14 +266,15 @@ body {
   color: var(--white) !important;
 }
 
-#Function {
-
+.Line {
+  opacity: 0;
 }
 
 /* PJW ClassList */
 
 .pjw-classlist {
   text-align: left;
+  margin-bottom: 50px;
 }
 
 .pjw-classlist-heading {
@@ -277,10 +283,30 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.pjw-classlist-selectors {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 6px 20px;
+}
+
+#pjw-select-academyList {
+  width: 300px;
+}
+
+.pjw-classlist-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: flex-end;
 }
 
-.pjw-classlist-heading > section {
+.pjw-classlist-controls > section {
   margin: 0 20px;
   display: flex;
   align-items: center;
@@ -347,7 +373,7 @@ body {
   order: 0;
   background: rgba(255, 255, 255, .9);
   /*background: linear-gradient(-10deg, rgba(211, 251, 251, 1), rgba(251, 221, 151, 1));*/
-  background: linear-gradient(200deg, rgba(99,6,95,.2) 0%, rgba(206,103,255,.2) 73%, rgba(255,71,152,.2) 100%);
+  background: linear-gradient(200deg, rgba(99,6,95,.2) 0%, rgba(175,55,232,.2) 73%, rgba(255,71,152,.2) 100%);
   transition: background-color .1s ease-out;
 }
 
