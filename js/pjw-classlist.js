@@ -310,7 +310,7 @@ function ClassListPlugin() {
         window.setTimeout( () => {
           comp_height = (comp_height - t.height()) / 2;
           t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
-          t.animate({ "margin-top": "6px", "margin-bottom": "6px" }, 100, (x) => {
+          t.animate({ "margin-top": "4px", "margin-bottom": "4px" }, 100, (x) => {
             return 1 - Math.cos(x * Math.PI / 2);
           });
           t.css("opacity", "1");

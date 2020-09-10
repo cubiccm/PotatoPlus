@@ -146,10 +146,6 @@ body {
   background: rgba(0, 0, 0, .05) !important;
 }
 
-.mdc-button {
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
-}
-
 .mdc-select__anchor {
   display: flex;
   width: 100%;
@@ -363,7 +359,7 @@ body {
 .pjw-class-container {
   padding: 10px 30px;
   border-radius: 20px;
-  margin: 6px 5%;
+  margin: 4px 5%;
   width: 90%;
   position: relative;
   justify-content: space-between;

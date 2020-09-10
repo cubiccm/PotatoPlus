@@ -1,4 +1,4 @@
-var potatojw_intl = function() {
+window.potatojw_intl = function() {
   window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
@@ -1231,20 +1231,6 @@ var potatojw_intl = function() {
   })();
 };
 
-
-function loadScript(url, callback = () => {}, failed = () => {}) {
-  var script = document.createElement('script');
-  script.type = "text/javaScript";
-  script.onload = function() {
-    callback();
-  };
-  script.onerror = function() {
-    failed();
-  };
-  script.src = url;
-  document.getElementsByTagName('head')[0].appendChild(script);
-}
-
 var google_analytics_js = `
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173014211-1"></script>
@@ -1258,9 +1244,4 @@ var google_analytics_js = `
   gtag('event', 'version_dimension', {'version': pjw_version});
 </script>
 `;
-
-(function() {
-  window.addEventListener("load", potatojw_intl);
-})();
-
 
