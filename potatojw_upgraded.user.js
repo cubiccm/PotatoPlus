@@ -310,7 +310,7 @@ body {
   font-style: italic;
 }
 
-#TopLink > a,span {
+#TopLink > a {
   /*color: var(--white) !important;*/
   font-weight: normal !important;
 }
@@ -463,15 +463,6 @@ body {
   background-image: none;
 }
 
-.pjw-class-main {
-  display: flex;
-  flex-direction: row;
-}
-
-.pjw-class-main > div {
-  margin: 0 10px;
-}
-
 .pjw-class-sub {
   display: flex;
   flex-direction: row;
@@ -487,7 +478,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 30%;
+  width: max(20%, 250px);
 }
 
 .pjw-class-container--compressed .pjw-class-info {
@@ -1550,19 +1541,21 @@ function ClassListPlugin() {
 
   window.PJWClass = class {
     show() {
+      if (!this.initialized) this.intl();
       if (this.display == true) return;
       this.display = true;
       this.dom.css("display", "flex");
     }
 
     hide() {
-      if (this.display == false) return;
+      if (!this.initialized || this.display == false) return;
       this.display = false;
       this.dom.css("display", "none");
     }
 
-    setPriority(priority) {
-      if (priority === false) { this.hide(); return; }
+    setPriority(priority = this.data.priority) {
+      if (!this.initialized) return;
+      if (priority === false || priority == -1) { this.hide(); return; }
       if (this.priority == priority) return;
       this.priority = priority;
       this.dom.css("order", -priority);
@@ -1733,38 +1726,42 @@ function ClassListPlugin() {
           </div>
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
-        <div class="pjw-class-main">
-          <div class="pjw-class-sub">
-            <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
-            <div class="pjw-class-sideinfo">
-              <div class="pjw-class-weeknum-bar">${this.getHTML(data, "weeknum")}</div>
-              <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
-            </div>
+        <div class="pjw-class-sub">
+          <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
+          <div class="pjw-class-sideinfo">
+            <div class="pjw-class-weeknum-bar">${this.getHTML(data, "weeknum")}</div>
+            <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
-          <div class="pjw-class-operation">
-            ${this.getHTML(data, "selectbutton")}
-            ${this.getHTML(data, "commentbutton")}
-          </div>
+        </div>
+        <div class="pjw-class-operation">
+          ${this.getHTML(data, "selectbutton")}
+          ${this.getHTML(data, "commentbutton")}
         </div>
       `;
       this.dom.html(class_html);
     }
 
     constructor(parent, data) {
-      var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed"></div>`;
+      var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;"></div>`;
       this.dom = $$(class_html).appendTo(parent);
-      this.set(data);
+      this.data = data;
+      this.initialized = false;
+    }
+
+    intl() {
+      if (this.initialized) return;
+      this.initialized = true;
+      this.set(this.data);
 
       this.info = this.dom.children(".pjw-class-info");
-      this.main = this.dom.children(".pjw-class-main");
-      this.sub = this.main.children(".pjw-class-sub");
+      this.sub = this.dom.children(".pjw-class-sub");
       this.weekcal = this.sub.children(".pjw-class-weekcal");
       this.sideinfo = this.sub.children(".pjw-class-sideinfo");
-      this.operation = this.main.children(".pjw-class-operation");
+      this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
 
-
+      var data = this.data;
       var target = this.select_button;
       var select_label = target.children(".pjw-class-select-button__container").children(".pjw-class-select-button__label");
       
@@ -1790,11 +1787,11 @@ function ClassListPlugin() {
         for (var item of data.select_button.text)
           target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`);
 
-      this.display = true;
+      this.display = false;
       this.priority = 0;
 
       this.sub.on("mouseenter", (e) => {
-        var t = jQuery(e.delegateTarget).parent().parent();
+        var t = jQuery(e.delegateTarget).parent();
         t.removeClass("pjw-class-container--compressed");
       });
       this.info.on("click", (e) => {
@@ -1825,28 +1822,34 @@ function ClassListPlugin() {
 
   window.PJWClassList = class {
     add(data) {
-      var priority = this.checkFilter(data);
       var item = new PJWClass(this.body, data);
-      item.setPriority(priority);
       this.class_data.push({
         data: data,
-        obj: item
+        obj: item,
+        id: this.auto_inc++
       });
     }
 
     clear() {
       this.class_data = [];
       this.body.html("");
+      this.auto_inc = 0;
+      this.max_classes_loaded = 50;
     }
 
     matchDegree(pattern, str) {
       function testString(keyword, str) {
-        if (str.search(keyword) != -1) {
+        var pos = str.search(keyword);
+        if (pos == 0) {
           return 1;
+        } else if (pos != -1) {
+          return 0.9;
         } else if (keyword.length == 2) {
           if (str.search(keyword[1]) > str.search(keyword[0]) 
-            && str.search(keyword[0]) != -1)
-            return 1;
+            && str.search(keyword[0]) != -1) {
+            if (str.search(keyword[0]) == 0) return 0.7;
+            else return 0.5;
+          }
         }
         return 0;
       }
@@ -1857,9 +1860,8 @@ function ClassListPlugin() {
         if (typeof(str) == "string") {
           matched_num += testString(keyword, str);
         } else {
-          for (var substr of str) {
+          for (var substr of str)
             matched_num += testString(keyword, substr);
-          }
         }
       }
       return 100.0 * (matched_num / pattern_num);
@@ -1870,7 +1872,7 @@ function ClassListPlugin() {
         return 0;
       }
       var priority = 0.0;
-      priority += 3 * this.matchDegree(search_str, data.title);
+      priority += 4 * this.matchDegree(search_str, data.title);
       priority += 2 * this.matchDegree(search_str, data.teachers);
       // priority += 1 * this.matchDegree(search_str, data.info);
       if (priority == 0) {
@@ -1885,8 +1887,12 @@ function ClassListPlugin() {
       /* Load filter modules... */
 
       var search_priority = this.search(data, this.search_string);
-      if (search_priority === false) return false;
+      if (search_priority === false) {
+        data.priority = -1;
+        return false;
+      }
       priority += search_priority;
+      data.priority = priority;
       return priority;
     }
 
@@ -1906,14 +1912,39 @@ function ClassListPlugin() {
 
     update() {
       for (var item of this.class_data) {
-        var priority = this.checkFilter(item.data);
-        if (priority === false) {
+        if (this.checkFilter(item.data) === false)
           item.obj.hide();
-        } else {
-          item.obj.setPriority(priority);
-          item.obj.show();
-        }
       }
+      this.class_data.sort(function(a, b) {
+        if (parseInt(b.data.priority) == parseInt(a.data.priority))
+          return a.id - b.id;
+        else if (b.data.priority > a.data.priority)
+          return 1;
+        else
+          return -1;
+      });
+      for (var i = 0; i < this.class_data.length; i++) {
+        if (i < this.max_classes_loaded && this.class_data[i].data.priority >= 0) {
+          this.class_data[i].obj.intl();
+          this.class_data[i].obj.show();
+        }
+        this.class_data[i].obj.setPriority(this.class_data.length - i);
+      }
+    }
+
+    checkScroll() {
+      if ("scroll_lock" in this && this.scroll_lock == true) return;
+      this.scroll_lock = true;
+      if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1600 >= $$(document).height()) {
+        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + 50 && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
+          this.class_data[i].obj.show();
+        this.max_classes_loaded += 50;
+      }
+      this.scroll_lock = false;
+    }
+
+    refresh() {
+      this.load();
     }
 
     constructor(parent) {
@@ -1977,14 +2008,19 @@ function ClassListPlugin() {
         target: this
       }, (e) => {
         e.data.target.search_string = this.search_input.val();
+        e.data.target.max_classes_loaded = 50;
         e.data.target.update();
       });
 
-      this.autoreload_button.on("click", (e) => {
-        list.refresh();
+      this.autoreload_button.on("click", null, {
+        target: this
+      }, (e) => {
+        e.data.target.refresh();
       });
 
-      this.heading_switch_button.on("click", (e) => {
+      this.heading_switch_button.on("click", null, {
+        target: this
+      }, (e) => {
         var t = $$(e.delegateTarget);
         if (t.hasClass("on")) {
           t.removeClass("on");
@@ -1999,8 +2035,16 @@ function ClassListPlugin() {
         }
       });
 
+      $$(window).on("scroll", null, {
+        target: this
+      }, (e) => {
+        e.data.target.checkScroll();
+      });
+
       this.class_data = [];
       this.search_string = "";
+      this.auto_inc = 0;
+      this.max_classes_loaded = 50;
 
       window.mdc.autoInit();
     }
@@ -2340,11 +2384,12 @@ var potatojw_intl = function() {
           return;
         }
       }
-      loadClassList();
+      list.refresh();
     };
 
-    
-    window.parse = function(data) {
+    window.list = new PJWClassList($$("#iframeTable").parent());
+
+    list.parse = function(data) {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
       var table = $$("#ghost-div").find("table.TABLE_BODY > tbody");
       table.find("tr:gt(0)").each((index, val) => {
@@ -2387,16 +2432,13 @@ var potatojw_intl = function() {
         };
         list.add(data);
       });
+      list.update();
       window.mdc.autoInit();
       $$("#ghost-div").remove();
     }
 
-    window.loadClassList = function() {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWAllClassList($$("#iframeTable").parent());
-      }
+    list.load = function() {
+      list.clear();
 
       $$("#iframeTable").css("display", "none");
       var url = "/jiaowu/student/teachinginfo/allCourseList.do?method=getCourseList&curTerm=" + $$("#termList").val() + "&curGrade=" + $$("#gradeList").val();
@@ -2407,17 +2449,11 @@ var potatojw_intl = function() {
         type: "GET",
         url: url
       }).done(function(data) {
-        parse(data);
+        list.parse(data);
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
-
-    class PJWAllClassList extends PJWClassList {
-      refresh() {
-        loadClassList();
-      }
-    }
 
 
     $$("#specialitySelect").css("display", "none");
@@ -2653,15 +2689,13 @@ var potatojw_intl = function() {
       $$("#comment").html("[potatoplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatoplus<br><br>" + $$("#comment").html());
     });
   } else if (pjw_mode == "common") {
-    window.showCourseDetailInfo = function(classId, courseNumber){
-      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
-    };
+    window.list = new PJWClassList($$("body > div[align=center]"));
 
     window.selectedClass = function(class_ID, class_kind) {
       return [class_ID, class_kind];
     };
 
-    window.selectClass = function(class_ID, class_kind) {
+    window.select = function(class_ID, class_kind) {
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do?method=submitCommonRenew&classId=" + class_ID + "&courseKind=" + class_kind,
         type: "GET",
@@ -2677,7 +2711,7 @@ var potatojw_intl = function() {
       });
     }
 
-    window.parse = function(data) {
+    list.parse = function(data) {
       var table = $$(data).find("table > tbody");
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(4)").html());
@@ -2710,7 +2744,7 @@ var potatojw_intl = function() {
           select_button: {
             status: select_status,
             text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-            action: ((e) => { selectClass(class_ID, class_kind); })
+            action: ((e) => { select(class_ID, class_kind); })
           },
           comment_button: {
             status: true,
@@ -2719,46 +2753,42 @@ var potatojw_intl = function() {
         };
         list.add(data);
       });
+      list.update();
       window.mdc.autoInit();
     }
 
-    window.loadClassList = function() {
-      list.clear();
+    list.load = function() {
+      this.clear();
       
       $$.ajax({
         type: "GET",
         url: "http://elite.nju.edu.cn/jiaowu/student/elective/courseList.do",
         data: {
           method: "commonCourseRenewList",
-          courseKind: selectors.class_kind.val()
+          courseKind: this.selectors.class_kind.val()
         }
       }).done(function(data) {
-        parse(data);
+        list.parse(data);
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWCommonClassList extends PJWClassList {
-      refresh() {
-        loadClassList();
-      }
-    }
-
-    window.list = new PJWCommonClassList($$("body > div[align=center]"));
-    window.selectors = {
+    list.selectors = {
       class_kind: new PJWSelect("courseKindList", "课程类型", list.heading.children(".pjw-classlist-selectors"))
     };
-    selectors.class_kind.onchange( (e) => {
-      loadClassList();
+    list.selectors.class_kind.onchange( (e) => {
+      list.refresh();
     } );
-    $$("table#tbCourseList").hide();
-    $$("#courseKindList").parent().hide();
+    $$("table#tbCourseList").remove();
+    $$("#courseKindList").parent().remove();
     list.refresh();
   } else if (pjw_mode == "dis" || pjw_mode == "public") {
-    window.selectClass = function(class_ID) {
+    window.list = new PJWClassList($$("body > div[align=center]"));
+
+    window.select = function(class_ID) {
       console.log("Select: " + class_ID);
-      var campus = selectors.campus.val();
+      var campus = list.selectors.campus.val();
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do?method=submit" + (pjw_mode == "dis" ? "Discuss" : "Public") + "Renew&classId=" + class_ID + "&campus=" + campus,
         type: "GET",
@@ -2774,17 +2804,15 @@ var potatojw_intl = function() {
       });
     }
 
-    window.optimizeClassList = function() {
+    window.optimizeClassList = (function() {
       $$("input[type='radio']").css("display", "none");
       $$("input[type='button']").css("display", "none");
       $$("input[type='radio']").each(function() {
         $$(this).after("<a onclick='selectClass(" + $$(this).attr("value") + ");'>选择</a>")
       });
-    }
-    
-    optimizeClassList();
+    })();
 
-    window.parse = function(data) {
+    list.parse = function(data) {
       var table = $$(data).find("table#tbCourseList");
       table.find("tbody").each((index, val) => {
         if ($$(val).css("display") == "none") return;
@@ -2814,7 +2842,7 @@ var potatojw_intl = function() {
             select_button: {
               status: select_status,
               text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-              action: () => { selectClass(class_ID); }
+              action: () => { select(class_ID); }
             },
             comment_button: {
               status: true,
@@ -2824,43 +2852,37 @@ var potatojw_intl = function() {
           list.add(data);
         });
       });
+      list.update();
       window.mdc.autoInit();
     }
 
-    window.loadClassList = function() {
-      list.clear();
+    list.load = function() {
+      this.clear();
 
       $$.ajax({
         url: window.location.pathname,
         data: {
           method: (pjw_mode == "dis" ? "discuss" : "public") + "RenewCourseList",
-          campus: selectors.campus.val()
+          campus: this.selectors.campus.val()
         },
         type: "GET"
       }).done(function(data) {
-        parse(data);
+        list.parse(data);
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWDisClassList extends PJWClassList {
-      refresh() {
-        loadClassList();
-      }
-    }
-
-    window.list = new PJWDisClassList($$("body > div[align=center]"));
-    window.selectors = {
+    list.selectors = {
       campus: new PJWSelect("campusList", "校区", list.heading.children(".pjw-classlist-selectors"))
     };
-    selectors.campus.onchange( (e) => {
-      loadClassList();
+    list.selectors.campus.onchange( (e) => {
+      list.refresh();
     } );
-    $$("#campusList").parent().hide();
-    $$("table#tbCourseList").hide();
-    $$("body > div[align=center]").children("p").hide();
-    loadClassList();
+    list.refresh();
+    $$("#campusList").parent().remove();
+    $$("table#tbCourseList").remove();
+    $$("body > div[align=center]").children("p").remove();
   } else if (pjw_mode == "dis_view") {
     window.parse = function(data) {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
@@ -2933,6 +2955,8 @@ var potatojw_intl = function() {
     }
     initList();
   } else if (pjw_mode == "open") {
+    window.list = new PJWClassList($$("#iframeTable").parent());
+
     window.showCourseDetailInfo = function(classId, courseNumber){
       window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
     };
@@ -2941,7 +2965,7 @@ var potatojw_intl = function() {
       return class_ID;
     };
 
-    window.selectClass = function(class_ID) {
+    window.select = function(class_ID) {
       var academy_ID = selectors.academy.val();
       $$.ajax({
         url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + class_ID + "&academy=" + academy_ID,
@@ -2953,7 +2977,7 @@ var potatojw_intl = function() {
       });
     }
 
-    window.parse = function(data) {
+    list.parse = function(data) {
       var table = $$(data).find("table > tbody");
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(5)").html());
@@ -2977,7 +3001,7 @@ var potatojw_intl = function() {
             hidden: true
           }, {
             key: "开课院系",
-            val: "test",//$$(`#academyList option[value=${$$("#academyList").val()}]`).html(),
+            val: this.selectors.academy.val(),
             hidden: true
           }],
           num_info: [{
@@ -2989,7 +3013,7 @@ var potatojw_intl = function() {
           select_button: {
             status: select_status,
             text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
-            action: ((e) => { selectClass(class_ID); })
+            action: ((e) => { select(class_ID); })
           },
           comment_button: {
             status: true,
@@ -2998,11 +3022,12 @@ var potatojw_intl = function() {
         };
         list.add(data);
       });
+      list.update();
       window.mdc.autoInit();
     }
 
-    window.loadClassList = function() {
-      list.clear();
+    list.load = function() {
+      this.clear();
       
       $$.ajax({
         type: "GET",
@@ -3010,32 +3035,25 @@ var potatojw_intl = function() {
         data: {
           method: "openRenewCourse",
           campus: "全部校区",
-          academy: window.selectors.academy.val()
+          academy: this.selectors.academy.val()
         }
       }).done(function(data) {
-        parse(data);
+        list.parse(data);
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
 
-    class PJWOpenClassList extends PJWClassList {
-      refresh() {
-        loadClassList();
-      }
-    }
-
-    window.list = new PJWOpenClassList($$("#iframeTable").parent());
     window.selectors = {
       academy: new PJWSelect("academyList", "院系", list.heading.children(".pjw-classlist-selectors"))
     };
     selectors.academy.onchange( (e) => {
-      loadClassList();
+      list.refresh();
     } );
     list.refresh();
-    $$("#iframeTable").hide();
-    $$("#myForm").hide();
-    $$("#operationInfo").hide();
+    $$("#iframeTable").remove();
+    $$("#myForm").remove();
+    $$("#operationInfo").remove();
   } else if (pjw_mode == "open_view") {
     window.parse = function(data) {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");

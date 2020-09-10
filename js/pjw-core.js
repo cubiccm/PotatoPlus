@@ -206,11 +206,12 @@ var potatojw_intl = function() {
           return;
         }
       }
-      loadClassList();
+      list.refresh();
     };
 
-    
-    window.parse = function(data) {
+    window.list = new PJWClassList($$("#iframeTable").parent());
+
+    list.parse = function(data) {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
       var table = $$("#ghost-div").find("table.TABLE_BODY > tbody");
       table.find("tr:gt(0)").each((index, val) => {
@@ -253,16 +254,13 @@ var potatojw_intl = function() {
         };
         list.add(data);
       });
+      list.update();
       window.mdc.autoInit();
       $$("#ghost-div").remove();
     }
 
-    window.loadClassList = function() {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWAllClassList($$("#iframeTable").parent());
-      }
+    list.load = function() {
+      list.clear();
 
       $$("#iframeTable").css("display", "none");
       var url = "/jiaowu/student/teachinginfo/allCourseList.do?method=getCourseList&curTerm=" + $$("#termList").val() + "&curGrade=" + $$("#gradeList").val();
@@ -273,17 +271,11 @@ var potatojw_intl = function() {
         type: "GET",
         url: url
       }).done(function(data) {
-        parse(data);
+        list.parse(data);
       }).fail(function(data) {
         console.log("Failed to request data: " + data);
       });
     };
-
-    class PJWAllClassList extends PJWClassList {
-      refresh() {
-        loadClassList();
-      }
-    }
 
 
     $$("#specialitySelect").css("display", "none");
@@ -583,10 +575,11 @@ var potatojw_intl = function() {
         };
         list.add(data);
       });
+      list.update();
       window.mdc.autoInit();
     }
 
-    list.refresh = function() {
+    list.load = function() {
       this.clear();
       
       $$.ajax({
@@ -681,10 +674,11 @@ var potatojw_intl = function() {
           list.add(data);
         });
       });
+      list.update();
       window.mdc.autoInit();
     }
 
-    list.refresh = function() {
+    list.load = function() {
       this.clear();
 
       $$.ajax({
@@ -850,10 +844,11 @@ var potatojw_intl = function() {
         };
         list.add(data);
       });
+      list.update();
       window.mdc.autoInit();
     }
 
-    list.refresh = function() {
+    list.load = function() {
       this.clear();
       
       $$.ajax({

@@ -387,15 +387,6 @@ body {
   background-image: none;
 }
 
-.pjw-class-main {
-  display: flex;
-  flex-direction: row;
-}
-
-.pjw-class-main > div {
-  margin: 0 10px;
-}
-
 .pjw-class-sub {
   display: flex;
   flex-direction: row;
@@ -411,7 +402,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 30%;
+  width: max(20%, 250px);
 }
 
 .pjw-class-container--compressed .pjw-class-info {
