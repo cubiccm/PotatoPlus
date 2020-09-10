@@ -217,13 +217,13 @@ injectStyleFromString(`#potatojw_mask {
 }
 
 body {
-  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
   display: block !important;
   background: rgba(0, 0, 0, .05) !important;
 }
 
 .mdc-button {
-  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
 }
 
 .mdc-select__anchor {
@@ -390,7 +390,7 @@ body {
 }
 
 .pjw-classlist-heading-button {
-  background-image: linear-gradient(220deg, #3ab3b0, #55367d);
+  background-image: linear-gradient(220deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -415,16 +415,16 @@ body {
 }
 
 .pjw-classlist-heading-switch-button.on {
-  background-image: linear-gradient(140deg, rgba(58, 179, 176, 1), rgba(85, 54, 125, 1));
+  background-image: linear-gradient(140deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
 }
 
 .pjw-classlist-heading-switch-button.off {
   background-image: none;
-  background-color: rgb(30, 30, 30);
+  background-color: rgba(0, 0, 0, .7);
 }
 
 #pjw-classlist-search-field {
-  width: 350px;
+  min-width: 300px;
 }
 
 #pjw-class-search-input {
@@ -498,13 +498,13 @@ body {
 }
 
 .pjw-class-title {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: bold;
   color: rgba(0, 0, 0, .9);
 }
 
 .pjw-class-teacher {
-  font-size: 16px;
+  font-size: 14px;
   color: rgba(0, 0, 0, .75);
 }
 
@@ -513,7 +513,7 @@ body {
 }
 
 .pjw-class-name-initial {
-  font-size: 18px;
+  font-size: 15.5px;
 }
 
 /* Weekly Calendar */
@@ -562,7 +562,7 @@ body {
 
 .pjw-class-weekcal-heading-day.selected {
   color: white;
-  background-color: rgba(30, 107, 235, 1);
+  background-color: rgba(54, 79, 125, 1);
   margin: 0 2px;
 }
 
@@ -590,7 +590,7 @@ body {
 .pjw-class-weekcal-calendar-day > span {
   color: rgba(0, 0, 0, .6);
   font-size: 11px;
-  font-family: 'Helvetica Neue', 'DengXian', 'Microsoft YaHei', sans-serif;
+  font-family: 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
   width: 17px;
   height: 17px;
   line-height: 17px;
@@ -606,7 +606,7 @@ body {
   border-radius: 0;
   color: white;
   font-weight: bold;
-  background-color: rgba(23, 83, 182, 1);
+  background-color: rgba(54, 79, 125, 1);
   height: 23px;
   margin: 0 7px;
 }
@@ -662,7 +662,7 @@ body {
   position: absolute;
   height: 16px;
   border-radius: 9px;
-  background-image: linear-gradient(-85deg, #3ab3b0, #55367d);
+  background-image: linear-gradient(-85deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
   color: white;
   text-align: center;
   vertical-align: middle;
@@ -697,7 +697,7 @@ body {
 }
 
 .pjw-class-bignum > .num {
-  font-size: 40px;
+  font-size: 32px;
   font-weight: bold;
   color: black;
 }
@@ -719,9 +719,9 @@ body {
 /* Class Operations */
 
 .pjw-class-operation {
-  padding: 20px 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  padding: 0 10px;
   justify-content: space-around;
   align-items: center;
 }
@@ -733,14 +733,14 @@ body {
 
 .pjw-class-select-button {
   min-width: 120px;
-  background-image: linear-gradient(114deg, #3ab3b0, #55367d);
+  background: linear-gradient(114deg, rgba(160, 74, 117, .55), rgba(54, 79, 125, .7));
 }
 
 .pjw-class-comment-button {
   width: 50px;
   min-width: 50px;
   max-width: 50px;
-  background-image: linear-gradient(45deg, #facc22, #f83600);
+  background: linear-gradient(45deg, rgba(144, 75, 204, 1), rgba(255, 71, 152, 1)) !important;
   padding: 0;
 }
 
@@ -750,13 +750,9 @@ body {
 
 .pjw-class-operation > button {
   border-radius: 25px;
-  font-family: 'PingFang SC', 'DengXian', 'Microsoft YaHei', sans-serif !important;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
   height: 50px;
-  margin: 6px 0;
-}
-
-.pjw-class-container--compressed .pjw-class-operation > button {
-  margin: 0 5px;
+  margin: 6px 5px;
 }
 
 .pjw-class-select-button__container {
@@ -784,7 +780,7 @@ body {
 
 /* Mobile */
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 950px) {
   .pjw-class-info {
     max-width: 100%;
   }
@@ -792,6 +788,10 @@ body {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+  }
+  .pjw-class-operation {
+    flex-direction: column;
+    padding: 20px 0;
   }
 }
 `);
