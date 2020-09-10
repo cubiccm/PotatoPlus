@@ -58,8 +58,6 @@ function injectStyleFromString(str) {
     }
   }
 
-  injectScriptFromString(`window.addEventListener("load", () => {potatojw_intl();});`);
-
   // injectStyle("css/material-components-web.min.css");
   // injectStyle("css/pjw.css");
 

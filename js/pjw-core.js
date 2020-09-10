@@ -1,4 +1,6 @@
 window.potatojw_intl = function() {
+  if (typeof(window.pjw_version) == "string") return;
+
   window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
@@ -1245,3 +1247,9 @@ var google_analytics_js = `
 </script>
 `;
 
+(function() {
+  if (document.readyState == "complete")
+    potatojw_intl();
+  else
+    window.addEventListener("load", potatojw_intl);
+})();

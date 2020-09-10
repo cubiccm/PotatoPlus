@@ -19,6 +19,6 @@
   "web_accessible_resources": [
     "js/*",
     "css/*",
-    "resources/*"
+    "fonts/*"
   ]
 }
