@@ -234,7 +234,7 @@ body {
   font-style: italic;
 }
 
-#TopLink > a,span {
+#TopLink > a {
   /*color: var(--white) !important;*/
   font-weight: normal !important;
 }

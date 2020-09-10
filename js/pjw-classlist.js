@@ -406,6 +406,8 @@ function ClassListPlugin() {
       }
     }
 
+    refresh() {}
+
     constructor(parent) {
       const list_html = `
       <div class="pjw-classlist">
@@ -470,11 +472,15 @@ function ClassListPlugin() {
         e.data.target.update();
       });
 
-      this.autoreload_button.on("click", (e) => {
-        list.refresh();
+      this.autoreload_button.on("click", null, {
+        target: this
+      }, (e) => {
+        e.data.target.refresh();
       });
 
-      this.heading_switch_button.on("click", (e) => {
+      this.heading_switch_button.on("click", null, {
+        target: this
+      }, (e) => {
         var t = $$(e.delegateTarget);
         if (t.hasClass("on")) {
           t.removeClass("on");
