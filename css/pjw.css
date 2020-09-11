@@ -125,7 +125,7 @@ body {
 }
 
 #Header {
-  background: linear-gradient(73deg, rgba(99,6,95,.9) 0%, rgba(206,103,255,.9) 73%, rgba(255,71,152,.9) 100%) !important;
+  background: linear-gradient(50deg, rgba(99, 6, 95, 0.9) 0%, rgba(93, 42, 175, 0.9) 60%, rgba(255, 71, 71, 0.9) 100%) !important;
 
   height: auto !important;
 }
@@ -501,6 +501,7 @@ body {
   background-color: rgba(54, 79, 125, 1);
   height: 23px;
   margin: 0 7px;
+  white-space: nowrap;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-start {
@@ -626,6 +627,11 @@ body {
 .pjw-class-select-button {
   min-width: 120px;
   background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
+}
+
+.pjw-class-select-button:disabled {
+  color: rgba(0, 0, 0, .4);
+  background: rgba(0, 0, 0, .2);
 }
 
 .pjw-class-comment-button {

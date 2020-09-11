@@ -201,7 +201,7 @@ body {
 }
 
 #Header {
-  background: linear-gradient(73deg, rgba(99,6,95,.9) 0%, rgba(206,103,255,.9) 73%, rgba(255,71,152,.9) 100%) !important;
+  background: linear-gradient(50deg, rgba(99, 6, 95, 0.9) 0%, rgba(93, 42, 175, 0.9) 60%, rgba(255, 71, 71, 0.9) 100%) !important;
 
   height: auto !important;
 }
@@ -577,6 +577,7 @@ body {
   background-color: rgba(54, 79, 125, 1);
   height: 23px;
   margin: 0 7px;
+  white-space: nowrap;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-start {
@@ -702,6 +703,11 @@ body {
 .pjw-class-select-button {
   min-width: 120px;
   background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
+}
+
+.pjw-class-select-button:disabled {
+  color: rgba(0, 0, 0, .4);
+  background: rgba(0, 0, 0, .2);
 }
 
 .pjw-class-comment-button {
@@ -1529,7 +1535,20 @@ function ClassListPlugin() {
       this.dom.css("order", -priority);
     }
 
-    getHTML(data, attr) {
+    getHTML(data, attr, options = {}) {
+      function parseTitle(content) {
+        content = content.split("<br>");
+        if (content.length > 1) {
+          if (!("info" in data)) data["info"] = [];
+          data["info"].push({
+            key: "附加信息",
+            val: "".concat(content.slice(1)),
+            hidden: true
+          });
+        }
+        return content[0];
+      }
+
       function getTeachers(content) {
         var is_first = true; var accu = "";
         for (var str of content) {
@@ -1629,9 +1648,31 @@ function ClassListPlugin() {
         return `<div class="pjw-class-weekcal-heading">${heading_html}</div><div class="pjw-class-weekcal-calendar">${body_html}</div>`;
       }
 
-      function getSelectButton(data) {
+      function getSelectButton(data, get_inner = false) {
         if (!data.status) return "";
-        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-select-button"><div class="material-icons-round">add_task</div><div class="pjw-class-select-button__container"><div class="mdc-button__label pjw-class-select-button__label" style="letter-spacing: 2px">选择</div></div></button>`;
+        var label_text = "选择";
+        var icon_text = "add_task";
+        var disabled = "";
+        if (data.status != "Available" && data.status !== true) {
+          disabled = "disabled ";
+          icon_text = "block";
+          if (data.status == "Full")
+            label_text = "满员";
+          else if (data.status == "Selected")
+            label_text = "已选";
+        }
+
+        var select_info = "";
+        if (data.text)
+          for (var item of data.text)
+            select_info += `<div class="mdc-button__label pjw-class-select-button__status">${item}</div>`;
+        var inner_html = `<div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="mdc-button__label pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${select_info}</div>`;
+        if (get_inner === true)
+          return {
+            html: inner_html,
+            disabled: (disabled == "disabled ")
+          };
+        return `<button data-mdc-auto-init="MDCRipple" ${disabled}class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-select-button">${inner_html}</button>`;
       }
 
       function getCommentButton(data) {
@@ -1645,7 +1686,7 @@ function ClassListPlugin() {
       switch(attr) {
         case "title":
           if ("title" in data)
-            return data.title;
+            return parseTitle(data.title);
           else return "";
 
         case "teachers":
@@ -1675,7 +1716,7 @@ function ClassListPlugin() {
 
         case "selectbutton":
           if ("select_button" in data)
-            return getSelectButton(data.select_button);
+            return getSelectButton(data.select_button, options);
           else return "";
 
         case "commentbutton":
@@ -1709,6 +1750,12 @@ function ClassListPlugin() {
       this.dom.html(class_html);
     }
 
+    updateSelectButton(data) {
+      var button_res = this.getHTML({select_button: data}, "selectbutton", true);
+      this.select_button.html(button_res.html);
+      this.select_button.prop("disabled", button_res.disabled);
+    }
+
     constructor(parent, data) {
       var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;"></div>`;
       this.dom = $$(class_html).appendTo(parent);
@@ -1730,34 +1777,15 @@ function ClassListPlugin() {
       this.comment_button = this.operation.children(".pjw-class-comment-button");
 
       var data = this.data;
-      var target = this.select_button;
-      var select_label = target.children(".pjw-class-select-button__container").children(".pjw-class-select-button__label");
-      
-      if (data.select_button.status == "Available") {
-        target.prop("disabled", false);
-        target.children(".material-icons-round").html("add_task");
-        select_label.html("选择");
-      } else {
-        target.prop("disabled", true);
-        target.children(".material-icons-round").html("block");
-        var text;
-        if (data.select_button.status == "Full")
-          text = "已满";
-        else if (data.select_button.status == "Selected")
-          text = "已选";
-        else
-          text = "选择";
-        select_label.html(text);
-      }
-      target.click({target: this, button_target: this.select_button}, data.select_button.action);
-      target = target.children(".pjw-class-select-button__container");
-      if (data.select_button.text)
-        for (var item of data.select_button.text)
-          target.append(`<div class="mdc-button__label pjw-class-select-button__status">` + item + `</div>`);
 
+      // Set select button onclick event
+      this.select_button.click({target: this, button_target: this.select_button}, data.select_button.action);
+
+      // Initialize DOM trace variables
       this.display = false;
       this.priority = 0;
 
+      // Set expand / collapse event of class comtainer
       this.sub.on("mouseenter", (e) => {
         var t = jQuery(e.delegateTarget).parent();
         t.removeClass("pjw-class-container--compressed");
@@ -1790,12 +1818,31 @@ function ClassListPlugin() {
 
   window.PJWClassList = class {
     add(data) {
-      var item = new PJWClass(this.body, data);
-      this.class_data.push({
-        data: data,
-        obj: item,
-        id: this.auto_inc++
-      });
+      if (!this.prepared_to_add) {
+        this.intl();
+        this.prepared_to_add = true;
+      }
+      function compareData(data1, data2) {
+        if ("title" in data2 && data1.title == data2.title)
+          return true;
+        return false;
+      }
+
+      if (this.auto_inc < this.class_data.length && compareData(data, this.class_data[this.auto_inc].data) == true) {
+        this.class_data[this.auto_inc].data = data;
+        this.class_data[this.auto_inc].obj.updateSelectButton(data.select_button);
+      } else {
+        var item = {
+          data: data,
+          obj: new PJWClass(this.body, data),
+          id: this.auto_inc
+        };
+        if (this.auto_inc < this.class_data.length)
+          this.class_data[this.auto_inc] = item;
+        else
+          this.class_data.push(item);
+      }
+      this.auto_inc++;
     }
 
     clear() {
@@ -1836,7 +1883,7 @@ function ClassListPlugin() {
     }
 
     search(data, search_str) {
-      if (search_str == "") {
+      if (typeof(search_str) == "undefined" || search_str == "") {
         return 0;
       }
       var priority = 0.0;
@@ -1878,11 +1925,18 @@ function ClassListPlugin() {
       }
     }
 
+    intl() {
+      this.class_data.sort(function(a, b) {
+        return a.id - b.id;
+      });
+      this.auto_inc = 0;
+    }
+
     update() {
-      for (var item of this.class_data) {
+      for (var item of this.class_data)
         if (this.checkFilter(item.data) === false)
           item.obj.hide();
-      }
+
       this.class_data.sort(function(a, b) {
         if (parseInt(b.data.priority) == parseInt(a.data.priority))
           return a.id - b.id;
@@ -1891,6 +1945,7 @@ function ClassListPlugin() {
         else
           return -1;
       });
+
       for (var i = 0; i < this.class_data.length; i++) {
         if (i < this.max_classes_loaded && this.class_data[i].data.priority >= 0) {
           this.class_data[i].obj.intl();
@@ -1898,6 +1953,7 @@ function ClassListPlugin() {
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
+      this.prepared_to_add = false;
     }
 
     checkScroll() {
@@ -1911,8 +1967,97 @@ function ClassListPlugin() {
       this.scroll_lock = false;
     }
 
+    updateRefreshButton() {
+      const max_frequency = 10.0;
+      if (this.auto_refresh_frequency <= 4.0)
+        this.auto_refresh_frequency *= 1.1;
+      else if (this.auto_refresh_frequency <= 8.0)
+        this.auto_refresh_frequency += 0.4;
+      else if (this.auto_refresh_frequency < max_frequency)
+        this.auto_refresh_frequency += 0.1;
+      else
+        this.auto_refresh_frequency = max_frequency;
+      $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
+    }
+
+    autoRefreshButtonEvent(status) {
+      if ($$("#autorefresh-switch").hasClass("off")) return;
+      if (status) {
+        this.toggleAutoRefresh(false);
+        this.auto_refresh_frequency = 1.0;
+        $$("#autorefresh-label").html("1.0x");
+        this.refresh_button_interval_id = window.setInterval(() => {
+          list.updateRefreshButton();
+        }, 50);
+      } else {
+        var text = "";
+        if (this.auto_refresh_frequency <= 4.0)
+          text = "标准";
+        else if (this.auto_refresh_frequency <= 8.0)
+          text = "快";
+        else if (this.auto_refresh_frequency < 10.0)
+          text = "极速";
+        else
+          text = "封号退学";
+        $$("#autorefresh-label").html(text);
+        this.toggleAutoRefresh(true);
+        window.clearInterval(this.refresh_button_interval_id);
+      }
+    }
+
     refresh() {
       this.load();
+    }
+
+    toggleAutoRefresh(status) {
+      if (status) {
+        // Start Autorefresh
+        function getNumberInNormalDistribution(mean, std_dev, lower_limit, upper_limit) {
+          var res = Math.floor(mean + randomNormalDistribution() * std_dev);
+          if (res >= upper_limit) return upper_limit;
+          if (res >= mean) return res;
+          res = mean - (mean-res) * 0.8;
+          if (res < lower_limit) return lower_limit;
+          return res;
+        }
+
+        function randomNormalDistribution() {
+          var u=0.0, v=0.0, w=0.0, c=0.0;
+          do {
+            u = Math.random()*2 - 1.0;
+            v = Math.random()*2 - 1.0;
+            w = u*u + v*v;
+          } while (w == 0.0 || w >= 1.0)
+          c = Math.sqrt((-2 * Math.log(w)) / w);
+          return u * c;
+        }
+
+        var auto_refresh_loss_rate = 0.1;
+
+        auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
+        var auto_check_times = 1;
+        console.log("First time refreshed.");
+        var random_interval = (1.0 / this.auto_refresh_frequency) * getNumberInNormalDistribution(Math.floor(Math.random() * 600) + 1400, 800, 800, 3000);
+        this.auto_refresh_interval_id = window.setInterval(function() {
+          if (Math.random() < window.auto_refresh_loss_rate) return;
+          window.setTimeout(function() {
+            list.refresh();
+            console.log((++auto_check_times) + " times refreshed.");
+          }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8));
+        }, random_interval);
+      } else {
+        window.clearInterval(this.auto_refresh_interval_id);
+      }
+    }
+
+    triggerSwitch(id) {
+      var status = $$("#"+id).hasClass("on");
+      if (id == "autorefresh-switch") {
+        this.auto_refresh_frequency = 1.0;
+        this.toggleAutoRefresh(status);
+      } else if (id == "filter-switch") {
+
+      }
     }
 
     constructor(parent) {
@@ -1924,11 +2069,11 @@ function ClassListPlugin() {
           <div class="pjw-classlist-controls">
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
-                <div class="material-icons-round">autorenew</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">刷新</div>
+                <div class="material-icons-round" id="autorefresh-icon">autorenew</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">刷新</div>
               </button>
 
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off" id="autorefresh-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
               </button>
@@ -1940,7 +2085,7 @@ function ClassListPlugin() {
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
               </button>
 
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off" id="filter-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
               </button>
@@ -1968,7 +2113,7 @@ function ClassListPlugin() {
       this.selectors = this.heading.children(".pjw-classlist-selectors");
       this.controls = this.heading.children(".pjw-classlist-controls");
       this.body = this.dom.children(".pjw-classlist-body");
-      this.autoreload_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
+      this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
 
@@ -1980,10 +2125,23 @@ function ClassListPlugin() {
         e.data.target.update();
       });
 
-      this.autoreload_button.on("click", null, {
+      this.refresh_button.on("click", null, {
         target: this
       }, (e) => {
-        e.data.target.refresh();
+        if ($$("#autorefresh-switch").hasClass("off"))
+          e.data.target.refresh();
+      });
+
+      this.refresh_button.on("mousedown", null, {
+        target: this
+      }, (e) => {
+        e.data.target.autoRefreshButtonEvent(true);
+      });
+
+      this.refresh_button.on("mouseup", null, {
+        target: this
+      }, (e) => {
+        e.data.target.autoRefreshButtonEvent(false);
       });
 
       this.heading_switch_button.on("click", null, {
@@ -1991,16 +2149,21 @@ function ClassListPlugin() {
       }, (e) => {
         var t = $$(e.delegateTarget);
         if (t.hasClass("on")) {
+          $$("#autorefresh-icon").html("autorenew");
+          $$("#autorefresh-label").html("刷新");
           t.removeClass("on");
           t.addClass("off");
           t.children(":eq(0)").html("toggle_off");
           t.children(":eq(1)").html(t.children(":eq(1)").attr("data-off"));
         } else {
+          $$("#autorefresh-icon").html("speed");
+          $$("#autorefresh-label").html("标准");
           t.removeClass("off");
           t.addClass("on");
           t.children(":eq(0)").html("toggle_on");
           t.children(":eq(1)").html(t.children(":eq(1)").attr("data-on"));
         }
+        e.data.target.triggerSwitch(t.attr("id"));
       });
 
       $$(window).on("scroll", null, {
@@ -2009,10 +2172,7 @@ function ClassListPlugin() {
         e.data.target.checkScroll();
       });
 
-      this.class_data = [];
-      this.search_string = "";
-      this.auto_inc = 0;
-      this.max_classes_loaded = 50;
+      this.clear();
 
       window.mdc.autoInit();
     }
@@ -2091,11 +2251,11 @@ function ClassListPlugin() {
           weekday = weekday_to_num[jtem[1]];
         } else if (jtem[jtem.length - 1] == "周") {
           has_week_info = true;
-          if (jtem[jtem.length - 2] == "单") {
+          if (jtem.search("单周") != -1) {
             for (var i = 1; i <= total_weeks; i += 2)
               weeks[i] = 1;
             ans[ans.length - 1].type = "odd";
-          } else if (jtem[jtem.length - 2] == "双") {
+          } else if (jtem.search("双周") != -1) {
             for (var i = 2; i <= total_weeks; i += 2)
               weeks[i] = 1;
             ans[ans.length - 1].type = "even";
@@ -2106,6 +2266,18 @@ function ClassListPlugin() {
             else if (num_arr.length == 2)
               for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
                 weeks[i] = 1;
+          }
+        } else if (jtem.search(/从第(\d+)周开始/) != -1) {
+          has_week_info = true;
+          start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
+          if (jtem.search("单周") != -1) {
+            for (var i = start_week; i <= total_weeks; i += 2)
+              weeks[i] = 1;
+            ans[ans.length - 1].type = "odd";
+          } else if (jtem.search("双周") != -1) {
+            for (var i = start_week; i <= total_weeks; i += 2)
+              weeks[i] = 1;
+            ans[ans.length - 1].type = "even";
           }
         } else if (jtem[jtem.length - 1] == "节") {
           var num_arr = jtem.match(/(\d+)+/g);
@@ -2437,7 +2609,7 @@ window.potatojw_intl = function() {
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(8)").html());
         data = {
-          title: $$(val).children("td:eq(1)").html().split('<br>')[0],
+          title: $$(val).children("td:eq(1)").html(),
           teachers: parseTeacherNames($$(val).children("td:eq(7)").html()),
           info: [{
             key: "课程编号",
@@ -2767,7 +2939,7 @@ window.potatojw_intl = function() {
         }
         
         data = {
-          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+          title: $$(val).children("td:eq(2)").html(),
           teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
           info: [{
             key: "课程编号",
@@ -2935,9 +3107,9 @@ window.potatojw_intl = function() {
         $$(val).find("tr").each((index, val) => {
           var res = parseClassTime($$(val).children("td:eq(4)").html());
           data = {
-            title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+            title: $$(val).children("td:eq(2)").html(),
             teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
-            info: $$(val).children("td:eq(2)").html().split('<br>').slice(1).concat([ {
+            info: [{
               key: "课程编号",
               val: $$(val).children('td:eq(0)').html(),
               hidden: true
@@ -2945,7 +3117,7 @@ window.potatojw_intl = function() {
               key: "类别",
               val: $$(val).children('td:eq(6)').html(),
               hidden: true
-            } ]),
+            }],
             num_info: [{
               num: parseInt($$(val).children("td:eq(3)").html()),
               label: "学分"
@@ -2999,78 +3171,96 @@ window.potatojw_intl = function() {
   } else if (pjw_mode == "open") {
     window.list = new PJWClassList($$("#iframeTable").parent());
 
-    window.showCourseDetailInfo = function(classId, courseNumber){
-      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
+    window.showCourseDetailInfo = function(classID, courseNumber){
+      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classID);
     };
 
-    window.selectedClass = function(class_ID, name) {
-      return class_ID;
+    window.selectedClass = function(classID, name) {
+      return classID;
     };
 
-    window.select = function(class_ID) {
-      var academy_ID = selectors.academy.val();
+    window.select = function(classID) {
+      var academy_ID = list.selectors.academy.val();
       $$.ajax({
-        url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + class_ID + "&academy=" + academy_ID,
+        url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + classID + "&academy=" + academy_ID,
         type: "GET",
         success: function(res) {
-          console.log("Result: " + (res.search("课程选择成功！") == -1 ? "failed" : "success"));
-          list.refresh();
+          res = res.slice(res.search("function initSelectedList()"));
+          var start = res.search(/\"*\"/);
+          var end = res.search(/\"\)/);
+          res = res.slice(start + 1, end);
+          console.log(res);
+          if (res.search("成功！") != -1)
+            list.refresh();
         }
       });
     }
 
     list.parse = function(data) {
-      var table = $$(data).find("table > tbody");
-      table.find("tr:gt(0)").each((index, val) => {
-        var res = parseClassTime($$(val).children("td:eq(5)").html());
-        var class_ID = "0";
-        if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
-          select_status = "Available";
-          class_ID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
-        } else {
-          select_status = "Full";
+      return new Promise((resolve, reject) => {
+        try {
+          var rows = $$(data).find("table > tbody").find("tr:gt(0)");
+          rows.each((index, val) => {
+            // Prepare lesson time
+            var res = parseClassTime($$(val).children("td:eq(5)").html());
+
+            // Prepare select button
+            var classID = "0";
+            if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
+              select_status = "Available";
+              classID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
+            } else {
+              select_status = "Full";
+            }
+
+            // Construct class data
+            data = {
+              classID: classID,
+              title: $$(val).children("td:eq(2)").html(),
+              teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
+              info: [{
+                key: "开课年级",
+                val: $$(val).children("td:eq(4)").html()
+              }, {
+                key: "课程编号",
+                val: $$(val).children('td:eq(0)').html(),
+                hidden: true
+              }, {
+                key: "开课院系",
+                val: this.selectors.academy.text(),
+                hidden: true
+              }],
+              num_info: [{
+                num: parseInt($$(val).children("td:eq(3)").html()),
+                label: "学分"
+              }],
+              lesson_time: res.lesson_time,
+              class_weeknum: res.class_weeknum,
+              select_button: {
+                status: select_status,
+                text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+                action: ((e) => { select(classID); })
+              },
+              comment_button: {
+                status: true,
+                text: (Math.random() * 10).toFixed(1)
+              }
+            };
+
+            list.add(data);
+          });
+
+          // Render DOM
+          list.update();
+          window.mdc.autoInit();
+          resolve();
+        } catch (e) {
+          reject(e);
         }
-        
-        data = {
-          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
-          teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
-          info: [{
-            key: "开课年级",
-            val: $$(val).children("td:eq(4)").html()
-          }, {
-            key: "课程编号",
-            val: $$(val).children('td:eq(0)').html(),
-            hidden: true
-          }, {
-            key: "开课院系",
-            val: this.selectors.academy.text(),
-            hidden: true
-          }],
-          num_info: [{
-            num: parseInt($$(val).children("td:eq(3)").html()),
-            label: "学分"
-          }],
-          lesson_time: res.lesson_time,
-          class_weeknum: res.class_weeknum,
-          select_button: {
-            status: select_status,
-            text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
-            action: ((e) => { select(class_ID); })
-          },
-          comment_button: {
-            status: true,
-            text: (Math.random() * 10).toFixed(1)
-          }
-        };
-        list.add(data);
       });
-      list.update();
-      window.mdc.autoInit();
     }
 
-    list.load = function() {
-      this.clear();
-      
+    list.load = function(resolve, reject) {      
       $$.ajax({
         type: "GET",
         url: "http://elite.nju.edu.cn/jiaowu/student/elective/courseList.do",
@@ -3081,8 +3271,9 @@ window.potatojw_intl = function() {
         }
       }).done(function(data) {
         list.parse(data);
+        // resolve();
       }).fail(function(data) {
-        console.log("Failed to request data: " + data);
+        reject("Failed to request data: " + data);
       });
     };
 
@@ -3103,7 +3294,7 @@ window.potatojw_intl = function() {
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(5)").html());
         data = {
-          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+          title: $$(val).children("td:eq(2)").html(),
           teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
           info: [{
             key: "开课年级",

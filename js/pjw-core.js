@@ -291,7 +291,7 @@ window.potatojw_intl = function() {
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(8)").html());
         data = {
-          title: $$(val).children("td:eq(1)").html().split('<br>')[0],
+          title: $$(val).children("td:eq(1)").html(),
           teachers: parseTeacherNames($$(val).children("td:eq(7)").html()),
           info: [{
             key: "课程编号",
@@ -621,7 +621,7 @@ window.potatojw_intl = function() {
         }
         
         data = {
-          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+          title: $$(val).children("td:eq(2)").html(),
           teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
           info: [{
             key: "课程编号",
@@ -789,9 +789,9 @@ window.potatojw_intl = function() {
         $$(val).find("tr").each((index, val) => {
           var res = parseClassTime($$(val).children("td:eq(4)").html());
           data = {
-            title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+            title: $$(val).children("td:eq(2)").html(),
             teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
-            info: $$(val).children("td:eq(2)").html().split('<br>').slice(1).concat([ {
+            info: [{
               key: "课程编号",
               val: $$(val).children('td:eq(0)').html(),
               hidden: true
@@ -799,7 +799,7 @@ window.potatojw_intl = function() {
               key: "类别",
               val: $$(val).children('td:eq(6)').html(),
               hidden: true
-            } ]),
+            }],
             num_info: [{
               num: parseInt($$(val).children("td:eq(3)").html()),
               label: "学分"
@@ -853,78 +853,96 @@ window.potatojw_intl = function() {
   } else if (pjw_mode == "open") {
     window.list = new PJWClassList($$("#iframeTable").parent());
 
-    window.showCourseDetailInfo = function(classId, courseNumber){
-      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classId);
+    window.showCourseDetailInfo = function(classID, courseNumber){
+      window.open("/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber="+courseNumber+"&classid="+classID);
     };
 
-    window.selectedClass = function(class_ID, name) {
-      return class_ID;
+    window.selectedClass = function(classID, name) {
+      return classID;
     };
 
-    window.select = function(class_ID) {
-      var academy_ID = selectors.academy.val();
+    window.select = function(classID) {
+      var academy_ID = list.selectors.academy.val();
       $$.ajax({
-        url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + class_ID + "&academy=" + academy_ID,
+        url: "/jiaowu/student/elective/courseList.do?method=submitOpenRenew&classId=" + classID + "&academy=" + academy_ID,
         type: "GET",
         success: function(res) {
-          console.log("Result: " + (res.search("课程选择成功！") == -1 ? "failed" : "success"));
-          list.refresh();
+          res = res.slice(res.search("function initSelectedList()"));
+          var start = res.search(/\"*\"/);
+          var end = res.search(/\"\)/);
+          res = res.slice(start + 1, end);
+          console.log(res);
+          if (res.search("成功！") != -1)
+            list.refresh();
         }
       });
     }
 
     list.parse = function(data) {
-      var table = $$(data).find("table > tbody");
-      table.find("tr:gt(0)").each((index, val) => {
-        var res = parseClassTime($$(val).children("td:eq(5)").html());
-        var class_ID = "0";
-        if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
-          select_status = "Available";
-          class_ID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
-        } else {
-          select_status = "Full";
+      return new Promise((resolve, reject) => {
+        try {
+          var rows = $$(data).find("table > tbody").find("tr:gt(0)");
+          rows.each((index, val) => {
+            // Prepare lesson time
+            var res = parseClassTime($$(val).children("td:eq(5)").html());
+
+            // Prepare select button
+            var classID = "0";
+            if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
+              select_status = "Available";
+              classID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
+            } else {
+              select_status = "Full";
+            }
+
+            // Construct class data
+            data = {
+              classID: classID,
+              title: $$(val).children("td:eq(2)").html(),
+              teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
+              info: [{
+                key: "开课年级",
+                val: $$(val).children("td:eq(4)").html()
+              }, {
+                key: "课程编号",
+                val: $$(val).children('td:eq(0)').html(),
+                hidden: true
+              }, {
+                key: "开课院系",
+                val: this.selectors.academy.text(),
+                hidden: true
+              }],
+              num_info: [{
+                num: parseInt($$(val).children("td:eq(3)").html()),
+                label: "学分"
+              }],
+              lesson_time: res.lesson_time,
+              class_weeknum: res.class_weeknum,
+              select_button: {
+                status: select_status,
+                text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+                action: ((e) => { select(classID); })
+              },
+              comment_button: {
+                status: true,
+                text: (Math.random() * 10).toFixed(1)
+              }
+            };
+
+            list.add(data);
+          });
+
+          // Render DOM
+          list.update();
+          window.mdc.autoInit();
+          resolve();
+        } catch (e) {
+          reject(e);
         }
-        
-        data = {
-          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
-          teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
-          info: [{
-            key: "开课年级",
-            val: $$(val).children("td:eq(4)").html()
-          }, {
-            key: "课程编号",
-            val: $$(val).children('td:eq(0)').html(),
-            hidden: true
-          }, {
-            key: "开课院系",
-            val: this.selectors.academy.text(),
-            hidden: true
-          }],
-          num_info: [{
-            num: parseInt($$(val).children("td:eq(3)").html()),
-            label: "学分"
-          }],
-          lesson_time: res.lesson_time,
-          class_weeknum: res.class_weeknum,
-          select_button: {
-            status: select_status,
-            text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
-            action: ((e) => { select(class_ID); })
-          },
-          comment_button: {
-            status: true,
-            text: (Math.random() * 10).toFixed(1)
-          }
-        };
-        list.add(data);
       });
-      list.update();
-      window.mdc.autoInit();
     }
 
-    list.load = function() {
-      this.clear();
-      
+    list.load = function(resolve, reject) {      
       $$.ajax({
         type: "GET",
         url: "http://elite.nju.edu.cn/jiaowu/student/elective/courseList.do",
@@ -935,8 +953,9 @@ window.potatojw_intl = function() {
         }
       }).done(function(data) {
         list.parse(data);
+        // resolve();
       }).fail(function(data) {
-        console.log("Failed to request data: " + data);
+        reject("Failed to request data: " + data);
       });
     };
 
@@ -957,7 +976,7 @@ window.potatojw_intl = function() {
       table.find("tr:gt(0)").each((index, val) => {
         var res = parseClassTime($$(val).children("td:eq(5)").html());
         data = {
-          title: $$(val).children("td:eq(2)").html().split('<br>')[0],
+          title: $$(val).children("td:eq(2)").html(),
           teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
           info: [{
             key: "开课年级",
