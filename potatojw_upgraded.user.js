@@ -349,6 +349,14 @@ body {
   justify-content: center;
 }
 
+#autoreload-control-section {
+  flex-shrink: 0;
+}
+
+#filter-control-section {
+  flex-shrink: 0;
+}
+
 .pjw-classlist-heading-button {
   background-image: linear-gradient(220deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
   display: flex;
@@ -384,7 +392,7 @@ body {
 }
 
 #pjw-classlist-search-field {
-  min-width: 300px;
+  min-width: min(350px, 30%);
 }
 
 #pjw-class-search-input {
@@ -622,7 +630,7 @@ body {
   position: absolute;
   height: 16px;
   border-radius: 9px;
-  background-image: linear-gradient(-85deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
+  background: linear-gradient(95deg, rgba(54, 79, 125, 1), rgba(123, 11, 94, 1));
   color: white;
   text-align: center;
   vertical-align: middle;
@@ -693,14 +701,14 @@ body {
 
 .pjw-class-select-button {
   min-width: 120px;
-  background: linear-gradient(114deg, rgba(160, 74, 117, .55), rgba(54, 79, 125, .7));
+  background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
 }
 
 .pjw-class-comment-button {
   width: 50px;
   min-width: 50px;
   max-width: 50px;
-  background: linear-gradient(45deg, rgba(144, 75, 204, 1), rgba(255, 71, 152, 1)) !important;
+  background: linear-gradient(-45deg, rgba(215, 10, 132, .9), rgba(248, 111, 100, .9));
   padding: 0;
 }
 
@@ -2244,7 +2252,7 @@ window.potatojw_intl = function() {
   <a style="color: #dedede;" href="https://cubiccm.ddns.net/2019/09/potatojw-upgraded/" target="_blank">[About]</a>
   `;
 
-  if (pjw_mode != "")
+  if (pjw_mode != "" && !(pjw_mode in pjw_classlist_mode_list))
     $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` +
         custom_toolbar_html[(pjw_mode in filter_mode_list ? "filter" : (pjw_mode in custom_toolbar_html ? pjw_mode : "default"))]
     + `<div class="about-proj"></div></div></div>`);
@@ -2256,6 +2264,78 @@ window.potatojw_intl = function() {
 
   if (pjw_mode in pjw_classlist_mode_list)
     ClassListPlugin();
+  else {
+    (function() {
+      // Initiate toolbar
+      $$(".about-proj").html(about_this_project);
+
+      // Draw collapse button
+      var canvas = document.getElementById("pjw-toolbar-collapse");
+      window.ctx = canvas.getContext('2d');
+      ctx.fillStyle = "#63065f";
+
+      ctx.beginPath();
+      ctx.moveTo(6, 7);
+      ctx.lineTo(6, 23);
+      ctx.lineTo(7, 24);
+      ctx.lineTo(8, 23);
+      ctx.lineTo(8, 7);
+      ctx.lineTo(7, 6);
+      ctx.fill();
+      ctx.closePath();
+
+      ctx.beginPath();
+      ctx.moveTo(22, 6);
+      ctx.lineTo(9, 15);
+      ctx.lineTo(22, 24);
+      ctx.lineTo(23, 25);
+      ctx.lineTo(24, 24);
+      ctx.lineTo(12, 15);
+      ctx.lineTo(24, 6);
+      ctx.lineTo(23, 5);
+      ctx.fill();
+      ctx.closePath();
+
+      // Collapse / Expand toolbar
+      function switchToolBar() {
+        if (store.get("is_toolbar_collapsed") == true) expandToolBar();
+        else collapseToolBar();
+      }
+      function collapseToolBar() {
+        $$("#pjw-toolbar").css("left", "-100%");
+        $$("#pjw-toolbar-collapse-bg").css("background-color", "");
+        $$("#pjw-toolbar-collapse").css({
+          "position": "fixed",
+          "left": "30px",
+          "bottom": "30px",
+          "top": "calc(100% - 60px)",
+          "transform": "rotate(180deg)"
+        });
+        store.set("is_toolbar_collapsed", true);
+      }
+      if (store.get("is_toolbar_collapsed") == null)
+        store.set("is_toolbar_collapsed", false);
+      else if (store.get("is_toolbar_collapsed") == true)
+        collapseToolBar();
+      $$("#pjw-toolbar-collapse-bg").on("click", switchToolBar);
+      $$("#pjw-toolbar-collapse").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
+      $$("#pjw-toolbar-collapse-bg").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
+
+      // Show toolbar
+      function expandToolBar() {
+        $$("#pjw-toolbar").css("left", "");
+        $$("#pjw-toolbar").css("opacity", "");
+        $$("#pjw-toolbar-collapse").css({
+          "position": "",
+          "left": "",
+          "bottom": "",
+          "top": "",
+          "transform": ""
+        });
+        store.set("is_toolbar_collapsed", false);
+      }
+    })();
+  }
 
   // Storage upgrade
   function checkStorageVersion() {
@@ -2963,7 +3043,7 @@ window.potatojw_intl = function() {
             hidden: true
           }, {
             key: "开课院系",
-            val: this.selectors.academy.val(),
+            val: this.selectors.academy.text(),
             hidden: true
           }],
           num_info: [{
@@ -3006,10 +3086,10 @@ window.potatojw_intl = function() {
       });
     };
 
-    window.selectors = {
+    list.selectors = {
       academy: new PJWSelect("academyList", "院系", list.heading.children(".pjw-classlist-selectors"))
     };
-    selectors.academy.onchange( (e) => {
+    list.selectors.academy.onchange( (e) => {
       list.refresh();
     } );
     list.refresh();
@@ -3297,78 +3377,6 @@ window.potatojw_intl = function() {
     }
   } else return;
 
-  // Initiate toolbar
-  $$(".about-proj").html(about_this_project);
-
-  // Draw collapse button
-  (function() {
-    var canvas = document.getElementById("pjw-toolbar-collapse");
-    window.ctx = canvas.getContext('2d');
-    ctx.fillStyle = "#63065f";
-
-    ctx.beginPath();
-    ctx.moveTo(6, 7);
-    ctx.lineTo(6, 23);
-    ctx.lineTo(7, 24);
-    ctx.lineTo(8, 23);
-    ctx.lineTo(8, 7);
-    ctx.lineTo(7, 6);
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.beginPath();
-    ctx.moveTo(22, 6);
-    ctx.lineTo(9, 15);
-    ctx.lineTo(22, 24);
-    ctx.lineTo(23, 25);
-    ctx.lineTo(24, 24);
-    ctx.lineTo(12, 15);
-    ctx.lineTo(24, 6);
-    ctx.lineTo(23, 5);
-    ctx.fill();
-    ctx.closePath();
-  })();
-
-  // Collapse / Expand toolbar
-  (function() {
-    function switchToolBar() {
-      if (store.get("is_toolbar_collapsed") == true) expandToolBar();
-      else collapseToolBar();
-    }
-    function collapseToolBar() {
-      $$("#pjw-toolbar").css("left", "-100%");
-      $$("#pjw-toolbar-collapse-bg").css("background-color", "");
-      $$("#pjw-toolbar-collapse").css({
-        "position": "fixed",
-        "left": "30px",
-        "bottom": "30px",
-        "top": "calc(100% - 60px)",
-        "transform": "rotate(180deg)"
-      });
-      store.set("is_toolbar_collapsed", true);
-    }
-    if (store.get("is_toolbar_collapsed") == null)
-      store.set("is_toolbar_collapsed", false);
-    else if (store.get("is_toolbar_collapsed") == true)
-      collapseToolBar();
-    $$("#pjw-toolbar-collapse-bg").on("click", switchToolBar);
-    $$("#pjw-toolbar-collapse").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
-    $$("#pjw-toolbar-collapse-bg").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
-
-    // Show toolbar
-    function expandToolBar() {
-      $$("#pjw-toolbar").css("left", "");
-      $$("#pjw-toolbar").css("opacity", "");
-      $$("#pjw-toolbar-collapse").css({
-        "position": "",
-        "left": "",
-        "bottom": "",
-        "top": "",
-        "transform": ""
-      });
-      store.set("is_toolbar_collapsed", false);
-    }
-  })();
 };
 
 var google_analytics_js = `

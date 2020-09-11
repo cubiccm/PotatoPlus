@@ -273,6 +273,14 @@ body {
   justify-content: center;
 }
 
+#autoreload-control-section {
+  flex-shrink: 0;
+}
+
+#filter-control-section {
+  flex-shrink: 0;
+}
+
 .pjw-classlist-heading-button {
   background-image: linear-gradient(220deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
   display: flex;
@@ -308,7 +316,7 @@ body {
 }
 
 #pjw-classlist-search-field {
-  min-width: 300px;
+  min-width: min(350px, 30%);
 }
 
 #pjw-class-search-input {
@@ -546,7 +554,7 @@ body {
   position: absolute;
   height: 16px;
   border-radius: 9px;
-  background-image: linear-gradient(-85deg, rgba(160, 74, 117, .7), rgba(54, 79, 125, .7));
+  background: linear-gradient(95deg, rgba(54, 79, 125, 1), rgba(123, 11, 94, 1));
   color: white;
   text-align: center;
   vertical-align: middle;
@@ -617,14 +625,14 @@ body {
 
 .pjw-class-select-button {
   min-width: 120px;
-  background: linear-gradient(114deg, rgba(160, 74, 117, .55), rgba(54, 79, 125, .7));
+  background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
 }
 
 .pjw-class-comment-button {
   width: 50px;
   min-width: 50px;
   max-width: 50px;
-  background: linear-gradient(45deg, rgba(144, 75, 204, 1), rgba(255, 71, 152, 1)) !important;
+  background: linear-gradient(-45deg, rgba(215, 10, 132, .9), rgba(248, 111, 100, .9));
   padding: 0;
 }
 
