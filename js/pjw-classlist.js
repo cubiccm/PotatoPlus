@@ -52,6 +52,11 @@ function ClassListPlugin() {
       this.dom.css("display", "none");
     }
 
+    remove() {
+      if (!this.initialized) return;
+      this.dom.remove();
+    }
+
     setPriority(priority = this.data.priority) {
       if (!this.initialized) return;
       if (priority === false || priority == -1) { this.hide(); return; }
@@ -276,15 +281,17 @@ function ClassListPlugin() {
     }
 
     updateSelectButton(data) {
+      if (!this.initialized) return;
       var button_res = this.getHTML({select_button: data}, "selectbutton", true);
       this.select_button.html(button_res.html);
       this.select_button.prop("disabled", button_res.disabled);
     }
 
-    constructor(parent, data) {
+    constructor(DOMparent, data, listparent) {
       var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;"></div>`;
-      this.dom = $$(class_html).appendTo(parent);
+      this.dom = $$(class_html).appendTo(DOMparent);
       this.data = data;
+      this.list = listparent;
       this.initialized = false;
     }
 
@@ -349,23 +356,27 @@ function ClassListPlugin() {
       }
       function compareData(data1, data2) {
         if ("title" in data2 && data1.title == data2.title)
-          return true;
+          if ("teachers" in data2 && data1.teachers[0] == data2.teachers[0])
+            return true;
         return false;
       }
 
+      if (data.title.trim() == "&nbsp;" || data.title.trim() == "") return;
       if (this.auto_inc < this.class_data.length && compareData(data, this.class_data[this.auto_inc].data) == true) {
         this.class_data[this.auto_inc].data = data;
         this.class_data[this.auto_inc].obj.updateSelectButton(data.select_button);
       } else {
         var item = {
           data: data,
-          obj: new PJWClass(this.body, data),
+          obj: new PJWClass(this.body, data, this),
           id: this.auto_inc
         };
-        if (this.auto_inc < this.class_data.length)
+        if (this.auto_inc < this.class_data.length) {
+          this.class_data[this.auto_inc].obj.remove();
           this.class_data[this.auto_inc] = item;
-        else
+        } else {
           this.class_data.push(item);
+        }
       }
       this.auto_inc++;
     }
@@ -374,7 +385,7 @@ function ClassListPlugin() {
       this.class_data = [];
       this.body.html("");
       this.auto_inc = 0;
-      this.max_classes_loaded = 50;
+      this.max_classes_loaded = this.class_load_size;
     }
 
     matchDegree(pattern, str) {
@@ -458,6 +469,11 @@ function ClassListPlugin() {
     }
 
     update() {
+      if (this.auto_inc < this.class_data.length) {
+        for (var item of this.class_data.slice(this.auto_inc))
+          item.obj.remove();
+        this.class_data = this.class_data.slice(0, this.auto_inc);
+      }
       for (var item of this.class_data)
         if (this.checkFilter(item.data) === false)
           item.obj.hide();
@@ -485,53 +501,16 @@ function ClassListPlugin() {
       if ("scroll_lock" in this && this.scroll_lock == true) return;
       this.scroll_lock = true;
       if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1600 >= $$(document).height()) {
-        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + 50 && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
+        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
           this.class_data[i].obj.show();
-        this.max_classes_loaded += 50;
+        this.max_classes_loaded += this.class_load_size;
       }
       this.scroll_lock = false;
     }
 
-    updateRefreshButton() {
-      const max_frequency = 10.0;
-      if (this.auto_refresh_frequency <= 4.0)
-        this.auto_refresh_frequency *= 1.1;
-      else if (this.auto_refresh_frequency <= 8.0)
-        this.auto_refresh_frequency += 0.4;
-      else if (this.auto_refresh_frequency < max_frequency)
-        this.auto_refresh_frequency += 0.1;
-      else
-        this.auto_refresh_frequency = max_frequency;
-      $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
-    }
-
-    autoRefreshButtonEvent(status) {
-      if ($$("#autorefresh-switch").hasClass("off")) return;
-      if (status) {
-        this.toggleAutoRefresh(false);
-        this.auto_refresh_frequency = 1.0;
-        $$("#autorefresh-label").html("1.0x");
-        this.refresh_button_interval_id = window.setInterval(() => {
-          list.updateRefreshButton();
-        }, 50);
-      } else {
-        var text = "";
-        if (this.auto_refresh_frequency <= 4.0)
-          text = "标准";
-        else if (this.auto_refresh_frequency <= 8.0)
-          text = "快";
-        else if (this.auto_refresh_frequency < 10.0)
-          text = "极速";
-        else
-          text = "封号退学";
-        $$("#autorefresh-label").html(text);
-        this.toggleAutoRefresh(true);
-        window.clearInterval(this.refresh_button_interval_id);
-      }
-    }
-
-    refresh() {
-      this.load();
+    refresh(hard_load = false) {
+      if (hard_load) this.clear();
+      return this.load();
     }
 
     toggleAutoRefresh(status) {
@@ -557,27 +536,82 @@ function ClassListPlugin() {
           return u * c;
         }
 
-        var auto_refresh_loss_rate = 0.1;
+        var auto_refresh_loss_rate = 0.2;
 
         auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
         var auto_check_times = 1;
-        console.log("First time refreshed.");
         var random_interval = (1.0 / this.auto_refresh_frequency) * getNumberInNormalDistribution(Math.floor(Math.random() * 600) + 1400, 800, 800, 3000);
-        this.auto_refresh_interval_id = window.setInterval(function() {
+        this.auto_refresh_interval_id = window.setInterval(function(target) {
           if (Math.random() < window.auto_refresh_loss_rate) return;
-          window.setTimeout(function() {
-            list.refresh();
-            console.log((++auto_check_times) + " times refreshed.");
-          }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8));
-        }, random_interval);
+          window.setTimeout(function(target) {
+            target.refresh().then(() => {
+              console.log("Count: " + auto_check_times++);
+            }).catch((e) => {
+              console.log(e);
+            });
+          }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8), target);
+        }, random_interval, this);
       } else {
         window.clearInterval(this.auto_refresh_interval_id);
+      }
+    }
+
+    updateRefreshButton() {
+      const max_frequency = 10.0;
+      if (this.auto_refresh_frequency <= 4.0)
+        this.auto_refresh_frequency *= 1.1;
+      else if (this.auto_refresh_frequency <= 8.0)
+        this.auto_refresh_frequency += 0.4;
+      else if (this.auto_refresh_frequency < max_frequency)
+        this.auto_refresh_frequency += 0.1;
+      else
+        this.auto_refresh_frequency = max_frequency;
+      $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
+    }
+
+    autoRefreshButtonEvent(status) {
+      if ($$("#autorefresh-switch").hasClass("off")) return;
+      if (status) {
+        if (typeof(this.show_refresh_level_timeout_id) != "undefined")
+          clearInterval(this.show_refresh_level_timeout_id);
+        this.toggleAutoRefresh(false);
+        this.auto_refresh_frequency = 1.0;
+        $$("#autorefresh-label").html("1.0x");
+        this.refresh_button_interval_id = window.setInterval((target) => {
+          target.updateRefreshButton();
+        }, 50, this);
+      } else {
+        var text = "";
+        if (this.auto_refresh_frequency <= 4.0)
+          text = "标准";
+        else if (this.auto_refresh_frequency <= 8.0)
+          text = "快";
+        else if (this.auto_refresh_frequency < 10.0)
+          text = "极速";
+        else
+          text = "封号退学";
+        this.show_refresh_level_timeout_id = setTimeout( (text) => {
+          $$("#autorefresh-label").html(text);
+        }, 1500, text);
+        this.toggleAutoRefresh(true);
+        clearInterval(this.refresh_button_interval_id);
       }
     }
 
     triggerSwitch(id) {
       var status = $$("#"+id).hasClass("on");
       if (id == "autorefresh-switch") {
+        if (!status) {
+          $$("#autorefresh-icon").html("autorenew");
+          $$("#autorefresh-label").html("刷新");
+          if (typeof(this.refresh_button_interval_id) != "undefined")
+            window.clearInterval(this.refresh_button_interval_id);
+          if (typeof(this.show_refresh_level_timeout_id) != "undefined")
+            clearInterval(this.show_refresh_level_timeout_id);
+        } else {
+          $$("#autorefresh-icon").html("speed");
+          $$("#autorefresh-label").html("标准");
+        }
         this.auto_refresh_frequency = 1.0;
         this.toggleAutoRefresh(status);
       } else if (id == "filter-switch") {
@@ -642,11 +676,13 @@ function ClassListPlugin() {
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
 
+      this.class_load_size = 30;
+
       this.search_input.on("input", null, {
         target: this
       }, (e) => {
         e.data.target.search_string = this.search_input.val();
-        e.data.target.max_classes_loaded = 50;
+        e.data.target.max_classes_loaded = this.class_load_size;
         e.data.target.update();
       });
 
@@ -674,15 +710,11 @@ function ClassListPlugin() {
       }, (e) => {
         var t = $$(e.delegateTarget);
         if (t.hasClass("on")) {
-          $$("#autorefresh-icon").html("autorenew");
-          $$("#autorefresh-label").html("刷新");
           t.removeClass("on");
           t.addClass("off");
           t.children(":eq(0)").html("toggle_off");
           t.children(":eq(1)").html(t.children(":eq(1)").attr("data-off"));
         } else {
-          $$("#autorefresh-icon").html("speed");
-          $$("#autorefresh-label").html("标准");
           t.removeClass("off");
           t.addClass("on");
           t.children(":eq(0)").html("toggle_on");
@@ -709,45 +741,83 @@ function ClassListPlugin() {
     }
 
     text() {
-      return this.obj.selectedText_.innerHTML;
+      return this.obj.selectedText.innerHTML;
+    }
+
+    setByText(text) {
+      this.obj.selectedIndex = parseInt(this.list.find(`[data-text=${text}]`).attr("data-index"));
+    }
+
+    setByValue(val) {
+      this.obj.selectedIndex = parseInt(this.list.find(`[data-value=${val}]`).attr("data-index"));
     }
 
     onchange(func) {
       this.obj.listen('MDCSelect:change', func);
     }
 
+    convert(item) {
+      return `<li data-value="${item.value}" data-text="${item.innerHTML}" data-index="${this.count++}" class="mdc-list-item"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${item.innerHTML}</span></li>`;
+    }
+
+    addItem(item) {
+      this.list.append(this.convert(item));
+    }
+
+    clear() {
+      this.obj.selectedIndex = -1;
+      this.list.html("");
+      this.count = 0;
+    }
+
     constructor(id, name, target, start = 1) {
       var list = $$(`#${id}`)[0].options;
       var list_html = "";
-      var is_first = true;
+      this.count = 0;
       for (var item of list) {
         if (start-- > 0) continue;
-        list_html += `<li data-value="${item.value}" class="mdc-list-item` +  (is_first ? " mdc-list-item--selected" : "") + `">${item.innerHTML}</li>`;
-        is_first = false;
+        list_html += this.convert(item);
       }
 
-      var html = `<div class="mdc-select mdc-select--outlined" id="pjw-select-${id}" style="z-index: 10;">
-        <input type="hidden" id="pjw-select-${id}-input">
-        <div class="mdc-select__anchor" aria-labelledby="outlined-label">
-          <span class="mdc-select__dropdown-icon"></span>
-          <div id="pjw-select-${id}-selected-text" class="mdc-select__selected-text" aria-disabled="false" aria-expanded="false"></div>
+      var html = `<div class="mdc-select mdc-select--outlined" id="pjw-select-${id}">
+        <div class="mdc-select__anchor" aria-labelledby="pjw-select-${id}-outlined-label">
+          <span id="pjw-select-${id}-selected-text" class="mdc-select__selected-text"></span>
+          <span class="mdc-select__dropdown-icon">
+            <svg
+                class="mdc-select__dropdown-icon-graphic"
+                viewBox="7 10 10 5" focusable="false">
+              <polygon
+                  class="mdc-select__dropdown-icon-inactive"
+                  stroke="none"
+                  fill-rule="evenodd"
+                  points="7 10 12 15 17 10">
+              </polygon>
+              <polygon
+                  class="mdc-select__dropdown-icon-active"
+                  stroke="none"
+                  fill-rule="evenodd"
+                  points="7 15 12 10 17 15">
+              </polygon>
+            </svg>
+          </span>   
           <div class="mdc-notched-outline mdc-notched-outline--upgraded">
             <div class="mdc-notched-outline__leading"></div>
             <div class="mdc-notched-outline__notch" style="">
-              <label id="outlined-label" class="mdc-floating-label" style="">${name}</label>
+              <label id="pjw-select-${id}-outlined-label" class="mdc-floating-label" style="">${name}</label>
             </div>
             <div class="mdc-notched-outline__trailing"></div>
           </div>
         </div>
-        <div class="mdc-select__menu mdc-menu mdc-menu-surface">
-          <ul class="mdc-list">${list_html}</ul>
+        <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth" role="listbox">
+          <ul class="mdc-list pjw-select-list" role="option">${list_html}</ul>
         </div>
       </div>`;
 
       this.id = id;
       this.dom = $$(html).appendTo(target);
       this.obj = new mdc.select.MDCSelect(this.dom[0]);
-
+      this.list = this.dom.children(".mdc-menu-surface").children(".pjw-select-list");
+      this.obj.selectedIndex = 0;
       $$("#" + id).hide();
     }
   }
