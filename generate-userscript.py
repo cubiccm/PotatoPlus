@@ -1,6 +1,12 @@
+import sys
+
+version = "beta"
+if len(sys.argv) == 2:
+  version = sys.argv[1]
+
 prefix = '''// ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.2 beta
+// @version      ''' + version + '''
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -28,7 +34,10 @@ with open("js/inject.js", "r") as fin:
         with open(filename, "r") as lib:
           lines2 = lib.readlines()
           for line2 in lines2:
-            fout.write(line2)
+            if line2.find("@version@") != -1:
+              fout.write(line2.replace("@version@", version))
+            else:
+              fout.write(line2)
         if line.find("injectStyle(\"") != -1:
           fout.write("`);")
         fout.write("\n")

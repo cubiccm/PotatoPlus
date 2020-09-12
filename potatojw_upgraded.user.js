@@ -1887,29 +1887,41 @@ function ClassListPlugin() {
 
     matchDegree(pattern, str) {
       function testString(keyword, str) {
+        if (keyword.length != 1 && keyword[0] == "-") {
+          if (testString(keyword.slice(1), str) !== 0)
+            return false;
+          else
+            return 0;
+        }
         var pos = str.search(keyword);
         if (pos == 0) {
-          return 1;
+          return 0.5 + (keyword.length / str.length) / 2;
         } else if (pos != -1) {
-          return 0.9;
+          return 0.3 + (keyword.length / str.length) / 2;
         } else if (keyword.length == 2) {
           if (str.search(keyword[1]) > str.search(keyword[0]) 
             && str.search(keyword[0]) != -1) {
-            if (str.search(keyword[0]) == 0) return 0.7;
-            else return 0.5;
+            if (str.search(keyword[0]) == 0) return 0.5;
+            else return 0.3;
           }
         }
         return 0;
       }
       pattern = pattern.trim().split(" ");
+      if (pattern[0] == "") return 0;
       var pattern_num = pattern.length;
       var matched_num = 0;
       for (var keyword of pattern) {
         if (typeof(str) == "string") {
-          matched_num += testString(keyword, str);
+          var t = testString(keyword, str);
+          if (t !== false) matched_num += t;
+          else return false;
         } else {
-          for (var substr of str)
-            matched_num += testString(keyword, substr);
+          for (var substr of str) {
+            var t = testString(keyword, substr);
+            if (t !== false) matched_num += t;
+            else return false;
+          }
         }
       }
       return 100.0 * (matched_num / pattern_num);
@@ -1920,9 +1932,12 @@ function ClassListPlugin() {
         return 0;
       }
       var priority = 0.0;
-      priority += 4 * this.matchDegree(search_str, data.title);
-      priority += 2 * this.matchDegree(search_str, data.teachers);
-      // priority += 1 * this.matchDegree(search_str, data.info);
+      var priority_map = [[data.title, 4], [data.teachers, 2], [data.info.map((item) => (item.val)), 1]];
+      for (var item of priority_map) {
+        var res = this.matchDegree(search_str, item[0]);
+        if (res === false) return false;
+        priority += item[1] * res;
+      }
       if (priority == 0) {
         return false;
       } else {
@@ -2412,6 +2427,8 @@ window.potatojw_intl = function() {
   if (typeof(window.pjw_version) == "string") return;
 
   window.pjw_version = "0.2 Userscript Beta 3";
+  if (window.pjw_version[0] == "@")
+    window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
   var head_metadata = `

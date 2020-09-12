@@ -1,7 +1,9 @@
 window.potatojw_intl = function() {
   if (typeof(window.pjw_version) == "string") return;
 
-  window.pjw_version = "0.2 beta";
+  window.pjw_version = "@version@";
+  if (window.pjw_version[0] == "@")
+    window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
 
   var head_metadata = `
