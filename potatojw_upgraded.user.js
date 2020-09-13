@@ -393,6 +393,10 @@ body {
   margin: 0;
 }
 
+.pjw-classlist-heading-button > .mdc-button__ripple {
+  border-radius: 30px 0 0 30px;
+}
+
 .pjw-classlist-heading-switch-button {
   border-radius: 0 30px 30px 0;
   display: flex;
@@ -749,6 +753,10 @@ body {
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
   height: 50px;
   margin: 8px 5px;
+}
+
+.pjw-class-operation > button > .mdc-button__ripple {
+  border-radius: 25px;
 }
 
 .pjw-class-select-button__container {
@@ -1681,7 +1689,7 @@ function ClassListPlugin() {
         var icon_text = "add_task";
         var disabled = "";
         if (data.status != "Available" && data.status !== true) {
-          disabled = "disabled ";
+          disabled = "disabled";
           icon_text = "block";
           if (data.status == "Full")
             label_text = "满员";
@@ -1692,22 +1700,22 @@ function ClassListPlugin() {
         var select_info = "";
         if (data.text)
           for (var item of data.text)
-            select_info += `<div class="mdc-button__label pjw-class-select-button__status">${item}</div>`;
-        var inner_html = `<div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="mdc-button__label pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${select_info}</div>`;
+            select_info += `<div class="pjw-class-select-button__status">${item}</div>`;
+        var inner_html = `<div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${select_info}</div>`;
         if (get_inner === true)
           return {
             html: inner_html,
-            disabled: (disabled == "disabled ")
+            disabled: (disabled == "disabled")
           };
-        return `<button data-mdc-auto-init="MDCRipple" ${disabled}class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-select-button">${inner_html}</button>`;
+        return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button"><div class="mdc-button__ripple"></div>${inner_html}</button>`;
       }
 
       function getCommentButton(data) {
         var text = "";
         if (data.text) text = data.text;
         if (!data.status) return "";
-        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-class-comment-button">
-          <div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">forum</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
+        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
+          <div class="mdc-button__ripple"></div><div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">forum</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
       }
 
       switch(attr) {
@@ -1732,9 +1740,14 @@ function ClassListPlugin() {
           else return "";
 
         case "weeknum":
-          if ("class_weeknum" in data)
-            return getWeekNum(data.class_weeknum);
-          else return "";
+          if ("class_weeknum" in data) {
+            if (data.class_weeknum.length)
+              return `<div class="pjw-class-weeknum-bar">${getWeekNum(data.class_weeknum)}</div>`
+            else
+              return `<div class="pjw-class-weeknum-bar" style="display: none;"></div>`;
+          } else {
+            return "";
+          }
 
         case "lessontime":
           if ("lesson_time" in data && data.lesson_time.length > 0)
@@ -1765,7 +1778,7 @@ function ClassListPlugin() {
         <div class="pjw-class-sub">
           <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
           <div class="pjw-class-sideinfo">
-            <div class="pjw-class-weeknum-bar">${this.getHTML(data, "weeknum")}</div>
+            ${this.getHTML(data, "weeknum")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
         </div>
@@ -2007,6 +2020,94 @@ function ClassListPlugin() {
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
       this.prepared_to_add = false;
+      window.mdc.autoInit();
+    }
+
+    parseTeacherNames = function(text) {
+      if (text == "") return [];
+      return text.split(/[,，]\s/g);
+    }
+
+    parseClassTime = function(text) {
+      var classes = text.split("<br>");
+      const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
+
+      var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      var ans = [];
+
+      for (var item of classes) {
+        var words = item.split(/\s|\&nbsp;/g);
+        var weekday = 0;
+        var is_odd = false, is_even = false;
+        var has_week_info = false;
+        var has_lesson_time_info = false;
+
+        for (var jtem of words) {
+          if (jtem[0] == "周") {
+            weekday = weekday_to_num[jtem[1]];
+          } else if (jtem[jtem.length - 1] == "周") {
+            has_week_info = true;
+            if (jtem.search("单周") != -1) {
+              for (var i = 1; i <= total_weeks; i += 2)
+                weeks[i] = 1;
+              ans[ans.length - 1].type = "odd";
+            } else if (jtem.search("双周") != -1) {
+              for (var i = 2; i <= total_weeks; i += 2)
+                weeks[i] = 1;
+              ans[ans.length - 1].type = "even";
+            } else {
+              var num_arr = jtem.match(/(\d+)+/g);
+              if (num_arr.length == 1)
+                weeks[parseInt(num_arr[0])] = 1;
+              else if (num_arr.length == 2)
+                for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
+                  weeks[i] = 1;
+            }
+          } else if (jtem.search(/从第(\d+)周开始/) != -1) {
+            has_week_info = true;
+            start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
+            if (jtem.search("单周") != -1) {
+              for (var i = start_week; i <= total_weeks; i += 2)
+                weeks[i] = 1;
+              ans[ans.length - 1].type = "odd";
+            } else if (jtem.search("双周") != -1) {
+              for (var i = start_week; i <= total_weeks; i += 2)
+                weeks[i] = 1;
+              ans[ans.length - 1].type = "even";
+            }
+          } else if (jtem[jtem.length - 1] == "节") {
+            var num_arr = jtem.match(/(\d+)+/g);
+            if (num_arr.length == 1)
+              num_arr.push(num_arr[0]);
+            if (weekday != 0 && num_arr.length) {
+              has_lesson_time_info = true;
+              ans.push({
+                weekday: weekday,
+                start: parseInt(num_arr[0]),
+                end: parseInt(num_arr[1]),
+                type: "normal"
+              });
+            }
+          }
+        }
+
+        if (has_week_info == false && has_lesson_time_info == true)
+          for (var i = 1; i <= total_weeks; i++)
+            weeks[i] = 1;
+      }
+
+      var ans_weeks = [];
+      for (var i = 1; i <= total_weeks + 1; i++) {
+        if (weeks[i] == 1 && weeks[i-1] == 0) {
+          ans_weeks.push({
+            start: i,
+            end: i
+          });
+        } else if (weeks[i] == 0 && weeks[i-1] == 1) {
+          ans_weeks[ans_weeks.length - 1].end = i-1;
+        }
+      }
+      return {lesson_time: ans, class_weeknum: ans_weeks};
     }
 
     checkScroll() {
@@ -2017,6 +2118,7 @@ function ClassListPlugin() {
           this.class_data[i].obj.show();
         this.max_classes_loaded += this.class_load_size;
       }
+      window.mdc.autoInit();
       this.scroll_lock = false;
     }
 
@@ -2060,7 +2162,8 @@ function ClassListPlugin() {
         this.auto_refresh_interval_id = window.setInterval(function(target) {
           if (Math.random() < window.auto_refresh_loss_rate) return;
           window.setTimeout(function(target) {
-            $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px red)");
+            if ($$("#autorefresh-switch").hasClass("on"))
+              $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px red)");
             target.refresh().then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
@@ -2112,7 +2215,7 @@ function ClassListPlugin() {
           text = "封号退学";
         this.show_refresh_level_timeout_id = setTimeout( (text) => {
           $$("#autorefresh-label").html(text);
-        }, 1500, text);
+        }, 1000, text);
         this.toggleAutoRefresh(true);
         clearInterval(this.refresh_button_interval_id);
       }
@@ -2147,24 +2250,26 @@ function ClassListPlugin() {
           </div>
           <div class="pjw-classlist-controls">
             <section id="autoreload-control-section">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
+                <div class="mdc-button__ripple"></div>
                 <div class="material-icons-round" id="autorefresh-icon">autorenew</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">刷新</div>
               </button>
 
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off" id="autorefresh-switch">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
               </button>
             </section>
 
             <section id="filter-control-section">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-button">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
+                <div class="mdc-button__ripple"></div>
                 <div class="material-icons-round">filter_alt</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
               </button>
 
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised mdc-ripple-upgraded pjw-classlist-heading-switch-button off" id="filter-switch">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="filter-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
               </button>
@@ -2341,93 +2446,6 @@ function ClassListPlugin() {
       $$("#" + id).hide();
     }
   }
-
-  window.parseTeacherNames = function(text) {
-    if (text == "") return [];
-    return text.split(/[,，]\s/g);
-  }
-
-  window.parseClassTime = function(text) {
-    var classes = text.split("<br>");
-    const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
-
-    var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var ans = [];
-
-    for (var item of classes) {
-      var words = item.split(/\s|\&nbsp;/g);
-      var weekday = 0;
-      var is_odd = false, is_even = false;
-      var has_week_info = false;
-      var has_lesson_time_info = false;
-
-      for (var jtem of words) {
-        if (jtem[0] == "周") {
-          weekday = weekday_to_num[jtem[1]];
-        } else if (jtem[jtem.length - 1] == "周") {
-          has_week_info = true;
-          if (jtem.search("单周") != -1) {
-            for (var i = 1; i <= total_weeks; i += 2)
-              weeks[i] = 1;
-            ans[ans.length - 1].type = "odd";
-          } else if (jtem.search("双周") != -1) {
-            for (var i = 2; i <= total_weeks; i += 2)
-              weeks[i] = 1;
-            ans[ans.length - 1].type = "even";
-          } else {
-            var num_arr = jtem.match(/(\d+)+/g);
-            if (num_arr.length == 1)
-              weeks[parseInt(num_arr[0])] = 1;
-            else if (num_arr.length == 2)
-              for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
-                weeks[i] = 1;
-          }
-        } else if (jtem.search(/从第(\d+)周开始/) != -1) {
-          has_week_info = true;
-          start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
-          if (jtem.search("单周") != -1) {
-            for (var i = start_week; i <= total_weeks; i += 2)
-              weeks[i] = 1;
-            ans[ans.length - 1].type = "odd";
-          } else if (jtem.search("双周") != -1) {
-            for (var i = start_week; i <= total_weeks; i += 2)
-              weeks[i] = 1;
-            ans[ans.length - 1].type = "even";
-          }
-        } else if (jtem[jtem.length - 1] == "节") {
-          var num_arr = jtem.match(/(\d+)+/g);
-          if (num_arr.length == 1)
-            num_arr.push(num_arr[0]);
-          if (weekday != 0 && num_arr.length) {
-            has_lesson_time_info = true;
-            ans.push({
-              weekday: weekday,
-              start: parseInt(num_arr[0]),
-              end: parseInt(num_arr[1]),
-              type: "normal"
-            });
-          }
-        }
-      }
-
-      if (has_week_info == false && has_lesson_time_info == true)
-        for (var i = 1; i <= total_weeks; i++)
-          weeks[i] = 1;
-    }
-
-    var ans_weeks = [];
-    for (var i = 1; i <= total_weeks + 1; i++) {
-      if (weeks[i] == 1 && weeks[i-1] == 0) {
-        ans_weeks.push({
-          start: i,
-          end: i
-        });
-      } else if (weeks[i] == 0 && weeks[i-1] == 1) {
-        ans_weeks[ans_weeks.length - 1].end = i-1;
-      }
-    }
-    return {lesson_time: ans, class_weeknum: ans_weeks};
-  }
 }
 
 /* js/pjw-core.js */
@@ -2447,7 +2465,7 @@ window.potatojw_intl = function() {
   // UI Improvement
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
-      <div id="pjw-user-info" onclick="window.location.href='/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse'">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
+      <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
@@ -2709,10 +2727,10 @@ window.potatojw_intl = function() {
           $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
           var table = $$("#ghost-div").find("table.TABLE_BODY > tbody");
           table.find("tr:gt(0)").each((index, val) => {
-            var res = parseClassTime($$(val).children("td:eq(8)").html());
+            var res = this.parseClassTime($$(val).children("td:eq(8)").html());
             data = {
               title: $$(val).children("td:eq(1)").html(),
-              teachers: parseTeacherNames($$(val).children("td:eq(7)").html()),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(7)").html()),
               info: [{
                 key: "课程编号",
                 val: $$(val).children('td:eq(0)').html()
@@ -2749,7 +2767,6 @@ window.potatojw_intl = function() {
             list.add(data);
           });
           list.update();
-          window.mdc.autoInit();
           $$("#ghost-div").remove();
           resolve();
         } catch(e) {
@@ -2955,13 +2972,13 @@ window.potatojw_intl = function() {
           table.find("tbody").each((index, val) => {
             if ($$(val).css("display") == "none") return;
             $$(val).find("tr").each((index, val) => {
-              var res = parseClassTime($$(val).children("td:eq(4)").html());
+              var res = this.parseClassTime($$(val).children("td:eq(4)").html());
               if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
               else select_status = "Full";
               var classID = $$(val).children("td:eq(9)").children("input").val();
               data = {
                 title: $$(val).children("td:eq(2)").html(),
-                teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+                teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
                 info: [{
                   key: "课程编号",
                   val: $$(val).children('td:eq(0)').html(),
@@ -2991,7 +3008,6 @@ window.potatojw_intl = function() {
             });
           });
           this.update();
-          window.mdc.autoInit();
           resolve();
         } catch(e) {
           reject(e);
@@ -3106,7 +3122,7 @@ window.potatojw_intl = function() {
         try {
           var table = $$(data).find("table > tbody");
           table.find("tr:gt(0)").each((index, val) => {
-            var res = parseClassTime($$(val).children("td:eq(4)").html());
+            var res = this.parseClassTime($$(val).children("td:eq(4)").html());
             var classID = "0", class_kind = "13";
             if ($$(val).children("td:eq(9)").html() != "") {
               select_status = "Available";
@@ -3118,7 +3134,7 @@ window.potatojw_intl = function() {
             
             data = {
               title: $$(val).children("td:eq(2)").html(),
-              teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
               info: [{
                 key: "课程编号",
                 val: $$(val).children('td:eq(0)').html()
@@ -3146,7 +3162,6 @@ window.potatojw_intl = function() {
             list.add(data);
           });
           list.update();
-          window.mdc.autoInit();
           resolve();
         } catch(e) {
           reject(e);
@@ -3223,13 +3238,13 @@ window.potatojw_intl = function() {
           table.find("tbody").each((index, val) => {
             if ($$(val).css("display") == "none") return;
             $$(val).find("tr").each((index, val) => {
-              var res = parseClassTime($$(val).children("td:eq(4)").html());
+              var res = this.parseClassTime($$(val).children("td:eq(4)").html());
               if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
               else select_status = "Full";
               var classID = $$(val).children("td:eq(9)").children("input").val();
               data = {
                 title: $$(val).children("td:eq(2)").html(),
-                teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+                teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
                 info: [{
                   key: "课程编号",
                   val: $$(val).children('td:eq(0)').html(),
@@ -3259,7 +3274,6 @@ window.potatojw_intl = function() {
             });
           });
           this.update();
-          window.mdc.autoInit();
           resolve();
         } catch(e) {
           reject(e);
@@ -3304,10 +3318,10 @@ window.potatojw_intl = function() {
       table.find("tbody").each((index, val) => {
         if ($$(val).css("display") == "none") return;
         $$(val).find("tr").each((index, val) => {
-          var res = parseClassTime($$(val).children("td:eq(4)").html());
+          var res = this.parseClassTime($$(val).children("td:eq(4)").html());
           data = {
             title: $$(val).children("td:eq(2)").html(),
-            teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+            teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
             info: [{
               key: "课程编号",
               val: $$(val).children('td:eq(0)').html(),
@@ -3336,7 +3350,6 @@ window.potatojw_intl = function() {
           list.add(data);
         });
       });
-      window.mdc.autoInit();
       $$("#ghost-div").remove();
     }
 
@@ -3406,7 +3419,7 @@ window.potatojw_intl = function() {
           var rows = $$(data).find("table > tbody").find("tr:gt(0)");
           rows.each((index, val) => {
             // Prepare lesson time
-            var res = parseClassTime($$(val).children("td:eq(5)").html());
+            var res = this.parseClassTime($$(val).children("td:eq(5)").html());
 
             // Prepare select button
             var classID = "0";
@@ -3421,7 +3434,7 @@ window.potatojw_intl = function() {
             data = {
               classID: classID,
               title: $$(val).children("td:eq(2)").html(),
-              teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
               info: [{
                 key: "开课年级",
                 val: $$(val).children("td:eq(4)").html()
@@ -3456,7 +3469,6 @@ window.potatojw_intl = function() {
 
           // Render DOM
           this.update();
-          window.mdc.autoInit();
           resolve();
         } catch (e) {
           reject(e);
@@ -3499,10 +3511,10 @@ window.potatojw_intl = function() {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
       var table = $$("#ghost-div").find("#tbCourseList > tbody");
       table.find("tr:gt(0)").each((index, val) => {
-        var res = parseClassTime($$(val).children("td:eq(5)").html());
+        var res = this.parseClassTime($$(val).children("td:eq(5)").html());
         data = {
           title: $$(val).children("td:eq(2)").html(),
-          teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
+          teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
           info: [{
             key: "开课年级",
             val: $$(val).children("td:eq(4)").html()
@@ -3533,7 +3545,6 @@ window.potatojw_intl = function() {
         };
         list.add(data);
       });
-      window.mdc.autoInit();
       $$("#ghost-div").remove();
     }
 

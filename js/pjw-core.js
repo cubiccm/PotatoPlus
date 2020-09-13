@@ -14,7 +14,7 @@ window.potatojw_intl = function() {
   // UI Improvement
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
-      <div id="pjw-user-info" onclick="window.location.href='/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse'">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
+      <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
@@ -276,10 +276,10 @@ window.potatojw_intl = function() {
           $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
           var table = $$("#ghost-div").find("table.TABLE_BODY > tbody");
           table.find("tr:gt(0)").each((index, val) => {
-            var res = parseClassTime($$(val).children("td:eq(8)").html());
+            var res = this.parseClassTime($$(val).children("td:eq(8)").html());
             data = {
               title: $$(val).children("td:eq(1)").html(),
-              teachers: parseTeacherNames($$(val).children("td:eq(7)").html()),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(7)").html()),
               info: [{
                 key: "课程编号",
                 val: $$(val).children('td:eq(0)').html()
@@ -316,7 +316,6 @@ window.potatojw_intl = function() {
             list.add(data);
           });
           list.update();
-          window.mdc.autoInit();
           $$("#ghost-div").remove();
           resolve();
         } catch(e) {
@@ -522,13 +521,13 @@ window.potatojw_intl = function() {
           table.find("tbody").each((index, val) => {
             if ($$(val).css("display") == "none") return;
             $$(val).find("tr").each((index, val) => {
-              var res = parseClassTime($$(val).children("td:eq(4)").html());
+              var res = this.parseClassTime($$(val).children("td:eq(4)").html());
               if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
               else select_status = "Full";
               var classID = $$(val).children("td:eq(9)").children("input").val();
               data = {
                 title: $$(val).children("td:eq(2)").html(),
-                teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+                teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
                 info: [{
                   key: "课程编号",
                   val: $$(val).children('td:eq(0)').html(),
@@ -558,7 +557,6 @@ window.potatojw_intl = function() {
             });
           });
           this.update();
-          window.mdc.autoInit();
           resolve();
         } catch(e) {
           reject(e);
@@ -673,7 +671,7 @@ window.potatojw_intl = function() {
         try {
           var table = $$(data).find("table > tbody");
           table.find("tr:gt(0)").each((index, val) => {
-            var res = parseClassTime($$(val).children("td:eq(4)").html());
+            var res = this.parseClassTime($$(val).children("td:eq(4)").html());
             var classID = "0", class_kind = "13";
             if ($$(val).children("td:eq(9)").html() != "") {
               select_status = "Available";
@@ -685,7 +683,7 @@ window.potatojw_intl = function() {
             
             data = {
               title: $$(val).children("td:eq(2)").html(),
-              teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
               info: [{
                 key: "课程编号",
                 val: $$(val).children('td:eq(0)').html()
@@ -713,7 +711,6 @@ window.potatojw_intl = function() {
             list.add(data);
           });
           list.update();
-          window.mdc.autoInit();
           resolve();
         } catch(e) {
           reject(e);
@@ -790,13 +787,13 @@ window.potatojw_intl = function() {
           table.find("tbody").each((index, val) => {
             if ($$(val).css("display") == "none") return;
             $$(val).find("tr").each((index, val) => {
-              var res = parseClassTime($$(val).children("td:eq(4)").html());
+              var res = this.parseClassTime($$(val).children("td:eq(4)").html());
               if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
               else select_status = "Full";
               var classID = $$(val).children("td:eq(9)").children("input").val();
               data = {
                 title: $$(val).children("td:eq(2)").html(),
-                teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+                teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
                 info: [{
                   key: "课程编号",
                   val: $$(val).children('td:eq(0)').html(),
@@ -826,7 +823,6 @@ window.potatojw_intl = function() {
             });
           });
           this.update();
-          window.mdc.autoInit();
           resolve();
         } catch(e) {
           reject(e);
@@ -871,10 +867,10 @@ window.potatojw_intl = function() {
       table.find("tbody").each((index, val) => {
         if ($$(val).css("display") == "none") return;
         $$(val).find("tr").each((index, val) => {
-          var res = parseClassTime($$(val).children("td:eq(4)").html());
+          var res = this.parseClassTime($$(val).children("td:eq(4)").html());
           data = {
             title: $$(val).children("td:eq(2)").html(),
-            teachers: parseTeacherNames($$(val).children("td:eq(5)").html()),
+            teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
             info: [{
               key: "课程编号",
               val: $$(val).children('td:eq(0)').html(),
@@ -903,7 +899,6 @@ window.potatojw_intl = function() {
           list.add(data);
         });
       });
-      window.mdc.autoInit();
       $$("#ghost-div").remove();
     }
 
@@ -973,7 +968,7 @@ window.potatojw_intl = function() {
           var rows = $$(data).find("table > tbody").find("tr:gt(0)");
           rows.each((index, val) => {
             // Prepare lesson time
-            var res = parseClassTime($$(val).children("td:eq(5)").html());
+            var res = this.parseClassTime($$(val).children("td:eq(5)").html());
 
             // Prepare select button
             var classID = "0";
@@ -988,7 +983,7 @@ window.potatojw_intl = function() {
             data = {
               classID: classID,
               title: $$(val).children("td:eq(2)").html(),
-              teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
               info: [{
                 key: "开课年级",
                 val: $$(val).children("td:eq(4)").html()
@@ -1023,7 +1018,6 @@ window.potatojw_intl = function() {
 
           // Render DOM
           this.update();
-          window.mdc.autoInit();
           resolve();
         } catch (e) {
           reject(e);
@@ -1066,10 +1060,10 @@ window.potatojw_intl = function() {
       $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
       var table = $$("#ghost-div").find("#tbCourseList > tbody");
       table.find("tr:gt(0)").each((index, val) => {
-        var res = parseClassTime($$(val).children("td:eq(5)").html());
+        var res = this.parseClassTime($$(val).children("td:eq(5)").html());
         data = {
           title: $$(val).children("td:eq(2)").html(),
-          teachers: parseTeacherNames($$(val).children("td:eq(6)").html()),
+          teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
           info: [{
             key: "开课年级",
             val: $$(val).children("td:eq(4)").html()
@@ -1100,7 +1094,6 @@ window.potatojw_intl = function() {
         };
         list.add(data);
       });
-      window.mdc.autoInit();
       $$("#ghost-div").remove();
     }
 
