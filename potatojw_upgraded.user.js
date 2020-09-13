@@ -2028,14 +2028,6 @@ function ClassListPlugin() {
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
-        function getNumberInNormalDistribution(mean, std_dev, lower_limit, upper_limit) {
-          var res = Math.floor(mean + randomNormalDistribution() * std_dev);
-          if (res >= upper_limit) return upper_limit;
-          if (res >= mean) return res;
-          res = mean - (mean-res) * 0.8;
-          if (res < lower_limit) return lower_limit;
-          return res;
-        }
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -2048,22 +2040,38 @@ function ClassListPlugin() {
           return u * c;
         }
 
+        function getNumberInNormalDistribution(mean, std_dev, lower_limit, upper_limit) {
+          var res = Math.floor(mean + randomNormalDistribution() * std_dev);
+          if (res >= upper_limit) return upper_limit;
+          if (res >= mean) return res;
+          res = mean - (mean-res) * 0.8;
+          if (res < lower_limit) return lower_limit;
+          return res;
+        }
+
+        $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
+
         var auto_refresh_loss_rate = 0.2;
 
         auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
         var auto_check_times = 1;
-        var random_interval = (1.0 / this.auto_refresh_frequency) * getNumberInNormalDistribution(Math.floor(Math.random() * 600) + 1400, 800, 800, 3000);
+        var random_interval = (1.0 / this.auto_refresh_frequency) * getNumberInNormalDistribution(Math.floor(Math.random() * 300) + 1500, 600, 1000, 2500);
+
         this.auto_refresh_interval_id = window.setInterval(function(target) {
           if (Math.random() < window.auto_refresh_loss_rate) return;
           window.setTimeout(function(target) {
+            $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px red)");
             target.refresh().then(() => {
+              if ($$("#autorefresh-switch").hasClass("on"))
+                $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
               console.log("Count: " + auto_check_times++);
             }).catch((e) => {
               console.log(e);
             });
-          }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8), target);
+          }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
       } else {
+        $$("#autoreload-control-section").css("filter", "");
         window.clearInterval(this.auto_refresh_interval_id);
       }
     }
