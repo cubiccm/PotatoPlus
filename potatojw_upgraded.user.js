@@ -2939,10 +2939,6 @@ window.potatojw_intl = function() {
 
     window.list = new PJWClassList($$("body"));
 
-    window.searchCourseList = function() {
-      list.refresh(true);
-    };
-
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
         try {
