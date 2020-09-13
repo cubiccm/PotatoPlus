@@ -2200,9 +2200,10 @@ function ClassListPlugin() {
       this.scroll_lock = false;
     }
 
-    refresh(hard_load = false) {
+    refresh(hard_load = false, is_auto = false) {
       if (hard_load) this.clear();
       return this.load().then(() => {
+        if (is_auto) return;
         if (this.class_data.length == 0)
           this.console.info("没有找到课程 : (");
         else
@@ -2215,7 +2216,7 @@ function ClassListPlugin() {
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
-        this.console.info("Auto-refresh started.")
+        this.console.info("自动刷新已打开。")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -2242,24 +2243,28 @@ function ClassListPlugin() {
         var auto_refresh_loss_rate = 0.2;
 
         auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
-        var auto_check_times = 1;
+        var auto_refresh_count = 1;
         var random_interval = (1.0 / this.auto_refresh_frequency) * getNumberInNormalDistribution(Math.floor(Math.random() * 300) + 1500, 600, 1000, 2500);
 
         this.auto_refresh_interval_id = window.setInterval(function(target) {
+          // Random skip
           if (Math.random() < window.auto_refresh_loss_rate) return;
+
           window.setTimeout(function(target) {
-            if ($$("#autorefresh-switch").hasClass("on"))
-              $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px red)");
-            target.refresh().then(() => {
+            if ($$("#autorefresh-switch").hasClass("off")) return;
+
+            $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px red)");
+            target.refresh(false, true).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
-              target.console.debug("Auto-refresh count: " + auto_check_times++, "auto-refresh-count");
+              target.console.debug("Auto-refresh count: " + auto_refresh_count++, "auto-refresh-count");
             }).catch((e) => {
               target.console.error(e);
             });
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
       } else {
+        this.console.info("自动刷新已关闭。")
         $$("#autoreload-control-section").css("filter", "");
         window.clearInterval(this.auto_refresh_interval_id);
       }
@@ -2626,7 +2631,7 @@ function ClassListPlugin() {
         </div>
         <div class="pjw-console-item">
           <div class="pjw-console-icon material-icons-round">emoji_people</div>
-          <div class="pjw-console-text">v${window.pjw_version} Potato Console</div>
+          <div class="pjw-console-text">potatoplus v${window.pjw_version}</div>
         </div>
       </div>`;
 
