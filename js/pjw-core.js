@@ -260,9 +260,7 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-
-    // if ($$("option[value=20202]").length == 0)
-      // $$("#termList > option:eq(0)").after('<option value="20201">2020-2021学年第二学期(*pjw+)</option>');
+    // $$("#termList > option:eq(0)").after('<option value="20202">2020-2021学年第二学期(*pjw+)</option>');
 
     window.list = new PJWClassList($$("body"));
 
@@ -345,7 +343,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject(data);
         });
       });
     }
@@ -645,7 +643,7 @@ window.potatojw_intl = function() {
       return [classID, class_kind];
     };
 
-    list.select = function(classID, class_kind) {
+    list.select = function(classID, class_kind, class_data) {
       return new Promise((resolve, reject) => {
         var target = this;
         $$.ajax({
@@ -656,9 +654,10 @@ window.potatojw_intl = function() {
           var start = res.search(/\"*\"/);
           var end = res.search(/\"\)/);
           res = res.slice(start + 1, end);
-          console.log(res);
           if (res.search("成功！") != -1)
-            target.refresh();
+            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+          else
+            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -701,7 +700,7 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-                action: ((e) => { e.data.target.list.select(classID, class_kind); })
+                action: ((e) => { e.data.target.list.select(classID, class_kind, e.data.target.data); })
               },
               comment_button: {
                 status: true,
@@ -758,7 +757,7 @@ window.potatojw_intl = function() {
       });
     })();
 
-    list.select = function(classID) {
+    list.select = function(classID, class_data) {
       return new Promise((resolve, reject) => {
         var campus = this.selectors.campus.val();
         var target = this;
@@ -770,9 +769,10 @@ window.potatojw_intl = function() {
           var start = res.search(/\"*\"/);
           var end = res.search(/\"\)/);
           res = res.slice(start + 1, end);
-          console.log(res);
           if (res.search("成功！") != -1)
-            target.refresh();
+            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+          else
+            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -812,7 +812,7 @@ window.potatojw_intl = function() {
                 select_button: {
                   status: select_status,
                   text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-                  action: (e) => { e.data.target.list.select(classID); }
+                  action: (e) => { e.data.target.list.select(classID, e.data.target.data); }
                 },
                 comment_button: {
                   status: true,
@@ -940,7 +940,7 @@ window.potatojw_intl = function() {
       return classID;
     };
 
-    list.select = function(classID) {
+    list.select = function(classID, class_data) {
       return new Promise((resolve, reject) => {
         var academy_ID = this.selectors.academy.val();
         var target = this;
@@ -952,9 +952,10 @@ window.potatojw_intl = function() {
           var start = res.search(/\"*\"/);
           var end = res.search(/\"\)/);
           res = res.slice(start + 1, end);
-          console.log(res);
           if (res.search("成功！") != -1)
-            target.refresh();
+            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+          else
+            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -1005,7 +1006,7 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
-                action: ((e) => { e.data.target.list.select(classID); })
+                action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {
                 status: true,

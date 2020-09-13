@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.2 Userscript Beta 3
+// @version      0.2 Userscript Beta 4
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -194,11 +194,6 @@ body {
   background: rgba(0, 0, 0, .05) !important;
 }
 
-.mdc-select__anchor {
-  display: flex;
-  width: 100%;
-}
-
 #courseList {
   height: auto !important;
   overflow: hidden !important;
@@ -312,9 +307,10 @@ body {
 
 .Line {
   opacity: 0;
-}
+}`);
 
-/* PJW ClassList */
+/* css/pjw-classlist.css */
+injectStyleFromString(`/* PJW ClassList */
 
 .pjw-classlist {
   text-align: left;
@@ -340,6 +336,11 @@ body {
 
 .pjw-classlist-selectors > div {
   margin: 5px 6px;
+}
+
+.mdc-select__anchor {
+  display: flex;
+  width: 100%;
 }
 
 #pjw-select-academyList {
@@ -782,7 +783,84 @@ body {
   letter-spacing: 0;
 }
 
-/* Mobile */
+/* PJW Console */
+#pjw-console {
+  position: fixed;
+  margin: 10px 20%;
+  bottom: -70px;
+  opacity: 0;
+  width: 60%;
+  border-radius: 20px;
+  transition: all .4s ease-out;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  filter: drop-shadow(3px -4px 6px rgba(0, 0, 0, .2));
+  background: rgba(255, 255, 255, .9);
+}
+
+.pjw-console-icon {
+  margin: 5px 10px 5px 20px;
+  font-size: 21px;
+}
+
+.pjw-console-icon.error:after {
+  content: "error";
+  color: #ff3300;
+}
+
+.pjw-console-icon.warning:after {
+  content: "warning";
+  color: #ff8936;
+}
+
+.pjw-console-icon.info:after {
+  content: "info";
+  color: blue;
+}
+
+.pjw-console-icon.code:after {
+  content: "code";
+  color: rgba(0, 0, 0, .6);
+}
+
+.pjw-console-icon.done:after {
+  content: "done";
+  color: limegreen;
+}
+
+#pjw-console-history {
+  width: 100%;
+  max-height: 500px;
+  overflow: auto;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background: rgba(0, 0, 0, .1);
+}
+
+.pjw-console-item {
+  min-height: 34px;
+  padding: 3px 20px;
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.pjw-console-text {
+  overflow-wrap: anywhere;
+  hyphens: "-";
+}
+
+/* Small screen */
 
 @media screen and (max-width: 950px) {
   .pjw-class-info {
@@ -2065,7 +2143,7 @@ function ClassListPlugin() {
             }
           } else if (jtem.search(/从第(\d+)周开始/) != -1) {
             has_week_info = true;
-            start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
+            var start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
             if (jtem.search("单周") != -1) {
               for (var i = start_week; i <= total_weeks; i += 2)
                 weeks[i] = 1;
@@ -2124,12 +2202,20 @@ function ClassListPlugin() {
 
     refresh(hard_load = false) {
       if (hard_load) this.clear();
-      return this.load();
+      return this.load().then(() => {
+        if (this.class_data.length == 0)
+          this.console.info("没有找到课程 : (");
+        else
+          this.console.debug(`已加载${this.class_data.length}门课程`);
+      }).catch((e) => {
+        this.console.error("无法加载课程列表：" + e);
+      });
     }
 
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
+        this.console.info("Auto-refresh started.")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -2167,9 +2253,9 @@ function ClassListPlugin() {
             target.refresh().then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
-              console.log("Count: " + auto_check_times++);
+              target.console.debug("Auto-refresh count: " + auto_check_times++, "auto-refresh-count");
             }).catch((e) => {
-              console.log(e);
+              target.console.error(e);
             });
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
@@ -2357,6 +2443,8 @@ function ClassListPlugin() {
       this.clear();
 
       window.mdc.autoInit();
+
+      this.console = new PJWConsole();
     }
   };
 
@@ -2446,13 +2534,144 @@ function ClassListPlugin() {
       $$("#" + id).hide();
     }
   }
+
+  window.PJWConsole = class {
+    show(stay = false) {
+      this.dom.css({
+        "bottom": "10px",
+        "opacity": "1"
+      });
+      if (typeof(this.stay_timeout) != "undefined")
+        clearTimeout(this.stay_timeout);
+      if (stay) this.mouse_stay = true;
+      if (!this.mouse_stay)
+        this.stay_timeout = setTimeout((target) => {
+          target.hide();
+        }, 2500, this);
+    }
+
+    hide() {
+      this.collapse();
+      this.dom.css({
+        "bottom": "-70px",
+        "opacity": "0"
+      });
+      this.setColor();
+    }
+
+    expand() {
+      this.history.css("display", "flex");
+    }
+
+    collapse() {
+      this.history.css("display", "none");
+    }
+
+    setColor(color = "rgba(0, 0, 0, .2)") {
+      this.dom.css("filter", `drop-shadow(0px 0px 6px ${color}`);
+    }
+
+    // type: error warning info done code
+    log(text, channel = null, type = "info") {
+      if (channel) {
+        channel = `data-channel="${channel}"`;
+        this.dom.find(`[${channel}]`).remove();
+      }
+      var html = `
+        <div class="pjw-console-item" ${channel}>
+          <div class="pjw-console-icon material-icons-round ${type}"></div>
+          <div class="pjw-console-text">${text}</div>
+        </div>
+      `;
+      this.dom.children(".pjw-console-item").appendTo(this.history);
+      this.dom.append(html);
+
+      this.history[0].scrollTop = this.history[0].scrollHeight;
+
+      this.setColor();
+      if (["error", "warning"].include(type)) {
+        this.setColor("#b74710");
+        this.show(true);
+      } else if (["done"].include(type)) {
+        this.setColor("limegreen");
+        this.show(true);
+      } else if (["info"].include(type)) 
+        this.show(false);
+    }
+
+    error(text, channel = null) {
+      this.log(text, channel, "error");
+    }
+
+    success(text, channel = null) {
+      this.log(text, channel, "done");
+    }
+
+    warn(text, channel = null) {
+      this.log(text, channel, "warning");
+    }
+
+    debug(text, channel = null) {
+      this.log(text, channel, "code");
+    }
+
+    info(text, channel = null) {
+      this.log(text, channel, "info");
+    }
+
+    constructor() {
+      var html = `
+      <div id="pjw-console" class="mdc-card">
+        <div id="pjw-console-history">
+        </div>
+        <div class="pjw-console-item">
+          <div class="pjw-console-icon material-icons-round">emoji_people</div>
+          <div class="pjw-console-text">v${window.pjw_version} Potato Console</div>
+        </div>
+      </div>`;
+
+      this.dom = $$(html).appendTo("body");
+      this.history = this.dom.children("#pjw-console-history");
+
+      $$(document).on("mousemove", null, {
+        target: this
+      }, function(e) {
+        if (e.clientY >= $$(window).height() - 60)
+          e.data.target.show();
+      });
+
+      this.dom.on("click", null, {
+        target: this
+      }, function(e) {
+        e.data.target.expand();
+      });
+
+      this.dom.on("mouseenter", null, {
+        target: this
+      }, function(e) {
+        var target = e.data.target;
+        target.mouse_stay = true;
+        clearTimeout(target.stay_timeout);
+      });
+
+      this.dom.on("mouseleave", null, {
+        target: this
+      }, function(e) {
+        var target = e.data.target;
+        target.mouse_stay = false;
+        target.stay_timeout = setTimeout((target) => {
+          target.hide();
+        }, 1500, target);
+      });
+    }
+  }
 }
 
 /* js/pjw-core.js */
 window.potatojw_intl = function() {
   if (typeof(window.pjw_version) == "string") return;
 
-  window.pjw_version = "0.2 Userscript Beta 3";
+  window.pjw_version = "0.2 Userscript Beta 4";
   if (window.pjw_version[0] == "@")
     window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
@@ -2711,9 +2930,7 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-
-    // if ($$("option[value=20202]").length == 0)
-      // $$("#termList > option:eq(0)").after('<option value="20201">2020-2021学年第二学期(*pjw+)</option>');
+    // $$("#termList > option:eq(0)").after('<option value="20202">2020-2021学年第二学期(*pjw+)</option>');
 
     window.list = new PJWClassList($$("body"));
 
@@ -2796,7 +3013,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject(data);
         });
       });
     }
@@ -3096,7 +3313,7 @@ window.potatojw_intl = function() {
       return [classID, class_kind];
     };
 
-    list.select = function(classID, class_kind) {
+    list.select = function(classID, class_kind, class_data) {
       return new Promise((resolve, reject) => {
         var target = this;
         $$.ajax({
@@ -3107,9 +3324,10 @@ window.potatojw_intl = function() {
           var start = res.search(/\"*\"/);
           var end = res.search(/\"\)/);
           res = res.slice(start + 1, end);
-          console.log(res);
           if (res.search("成功！") != -1)
-            target.refresh();
+            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+          else
+            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -3152,7 +3370,7 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-                action: ((e) => { e.data.target.list.select(classID, class_kind); })
+                action: ((e) => { e.data.target.list.select(classID, class_kind, e.data.target.data); })
               },
               comment_button: {
                 status: true,
@@ -3209,7 +3427,7 @@ window.potatojw_intl = function() {
       });
     })();
 
-    list.select = function(classID) {
+    list.select = function(classID, class_data) {
       return new Promise((resolve, reject) => {
         var campus = this.selectors.campus.val();
         var target = this;
@@ -3221,9 +3439,10 @@ window.potatojw_intl = function() {
           var start = res.search(/\"*\"/);
           var end = res.search(/\"\)/);
           res = res.slice(start + 1, end);
-          console.log(res);
           if (res.search("成功！") != -1)
-            target.refresh();
+            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+          else
+            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -3263,7 +3482,7 @@ window.potatojw_intl = function() {
                 select_button: {
                   status: select_status,
                   text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
-                  action: (e) => { e.data.target.list.select(classID); }
+                  action: (e) => { e.data.target.list.select(classID, e.data.target.data); }
                 },
                 comment_button: {
                   status: true,
@@ -3391,7 +3610,7 @@ window.potatojw_intl = function() {
       return classID;
     };
 
-    list.select = function(classID) {
+    list.select = function(classID, class_data) {
       return new Promise((resolve, reject) => {
         var academy_ID = this.selectors.academy.val();
         var target = this;
@@ -3403,9 +3622,10 @@ window.potatojw_intl = function() {
           var start = res.search(/\"*\"/);
           var end = res.search(/\"\)/);
           res = res.slice(start + 1, end);
-          console.log(res);
           if (res.search("成功！") != -1)
-            target.refresh();
+            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+          else
+            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -3456,7 +3676,7 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
-                action: ((e) => { e.data.target.list.select(classID); })
+                action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {
                 status: true,

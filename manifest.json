@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.nju.edu.cn/jiaowu*"],
-      "css": ["css/material-components-web.min.css", "css/pjw.css"],
+      "css": ["css/material-components-web.min.css", "css/pjw.css", "css/pjw-classlist.css"],
       "js": ["js/inject.js"],
       "run_at": "document_start"
     }

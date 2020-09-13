@@ -560,7 +560,7 @@ function ClassListPlugin() {
             }
           } else if (jtem.search(/从第(\d+)周开始/) != -1) {
             has_week_info = true;
-            start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
+            var start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
             if (jtem.search("单周") != -1) {
               for (var i = start_week; i <= total_weeks; i += 2)
                 weeks[i] = 1;
@@ -619,12 +619,20 @@ function ClassListPlugin() {
 
     refresh(hard_load = false) {
       if (hard_load) this.clear();
-      return this.load();
+      return this.load().then(() => {
+        if (this.class_data.length == 0)
+          this.console.info("没有找到课程 : (");
+        else
+          this.console.debug(`已加载${this.class_data.length}门课程`);
+      }).catch((e) => {
+        this.console.error("无法加载课程列表：" + e);
+      });
     }
 
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
+        this.console.info("Auto-refresh started.")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -662,9 +670,9 @@ function ClassListPlugin() {
             target.refresh().then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
-              console.log("Count: " + auto_check_times++);
+              target.console.debug("Auto-refresh count: " + auto_check_times++, "auto-refresh-count");
             }).catch((e) => {
-              console.log(e);
+              target.console.error(e);
             });
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
@@ -852,6 +860,8 @@ function ClassListPlugin() {
       this.clear();
 
       window.mdc.autoInit();
+
+      this.console = new PJWConsole();
     }
   };
 
@@ -939,6 +949,137 @@ function ClassListPlugin() {
       this.list = this.dom.children(".mdc-menu-surface").children(".pjw-select-list");
       this.obj.selectedIndex = 0;
       $$("#" + id).hide();
+    }
+  }
+
+  window.PJWConsole = class {
+    show(stay = false) {
+      this.dom.css({
+        "bottom": "10px",
+        "opacity": "1"
+      });
+      if (typeof(this.stay_timeout) != "undefined")
+        clearTimeout(this.stay_timeout);
+      if (stay) this.mouse_stay = true;
+      if (!this.mouse_stay)
+        this.stay_timeout = setTimeout((target) => {
+          target.hide();
+        }, 2500, this);
+    }
+
+    hide() {
+      this.collapse();
+      this.dom.css({
+        "bottom": "-70px",
+        "opacity": "0"
+      });
+      this.setColor();
+    }
+
+    expand() {
+      this.history.css("display", "flex");
+    }
+
+    collapse() {
+      this.history.css("display", "none");
+    }
+
+    setColor(color = "rgba(0, 0, 0, .2)") {
+      this.dom.css("filter", `drop-shadow(0px 0px 6px ${color}`);
+    }
+
+    // type: error warning info done code
+    log(text, channel = null, type = "info") {
+      if (channel) {
+        channel = `data-channel="${channel}"`;
+        this.dom.find(`[${channel}]`).remove();
+      }
+      var html = `
+        <div class="pjw-console-item" ${channel}>
+          <div class="pjw-console-icon material-icons-round ${type}"></div>
+          <div class="pjw-console-text">${text}</div>
+        </div>
+      `;
+      this.dom.children(".pjw-console-item").appendTo(this.history);
+      this.dom.append(html);
+
+      this.history[0].scrollTop = this.history[0].scrollHeight;
+
+      this.setColor();
+      if (["error", "warning"].include(type)) {
+        this.setColor("#b74710");
+        this.show(true);
+      } else if (["done"].include(type)) {
+        this.setColor("limegreen");
+        this.show(true);
+      } else if (["info"].include(type)) 
+        this.show(false);
+    }
+
+    error(text, channel = null) {
+      this.log(text, channel, "error");
+    }
+
+    success(text, channel = null) {
+      this.log(text, channel, "done");
+    }
+
+    warn(text, channel = null) {
+      this.log(text, channel, "warning");
+    }
+
+    debug(text, channel = null) {
+      this.log(text, channel, "code");
+    }
+
+    info(text, channel = null) {
+      this.log(text, channel, "info");
+    }
+
+    constructor() {
+      var html = `
+      <div id="pjw-console" class="mdc-card">
+        <div id="pjw-console-history">
+        </div>
+        <div class="pjw-console-item">
+          <div class="pjw-console-icon material-icons-round">emoji_people</div>
+          <div class="pjw-console-text">v${window.pjw_version} Potato Console</div>
+        </div>
+      </div>`;
+
+      this.dom = $$(html).appendTo("body");
+      this.history = this.dom.children("#pjw-console-history");
+
+      $$(document).on("mousemove", null, {
+        target: this
+      }, function(e) {
+        if (e.clientY >= $$(window).height() - 60)
+          e.data.target.show();
+      });
+
+      this.dom.on("click", null, {
+        target: this
+      }, function(e) {
+        e.data.target.expand();
+      });
+
+      this.dom.on("mouseenter", null, {
+        target: this
+      }, function(e) {
+        var target = e.data.target;
+        target.mouse_stay = true;
+        clearTimeout(target.stay_timeout);
+      });
+
+      this.dom.on("mouseleave", null, {
+        target: this
+      }, function(e) {
+        var target = e.data.target;
+        target.mouse_stay = false;
+        target.stay_timeout = setTimeout((target) => {
+          target.hide();
+        }, 1500, target);
+      });
     }
   }
 }
