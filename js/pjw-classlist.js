@@ -973,6 +973,7 @@ function ClassListPlugin() {
     }
 
     hide() {
+      this.history[0].scrollTop = this.history[0].scrollHeight;
       this.collapse();
       this.dom.css({
         "bottom": "-70px",
@@ -1083,7 +1084,7 @@ function ClassListPlugin() {
         target.mouse_stay = false;
         target.stay_timeout = setTimeout((target) => {
           target.hide();
-        }, 1500, target);
+        }, 600, target);
       });
     }
   }
