@@ -650,6 +650,14 @@ injectStyleFromString(`/* PJW ClassList */
   justify-content: space-evenly;
 }
 
+.pjw-class-time-detail {
+  color: rgba(0, 0, 0, .6);
+}
+
+.pjw-class-container--compressed .pjw-class-time-detail {
+  display: none;
+}
+
 .pjw-class-weeknum-bar {
   height: 16px;
   width: 200px;
@@ -1861,6 +1869,11 @@ function ClassListPlugin() {
             return getLessonTime(data.lesson_time);
           else return `<div class="pjw-class-weekcal-heading">自由时间</div>`;
 
+        case "timedetail":
+          if ("time_detail" in data && data.time_detail.length > 0)
+            return `<div class="pjw-class-time-detail">${data.time_detail}</div>`;
+          else return "";
+
         case "selectbutton":
           if ("select_button" in data)
             return getSelectButton(data.select_button, options);
@@ -1885,6 +1898,7 @@ function ClassListPlugin() {
         <div class="pjw-class-sub">
           <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
           <div class="pjw-class-sideinfo">
+            ${this.getHTML(data, "timedetail")}
             ${this.getHTML(data, "weeknum")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
@@ -2569,11 +2583,19 @@ function ClassListPlugin() {
     }
 
     setByText(text) {
-      this.obj.selectedIndex = parseInt(this.list.find(`[data-text=${text}]`).attr("data-index"));
+      var find_res = this.list.find(`[data-text=${text}]`);
+      if (find_res.length)
+        this.obj.selectedIndex = parseInt(find_res.attr("data-index"));
+      else
+        this.obj.selectedIndex = 0;
     }
 
     setByValue(val) {
-      this.obj.selectedIndex = parseInt(this.list.find(`[data-value=${val}]`).attr("data-index"));
+      var find_res = this.list.find(`[data-value=${val}]`);
+      if (find_res.length)
+        this.obj.selectedIndex = parseInt(find_res.attr("data-index"));
+      else
+        this.obj.selectedIndex = 0;
     }
 
     onchange(func) {
@@ -2704,8 +2726,6 @@ function ClassListPlugin() {
       `;
       this.dom.children(".pjw-console-item").appendTo(this.history);
       this.dom.append(html);
-
-      this.history[0].scrollTop = this.history[0].scrollHeight;
 
       this.setColor();
       if (["error", "warning"].include(type)) {
@@ -3088,6 +3108,7 @@ window.potatojw_intl = function() {
                 label: "学时"
               }],
               lesson_time: res.lesson_time,
+              time_detail: $$(val).children('td:eq(8)').html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: false
@@ -3136,6 +3157,8 @@ window.potatojw_intl = function() {
 
     $$("#academySelect > option:eq(0)").html("全部院系");
     $$("#academySelect > option:eq(0)").val("00");
+    $$("#academySelect > option:eq(29)").after(`<option value="30">人工智能学院</option>`);
+    academySelectgroup.splice(30, 0, [$$(`<option value="302">人工智能</option>`)[0]]);
 
     list.selectors = {
       term: new PJWSelect("termList", "学期", list.heading.children(".pjw-classlist-selectors")),
@@ -3325,6 +3348,7 @@ window.potatojw_intl = function() {
                   label: "学分"
                 }],
                 lesson_time: res.lesson_time,
+                time_detail: $$(val).children('td:eq(4)').html(),
                 class_weeknum: res.class_weeknum,
                 select_button: {
                   status: select_status,
@@ -3598,6 +3622,7 @@ window.potatojw_intl = function() {
                 label: "学分"
               }],
               lesson_time: res.lesson_time,
+              time_detail: $$(val).children('td:eq(4)').html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
@@ -3710,6 +3735,7 @@ window.potatojw_intl = function() {
                   label: "学分"
                 }],
                 lesson_time: res.lesson_time,
+                time_detail: $$(val).children('td:eq(4)').html(),
                 class_weeknum: res.class_weeknum,
                 select_button: {
                   status: select_status,
@@ -3787,6 +3813,7 @@ window.potatojw_intl = function() {
               label: "学分"
             }],
             lesson_time: res.lesson_time,
+            time_detail: $$(val).children('td:eq(4)').html(),
             class_weeknum: res.class_weeknum,
             select_button: {
               status: "Select",
@@ -3904,6 +3931,7 @@ window.potatojw_intl = function() {
                 label: "学分"
               }],
               lesson_time: res.lesson_time,
+              time_detail: $$(val).children('td:eq(5)').html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
@@ -4032,6 +4060,7 @@ window.potatojw_intl = function() {
                 label: "专业意向/已选/限额"
               }],
               lesson_time: res.lesson_time,
+              time_detail: $$(val).children('td:eq(5)').html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,

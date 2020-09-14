@@ -256,6 +256,11 @@ function ClassListPlugin() {
             return getLessonTime(data.lesson_time);
           else return `<div class="pjw-class-weekcal-heading">自由时间</div>`;
 
+        case "timedetail":
+          if ("time_detail" in data && data.time_detail.length > 0)
+            return `<div class="pjw-class-time-detail">${data.time_detail}</div>`;
+          else return "";
+
         case "selectbutton":
           if ("select_button" in data)
             return getSelectButton(data.select_button, options);
@@ -280,6 +285,7 @@ function ClassListPlugin() {
         <div class="pjw-class-sub">
           <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
           <div class="pjw-class-sideinfo">
+            ${this.getHTML(data, "timedetail")}
             ${this.getHTML(data, "weeknum")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
@@ -964,11 +970,19 @@ function ClassListPlugin() {
     }
 
     setByText(text) {
-      this.obj.selectedIndex = parseInt(this.list.find(`[data-text=${text}]`).attr("data-index"));
+      var find_res = this.list.find(`[data-text=${text}]`);
+      if (find_res.length)
+        this.obj.selectedIndex = parseInt(find_res.attr("data-index"));
+      else
+        this.obj.selectedIndex = 0;
     }
 
     setByValue(val) {
-      this.obj.selectedIndex = parseInt(this.list.find(`[data-value=${val}]`).attr("data-index"));
+      var find_res = this.list.find(`[data-value=${val}]`);
+      if (find_res.length)
+        this.obj.selectedIndex = parseInt(find_res.attr("data-index"));
+      else
+        this.obj.selectedIndex = 0;
     }
 
     onchange(func) {
@@ -1099,8 +1113,6 @@ function ClassListPlugin() {
       `;
       this.dom.children(".pjw-console-item").appendTo(this.history);
       this.dom.append(html);
-
-      this.history[0].scrollTop = this.history[0].scrollHeight;
 
       this.setColor();
       if (["error", "warning"].include(type)) {

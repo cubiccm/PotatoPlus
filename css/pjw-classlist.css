@@ -337,6 +337,14 @@
   justify-content: space-evenly;
 }
 
+.pjw-class-time-detail {
+  color: rgba(0, 0, 0, .6);
+}
+
+.pjw-class-container--compressed .pjw-class-time-detail {
+  display: none;
+}
+
 .pjw-class-weeknum-bar {
   height: 16px;
   width: 200px;
