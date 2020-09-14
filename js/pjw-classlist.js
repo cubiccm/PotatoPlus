@@ -1064,7 +1064,6 @@ function ClassListPlugin() {
     }
 
     hide() {
-      this.history[0].scrollTop = this.history[0].scrollHeight;
       this.collapse();
       this.dom.css({
         "bottom": "-70px",
@@ -1075,6 +1074,7 @@ function ClassListPlugin() {
 
     expand() {
       this.history.css("display", "flex");
+      this.history[0].scrollTop = this.history[0].scrollHeight;
     }
 
     collapse() {
