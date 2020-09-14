@@ -213,6 +213,7 @@
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal {
+  cursor: pointer;
   background-color: transparent;
 }
 

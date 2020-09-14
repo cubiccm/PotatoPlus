@@ -525,6 +525,7 @@ injectStyleFromString(`/* PJW ClassList */
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal {
+  cursor: pointer;
   background-color: transparent;
 }
 
@@ -1909,12 +1910,21 @@ function ClassListPlugin() {
       this.priority = 0;
 
       // Set expand / collapse event of class comtainer
-      this.sub.on("mouseenter", (e) => {
+      this.sub.on("mouseenter", null, {
+        target: this
+      }, (e) => {
+        if (!e.data.target.list.move_to_expand) return;
         var t = jQuery(e.delegateTarget).parent();
         t.removeClass("pjw-class-container--compressed");
       });
-      this.info.on("click", (e) => {
-        var t = jQuery(e.delegateTarget).parent();
+      this.dom.on("click", null, {
+        target: this
+      }, (e) => {
+        if (!e.data.target.list.move_to_expand)
+          e.data.target.list.move_to_expand = true;
+        else
+          e.data.target.list.move_to_expand = false;
+        var t = jQuery(e.delegateTarget);
         if (t.hasClass("pjw-class-container--compressed"))
           t.removeClass("pjw-class-container--compressed");
         else
