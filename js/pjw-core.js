@@ -50,7 +50,7 @@ window.potatojw_intl = function() {
   }
 
   var subclass_mode_list = {};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true};
   var filter_mode_list = subclass_mode_list;
 
   const custom_toolbar_html = {
@@ -305,7 +305,7 @@ window.potatojw_intl = function() {
               },
               comment_button: {
                 status: true,
-                text: (Math.random() * 10).toFixed(1)
+                // text: (Math.random() * 10).toFixed(1)
               }
             };
             list.add(data);
@@ -417,7 +417,6 @@ window.potatojw_intl = function() {
         fillCompleted();
       });
     }
-
   } else if (pjw_mode == "freshmen_exam") {
     window.findSelection = function(pos) {
       var sel_A = lib.lastIndexOf('A', pos);
@@ -517,7 +516,7 @@ window.potatojw_intl = function() {
             if ($$(val).css("display") == "none") return;
             $$(val).find("tr").each((index, val) => {
               var res = this.parseClassTime($$(val).children("td:eq(4)").html());
-              if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
+              if ($$(val).children("td:eq(9)").html() != "") select_status = "Select";
               else select_status = "Full";
               var classID = $$(val).children("td:eq(9)").children("input").val();
               data = {
@@ -545,7 +544,7 @@ window.potatojw_intl = function() {
                 },
                 comment_button: {
                   status: true,
-                  text: (Math.random() * 10).toFixed(1)
+                  // text: (Math.random() * 10).toFixed(1)
                 }
               };
               this.add(data);
@@ -633,6 +632,123 @@ window.potatojw_intl = function() {
     $$(document).ready(function() {
       $$("#comment").html("[potatoplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatoplus<br><br>" + $$("#comment").html());
     });
+  } else if (pjw_mode == "read_view") {
+    window.list = new PJWClassList($$("body"));
+    window.initClassList = () => {};
+    $$("#courseList").hide();
+    $$("#comment").appendTo("body");
+
+    list.select = function(classID, class_data) {
+      return new Promise((resolve, reject) => {
+        var deselect = class_data.select_button.status == "Deselect";
+        var target = this;
+        $$.ajax({
+          url: "/jiaowu/student/elective/selectCourse.do",
+          data: {
+            method: (deselect ? "readCourseDelete" : "readCourseSelect"),
+            classid: classID
+          },
+          type: "POST"
+        }).done(function(res) {
+          if ($$(res).is("#successMsg"))
+            target.console.success(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+          else if ($$(res).is("#errMsg"))
+            target.console.error(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+          target.refresh(false, true).then(resolve);
+        }).fail((res) => {
+          target.console.error(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")} 操作失败：${res}`);
+          reject(res);
+        });
+      });
+    }
+
+    list.parse = function(data) {
+      return new Promise((resolve, reject) => {
+        try {
+          var rows = $$(data).find("tbody").find("tr");
+          rows.each((index, val) => {
+            // Prepare select button
+            var classID = this.getClassNameFromCourseNum($$(val).children("td:eq(6)").attr("onclick"));
+            var select_status = ($$(val).children("td:eq(6)").children("a").html() == "选择" ? "Select" : "Deselect");
+
+            // Construct class data
+            data = {
+              classID: classID,
+              title: $$(val).children("td:eq(1)").html(),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(2)").html()),
+              info: [{
+                key: "类别",
+                val: $$(val).children("td:eq(3)").html()
+              }, {
+                key: "课程编号",
+                val: $$(val).children('td:eq(0)').html(),
+                hidden: true
+              }],
+              num_info: [{
+                num: '' + parseInt($$(val).children("td:eq(5)").html()) + '/' + parseInt($$(val).children("td:eq(4)").html()),
+                label: "已选/限额"
+              }],
+              select_button: {
+                status: select_status,
+                text: [`${parseInt($$(val).children("td:eq(5)").html())}/${parseInt($$(val).children("td:eq(4)").html())}`],
+                action: (e) => {
+                  e.data.button_target.prop("disabled", true);
+                  e.data.target.list.select(classID, e.data.target.data);
+                }
+              },
+              comment_button: {
+                status: true,
+                // text: (Math.random() * 10).toFixed(1)
+              }
+            };
+
+            this.add(data);
+          });
+
+          // Render DOM
+          this.update();
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+
+    list.load = function() {
+      return new Promise((resolve, reject) => {
+        $$.ajax({
+          type: "POST",
+          url: "/jiaowu/student/elective/courseList.do",
+          data: {
+            method: "readCourseList",
+            type: this.selectors.type.val()
+          }
+        }).done((data) => {
+          this.parse(data);
+          resolve();
+        }).fail((data) => {
+          reject("Failed to request data: " + data);
+        });
+      });
+    }
+
+    $$.ajax({
+      type: "POST",
+      url: "/jiaowu/student/elective/courseList.do",
+      data: {
+        method: "readCourseList",
+        type: 1
+      }
+    }).done((data) => {
+      list.selectors = {
+        type: new PJWSelect($$(data).filter("#readType"), "书目类别", list.heading.children(".pjw-classlist-selectors"), 0)
+      };
+      list.selectors.type.onchange( (e) => {
+        list.refresh(true);
+      } );
+      list.refresh();
+    });
+
   } else if (pjw_mode == "common") {
     window.list = new PJWClassList($$("body"));
 
@@ -666,11 +782,11 @@ window.potatojw_intl = function() {
       return new Promise((resolve, reject) => {
         try {
           var table = $$(data).find("table > tbody");
-          table.find("tr:gt(0)").each((index, val) => {
+          table.find("tr").each((index, val) => {
             var res = this.parseClassTime($$(val).children("td:eq(4)").html());
             var classID = "0", class_kind = "13";
             if ($$(val).children("td:eq(9)").html() != "") {
-              select_status = "Available";
+              select_status = "Select";
               var parse_class_res = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
               classID = parse_class_res[0], class_kind = parse_class_res[1];
             } else {
@@ -701,7 +817,7 @@ window.potatojw_intl = function() {
               },
               comment_button: {
                 status: true,
-                text: (Math.random() * 10).toFixed(1)
+                // text: (Math.random() * 10).toFixed(1)
               }
             };
             list.add(data);
@@ -785,7 +901,7 @@ window.potatojw_intl = function() {
             if ($$(val).css("display") == "none") return;
             $$(val).find("tr").each((index, val) => {
               var res = this.parseClassTime($$(val).children("td:eq(4)").html());
-              if ($$(val).children("td:eq(9)").html() != "") select_status = "Available";
+              if ($$(val).children("td:eq(9)").html() != "") select_status = "Select";
               else select_status = "Full";
               var classID = $$(val).children("td:eq(9)").children("input").val();
               data = {
@@ -813,7 +929,7 @@ window.potatojw_intl = function() {
                 },
                 comment_button: {
                   status: true,
-                  text: (Math.random() * 10).toFixed(1)
+                  // text: (Math.random() * 10).toFixed(1)
                 }
               };
               this.add(data);
@@ -884,13 +1000,13 @@ window.potatojw_intl = function() {
             lesson_time: res.lesson_time,
             class_weeknum: res.class_weeknum,
             select_button: {
-              status: "Available",
+              status: "Select",
               text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
               action: (() => {})
             },
             comment_button: {
               status: true,
-              text: (Math.random() * 10).toFixed(1)
+              // text: (Math.random() * 10).toFixed(1)
             }
           };
           list.add(data);
@@ -971,7 +1087,7 @@ window.potatojw_intl = function() {
             // Prepare select button
             var classID = "0";
             if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
-              select_status = "Available";
+              select_status = "Select";
               classID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
             } else {
               select_status = "Full";
@@ -1007,7 +1123,7 @@ window.potatojw_intl = function() {
               },
               comment_button: {
                 status: true,
-                text: (Math.random() * 10).toFixed(1)
+                // text: (Math.random() * 10).toFixed(1)
               }
             };
 
@@ -1054,77 +1170,137 @@ window.potatojw_intl = function() {
     $$("#myForm").remove();
     $$("#operationInfo").remove();
   } else if (pjw_mode == "open_view") {
-    window.parse = function(data) {
-      $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
-      var table = $$("#ghost-div").find("#tbCourseList > tbody");
-      table.find("tr:gt(0)").each((index, val) => {
-        var res = this.parseClassTime($$(val).children("td:eq(5)").html());
-        data = {
-          title: $$(val).children("td:eq(2)").html(),
-          teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
-          info: [{
-            key: "开课年级",
-            val: $$(val).children("td:eq(4)").html()
-          }, {
-            key: "课程编号",
-            val: $$(val).children('td:eq(0)').html(),
-            hidden: true
-          }, {
-            key: "开课院系",
-            val: $$("#academyList option:selected"),
-            hiddden: true
-          }],
-          num_info: [{
-            num: parseInt($$(val).children("td:eq(3)").html()),
-            label: "学分"
-          }],
-          lesson_time: res.lesson_time,
-          class_weeknum: res.class_weeknum,
-          select_button: {
-            status: "Available",
-            text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`, `专业意向：${$$(val).children("td:eq(9)").html()}`],
-            action: (() => {})
-          },
-          comment_button: {
-            status: true,
-            text: (Math.random() * 10).toFixed(1)
-          }
-        };
-        list.add(data);
-      });
-      $$("#ghost-div").remove();
-    }
+    window.list = new PJWClassList($$("#courseList"));
+    window.initList = () => {};
 
-    window.loadClassList = function(academy = $$("#academyList").val()) {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        $$("div#course").css("display", "none");
-        window.list = new PJWOpenClassList($$("#courseList"));
-      }
-      
-      $$.ajax({
-        type: "POST",
-        url: "/jiaowu/student/elective/courseList.do",
-        data: {
-          method: "opencourse",
-          campus: "全部校区",
-          academy: academy
+    list.select = function(classID, class_data) {
+      var bIsExist = false;
+      var classIdList = $('classIdList').innerHTML;
+      var arrClassId = classIdList.split(",");
+      for(var i = 0; i < arrClassId.length; i++){
+        if (arrClassId[i] == classID) {
+          bIsExist = true;
+          break;
         }
-      }).done(function(data) {
-        parse(data);
-      }).fail(function(data) {
-        console.log("Failed to request data: " + data);
-      });
-    };
-
-    class PJWOpenClassList extends PJWClassList {
-      refresh() {
-        loadClassList();
       }
+      if (bIsExist) {
+        this.console.log("这门课程已经在已选列表中了。");
+        return;
+      }
+
+      var newRow = $('tbCourseListEx').insertRow(-1);
+      newRow.id = "trClass" + classID;
+      var mynewcell = newRow.insertCell(-1);
+      mynewcell.innerHTML = class_data.class_name_for_list;
+      mynewcell = newRow.insertCell(-1);
+      mynewcell.innerHTML = "<a href='javascript:upClick(" + classID + ")'>上移</a>";
+      mynewcell = newRow.insertCell(-1);
+      mynewcell.innerHTML = "<a href='javascript:exitElective(" + classID + ")'>退选</a>";
+      
+      $('classIdList').innerHTML = $('classIdList').innerHTML + "," + classID;
+      
+      g_selectedLeft--;
+
+      this.console.log(`《${class_data.title}》（${class_data.teachers.join("，")}） 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加。` : ""));
     }
 
-    window.campusChange = loadClassList;
+    list.parse = function(data) {
+      return new Promise((resolve, reject) => {
+        try {
+          var rows = $$(data).find("tbody").find("tr:gt(0)");
+          rows.each((index, val) => {
+            // Prepare lesson time
+            var res = this.parseClassTime($$(val).children("td:eq(5)").html());
+
+            // Prepare select button
+            var classID = this.getClassIDFromCourseNum($$(val).children("td:eq(0)"));
+            var class_name_for_list = this.getClassNameFromCourseNum($$(val).children("td:eq(10)"));
+            var select_status = "Select";
+
+            // Construct class data
+            data = {
+              classID: classID,
+              class_name_for_list: class_name_for_list,
+              title: $$(val).children("td:eq(2)").html(),
+              teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
+              info: [{
+                key: "开课年级",
+                val: $$(val).children("td:eq(4)").html()
+              }, {
+                key: "课程编号",
+                val: $$(val).children('td:eq(0)').html(),
+                hidden: true
+              }, {
+                key: "开课院系",
+                val: this.selectors.academy.text(),
+                hidden: true
+              }],
+              num_info: [{
+                num: parseInt($$(val).children("td:eq(3)").html()),
+                label: "学分"
+              }, {
+                num: parseInt($$(val).children("td:eq(9)").html()) + '/' + parseInt($$(val).children("td:eq(8)").html()) + '/' + parseInt($$(val).children("td:eq(7)").html()),
+                label: "专业意向/已选/限额"
+              }],
+              lesson_time: res.lesson_time,
+              class_weeknum: res.class_weeknum,
+              select_button: {
+                status: select_status,
+                text: [`${$$(val).children("td:eq(9)").html()}/${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+                action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
+              },
+              comment_button: {
+                status: true,
+                // text: (Math.random() * 10).toFixed(1)
+              }
+            };
+
+            this.add(data);
+          });
+
+          // Render DOM
+          this.update();
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+
+    list.load = function() {
+      return new Promise((resolve, reject) => {
+        $$.ajax({
+          type: "POST",
+          url: "/jiaowu/student/elective/courseList.do",
+          data: {
+            method: "opencourse",
+            campus: "全部校区",
+            academy: this.selectors.academy.val()
+          }
+        }).done((data) => {
+          this.parse(data);
+          resolve();
+        }).fail((data) => {
+          reject("Failed to request data: " + data);
+        });
+      });
+    }
+
+    $$.ajax({
+      type: "POST",
+      url: "/jiaowu/student/elective/courseList.do",
+      data: {
+        method: "openCourse"
+      }
+    }).done((data) => {
+      list.selectors = {
+        academy: new PJWSelect($$(data).filter("#academyList"), "院系", list.heading.children(".pjw-classlist-selectors"))
+      };
+      list.selectors.academy.onchange( (e) => {
+        list.refresh(true);
+      } );
+      list.refresh();
+    });
   } else if (pjw_mode == "major_course") {
     /*
     window.hideCourseDetail = function(response){

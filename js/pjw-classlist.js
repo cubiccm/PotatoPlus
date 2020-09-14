@@ -26,7 +26,7 @@ function ClassListPlugin() {
         end: <Integer>
       }, ...],
       select_button: {
-        status: <String>, // "Available", "Full", "Selected", false
+        status: <String>, // "Select", "Deselect", "Full", "Selected", false
         text: [<String>, ...],
         action: <Function>
       }
@@ -76,7 +76,7 @@ function ClassListPlugin() {
             hidden: true
           });
         }
-        return content[0];
+        return data.title = content[0];
       }
 
       function getTeachers(content) {
@@ -183,7 +183,13 @@ function ClassListPlugin() {
         var label_text = "选择";
         var icon_text = "add_task";
         var disabled = "";
-        if (data.status != "Available" && data.status !== true) {
+        var extra_classes = "";
+
+        if (data.status == "Deselect") {
+          label_text = "退选";
+          icon_text = "layers_clear";
+          extra_classes = "deselect";
+        } else if (data.status != "Select" && data.status !== true) {
           disabled = "disabled";
           icon_text = "block";
           if (data.status == "Full")
@@ -196,13 +202,14 @@ function ClassListPlugin() {
         if (data.text)
           for (var item of data.text)
             select_info += `<div class="pjw-class-select-button__status">${item}</div>`;
-        var inner_html = `<div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${select_info}</div>`;
+        var inner_html = `<div class="mdc-button__ripple"></div><div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${select_info}</div>`;
         if (get_inner === true)
           return {
             html: inner_html,
-            disabled: (disabled == "disabled")
+            disabled: (disabled == "disabled"),
+            extra_classes: extra_classes
           };
-        return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button"><div class="mdc-button__ripple"></div>${inner_html}</button>`;
+        return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>`;
       }
 
       function getCommentButton(data) {
@@ -210,7 +217,7 @@ function ClassListPlugin() {
         if (data.text) text = data.text;
         if (!data.status) return "";
         else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
-          <div class="mdc-button__ripple"></div><div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">forum</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
+          <div class="mdc-button__ripple"></div><div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">fingerprint</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
       }
 
       switch(attr) {
@@ -290,6 +297,11 @@ function ClassListPlugin() {
       var button_res = this.getHTML({select_button: data}, "selectbutton", true);
       this.select_button.html(button_res.html);
       this.select_button.prop("disabled", button_res.disabled);
+
+      if (this.select_button.attr("data-extra-class"))
+        this.select_button.removeClass(this.select_button.attr("data-extra-class"));
+      this.select_button.addClass(button_res.extra_classes);
+      this.select_button.attr("data-extra-class", button_res.extra_classes);
     }
 
     constructor(DOMparent, data, listparent) {
@@ -316,13 +328,19 @@ function ClassListPlugin() {
       var data = this.data;
 
       // Set select button onclick event
-      this.select_button.click({target: this, button_target: this.select_button}, data.select_button.action);
+      this.select_button.click({
+        target: this,
+        button_target: this.select_button,
+        action: ("action" in data.select_button ? data.select_button.action : () => {})
+      }, (e) => {
+        e.data.action(e);
+      });
 
       // Initialize DOM trace variables
       this.display = false;
       this.priority = 0;
 
-      // Set expand / collapse event of class comtainer
+      // Set expand / collapse event of class container
       this.sub.on("mouseenter", null, {
         target: this
       }, (e) => {
@@ -330,9 +348,11 @@ function ClassListPlugin() {
         var t = jQuery(e.delegateTarget).parent();
         t.removeClass("pjw-class-container--compressed");
       });
+
       this.dom.on("click", null, {
         target: this
       }, (e) => {
+        if ($$(e.target).parent().hasClass("pjw-class-select-button")) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
         else
@@ -343,6 +363,7 @@ function ClassListPlugin() {
         else
           t.addClass("pjw-class-container--compressed");
       });
+
       this.dom.on("mouseleave", (e) => {
         var t = jQuery(e.delegateTarget);
         if (t.hasClass("pjw-class-container--compressed")) return;
@@ -378,6 +399,7 @@ function ClassListPlugin() {
       if (data.title.trim() == "&nbsp;" || data.title.trim() == "") return;
       if (this.auto_inc < this.class_data.length && compareData(data, this.class_data[this.auto_inc].data) == true) {
         this.class_data[this.auto_inc].data = data;
+        this.class_data[this.auto_inc].obj.data = data;
         this.class_data[this.auto_inc].obj.updateSelectButton(data.select_button);
       } else {
         var item = {
@@ -640,10 +662,10 @@ function ClassListPlugin() {
       this.scroll_lock = false;
     }
 
-    refresh(hard_load = false, is_auto = false) {
+    refresh(hard_load = false, disable_log = false) {
       if (hard_load) this.clear();
       return this.load().then(() => {
-        if (is_auto) return;
+        if (disable_log) return;
         if (this.class_data.length == 0)
           this.console.info("没有找到课程 : (");
         else
@@ -773,6 +795,37 @@ function ClassListPlugin() {
       }
     }
 
+    handleResize() {
+      var width = this.dom.width();
+      if (width < 1050) this.dom.addClass("narrow-desktop");
+      else this.dom.removeClass("narrow-desktop");
+    }
+
+    getClassIDFromCourseNum(obj) {
+      if (obj.children("a").length == 0) return false;
+      var str = obj.children("a").attr("href");
+      if (str == "" || !str) return false;
+      var res = str.match(/[0-9]+/);
+      if (res.length >= 1)
+        return res[0];
+      return false;
+    }
+
+    getClassNameFromCourseNum(obj) {
+      if (typeof(obj) == "string") {
+        var str = obj;
+      } else {
+        if (obj.children("a").length == 0) return false;
+        var str = obj.children("a").attr("href");
+        if (str == "" || !str) return false;
+      }
+
+      var res = str.match(/(?:')(.*?)(?:')/);
+      if (res.length >= 1)
+        return res[1];
+      return false;
+    }
+
     constructor(parent) {
       const list_html = `
       <div class="pjw-classlist">
@@ -885,7 +938,15 @@ function ClassListPlugin() {
         e.data.target.checkScroll();
       });
 
+      $$(window).on("resize", null, {
+        target: this
+      }, (e) => {
+        e.data.target.handleResize();
+      });
+
       this.clear();
+
+      this.handleResize();
 
       window.mdc.autoInit();
 
@@ -929,7 +990,15 @@ function ClassListPlugin() {
     }
 
     constructor(id, name, target, start = 1) {
-      var list = $$(`#${id}`)[0].options;
+      var list;
+      if (typeof(id) == "string") {
+        list = $$(`#${id}`)[0].options;
+        $$(`#${id}`).hide();
+      } else {
+        id.hide();
+        list = id[0].options;
+        id = id.attr("id");
+      }
       var list_html = "";
       this.count = 0;
       for (var item of list) {
@@ -976,7 +1045,6 @@ function ClassListPlugin() {
       this.obj = new mdc.select.MDCSelect(this.dom[0]);
       this.list = this.dom.children(".mdc-menu-surface").children(".pjw-select-list");
       this.obj.selectedIndex = 0;
-      $$("#" + id).hide();
     }
   }
 

@@ -50,6 +50,7 @@
 .pjw-classlist-controls {
   float: right;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
@@ -109,6 +110,7 @@
 
 #pjw-classlist-search-field {
   min-width: 300px;
+  margin-top: 10px;
 }
 
 .pjw-classlist-body {
@@ -149,10 +151,15 @@
 .pjw-class-sub {
   display: flex;
   flex-direction: row;
+  user-select: none;
 }
 
 .pjw-class-sub > div {
   margin: 0 10px;
+}
+
+.pjw-class-container--compressed .pjw-class-sub {
+  align-self: center;
 }
 
 /* Basic Class Info */
@@ -205,7 +212,6 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  user-select: none;
   border-radius: 14px;
   background-color: rgba(0, 0, 0, .05);
   padding: 6px;
@@ -213,7 +219,6 @@
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal {
-  cursor: pointer;
   background-color: transparent;
 }
 
@@ -230,6 +235,7 @@
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading {
   margin: 10px 0;
+  cursor: pointer;
 }
 
 .pjw-class-weekcal-heading-day {
@@ -327,6 +333,7 @@
 .pjw-class-sideinfo {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: space-evenly;
 }
 
@@ -341,6 +348,7 @@
 
 .pjw-class-container--compressed .pjw-class-weeknum-bar {
   width: 180px;
+  cursor: pointer;
 }
 
 .pjw-class-weeknum-bar__fill {
@@ -379,6 +387,8 @@
   flex-direction: row;
   align-items: flex-end;
   padding: 0;
+  cursor: pointer;
+  user-select: none;
 }
 
 .pjw-class-bignum > .num {
@@ -399,6 +409,10 @@
 
 .pjw-class-container--compressed .pjw-class-bignum > .label {
   font-size: 12px;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Class Operations */
@@ -421,6 +435,10 @@
   background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
 }
 
+.pjw-class-select-button.deselect {
+  background: darkred;
+}
+
 .pjw-class-select-button:disabled {
   color: rgba(0, 0, 0, .5);
   background: rgba(0, 0, 0, .3);
@@ -435,13 +453,13 @@
 }
 
 .pjw-class-comment-icon {
-  font-size: 20px;
+  font-size: 28px;
 }
 
 .pjw-class-operation > button {
   border-radius: 25px;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
-  height: 50px;
+  min-height: 50px;
   margin: 8px 5px;
 }
 
@@ -451,6 +469,10 @@
 
 .pjw-class-select-button__container {
   margin-left: 20px;
+}
+
+.pjw-class-select-button__container > div {
+  white-space: nowrap;
 }
 
 .pjw-class-select-button__label {
@@ -479,6 +501,8 @@
   bottom: -70px;
   opacity: 0;
   width: 60%;
+
+  z-index: 100;
   border-radius: 20px;
   transition: all .4s ease-out;
 
@@ -549,19 +573,12 @@
   hyphens: "-";
 }
 
-/* Small screen */
-
-@media screen and (max-width: 950px) {
-  .pjw-class-info {
-    max-width: 100%;
-  }
-  .pjw-class-sub {
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-  }
-  .pjw-class-operation {
-    flex-direction: column;
-    padding: 20px 0;
-  }
+.narrow-desktop .pjw-class-sub {
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.narrow-desktop .pjw-class-operation {
+  flex-direction: column;
+  padding: 20px 0;
 }
