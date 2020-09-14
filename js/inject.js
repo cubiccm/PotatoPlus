@@ -65,6 +65,7 @@ function injectStyleFromString(str) {
   injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");
   injectScript("js/material-components-web.min.js");
+  injectScript("js/tinypinyin.js");
 
   injectScriptFromString(`
     var pjw_mode = "${pjw_mode}";

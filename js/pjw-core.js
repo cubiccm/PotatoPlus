@@ -8,6 +8,7 @@ window.potatojw_intl = function() {
 
   var head_metadata = `
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <link rel="shortcut icon" href="https://www.nju.edu.cn/_upload/tpl/01/36/310/template310/images/16.ico" type="image/x-icon">
   `;
   $$("head").prepend(head_metadata);
 

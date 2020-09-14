@@ -401,7 +401,20 @@ function ClassListPlugin() {
           else
             return 0;
         }
+
+        keyword = keyword.toUpperCase();
+        str = str.toUpperCase();
         var pos = str.search(keyword);
+
+        // Pinyin
+        if (pos == -1 && /^[a-zA-Z]+$/.test(keyword)) {
+          var initials = "";
+          for (var char of str)
+            initials += Pinyin.convertToPinyin(char)[0];
+          str = initials;
+          pos = str.search(keyword);
+        }
+
         if (pos == 0) {
           return 0.5 + (keyword.length / str.length) / 2;
         } else if (pos != -1) {
@@ -494,6 +507,7 @@ function ClassListPlugin() {
           item.obj.remove();
         this.class_data = this.class_data.slice(0, this.auto_inc);
       }
+
       for (var item of this.class_data)
         if (this.checkFilter(item.data) === false)
           item.obj.hide();
