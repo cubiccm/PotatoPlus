@@ -1247,15 +1247,15 @@ window.potatojw_intl = function() {
                 num: parseInt($$(val).children("td:eq(3)").html()),
                 label: "学分"
               }, {
-                num: parseInt($$(val).children("td:eq(9)").html()) + '/' + parseInt($$(val).children("td:eq(8)").html()) + '/' + parseInt($$(val).children("td:eq(7)").html()),
-                label: "专业意向/已选/限额"
+                num: parseInt($$(val).children("td:eq(8)").html()) + `<span style="font-size: 60%; color: rgba(0, 0, 0, .6);">(${parseInt($$(val).children("td:eq(9)").html())})</span> / ` + parseInt($$(val).children("td:eq(7)").html()),
+                label: "已选<span style=\"font-size: 9px;\">（专业意向）</span>/限额"
               }],
               lesson_time: res.lesson_time,
               time_detail: $$(val).children('td:eq(5)').html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
-                text: [`${$$(val).children("td:eq(9)").html()}/${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+                text: [`${$$(val).children("td:eq(8)").html()}(${$$(val).children("td:eq(9)").html()}) / ${$$(val).children("td:eq(7)").html()}`],
                 action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {

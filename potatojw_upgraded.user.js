@@ -424,6 +424,7 @@ injectStyleFromString(`/* PJW ClassList */
 #pjw-classlist-search-field {
   min-width: 300px;
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .pjw-classlist-body {
@@ -1923,6 +1924,12 @@ function ClassListPlugin() {
       this.select_button.attr("data-extra-class", button_res.extra_classes);
     }
 
+    updateNumInfo(data) {
+      if (!this.initialized) return;
+      if (this.sideinfo.children(".pjw-class-num-info").length)
+        this.sideinfo.children(".pjw-class-num-info").html(this.getHTML(data, "numinfo"));
+    }
+
     constructor(DOMparent, data, listparent) {
       var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;"></div>`;
       this.dom = $$(class_html).appendTo(DOMparent);
@@ -2008,6 +2015,7 @@ function ClassListPlugin() {
         this.intl();
         this.prepared_to_add = true;
       }
+
       function compareData(data1, data2) {
         if ("title" in data2 && data1.title == data2.title)
           if ("teachers" in data2 && data1.teachers[0] == data2.teachers[0])
@@ -2016,10 +2024,15 @@ function ClassListPlugin() {
       }
 
       if (data.title.trim() == "&nbsp;" || data.title.trim() == "") return;
-      if (this.auto_inc < this.class_data.length && compareData(data, this.class_data[this.auto_inc].data) == true) {
+
+      if ((this.auto_inc < this.class_data.length && !compareData(data, this.class_data[this.auto_inc].data)) || this.auto_inc >= this.class_data.length)
+        this.soft_refresh = false;
+
+      if (this.soft_refresh == true) {
         this.class_data[this.auto_inc].data = data;
-        this.class_data[this.auto_inc].obj.data = data;
-        this.class_data[this.auto_inc].obj.updateSelectButton(data.select_button);
+        var target = this.class_data[this.auto_inc].obj;
+        target.data = data;
+        target.updateSelectButton(data.select_button);
       } else {
         var item = {
           data: data,
@@ -2149,6 +2162,7 @@ function ClassListPlugin() {
         return a.id - b.id;
       });
       this.auto_inc = 0;
+      this.soft_refresh = true;
     }
 
     update() {
@@ -2338,7 +2352,7 @@ function ClassListPlugin() {
             target.refresh(false, true).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
-              target.console.debug("Auto-refresh count: " + auto_refresh_count++, "auto-refresh-count");
+              target.console.debug("自动刷新计数：" + auto_refresh_count++, "auto-refresh-count");
             }).catch((e) => {
               target.console.error(e);
             });
@@ -2518,7 +2532,7 @@ function ClassListPlugin() {
         target: this
       }, (e) => {
         if ($$("#autorefresh-switch").hasClass("off"))
-          e.data.target.refresh();
+          e.data.target.refresh(true);
       });
 
       this.refresh_button.on("mousedown", null, {
@@ -2724,18 +2738,23 @@ function ClassListPlugin() {
           <div class="pjw-console-text">${text}</div>
         </div>
       `;
-      this.dom.children(".pjw-console-item").appendTo(this.history);
-      this.dom.append(html);
-
-      this.setColor();
+      if (type == "code") {
+        this.history.append(html);
+      } else {
+        this.dom.children(".pjw-console-item").appendTo(this.history);
+        this.dom.append(html);
+      }
+      
       if (["error", "warning"].include(type)) {
         this.setColor("#b74710");
         this.show(true);
       } else if (["done"].include(type)) {
         this.setColor("limegreen");
         this.show(true);
-      } else if (["info"].include(type)) 
+      } else if (["info"].include(type)) {
+        this.setColor();
         this.show(false);
+      }
     }
 
     error(text, channel = null) {
@@ -4056,15 +4075,15 @@ window.potatojw_intl = function() {
                 num: parseInt($$(val).children("td:eq(3)").html()),
                 label: "学分"
               }, {
-                num: parseInt($$(val).children("td:eq(9)").html()) + '/' + parseInt($$(val).children("td:eq(8)").html()) + '/' + parseInt($$(val).children("td:eq(7)").html()),
-                label: "专业意向/已选/限额"
+                num: parseInt($$(val).children("td:eq(8)").html()) + `<span style="font-size: 60%; color: rgba(0, 0, 0, .6);">(${parseInt($$(val).children("td:eq(9)").html())})</span> / ` + parseInt($$(val).children("td:eq(7)").html()),
+                label: "已选<span style=\"font-size: 9px;\">（专业意向）</span>/限额"
               }],
               lesson_time: res.lesson_time,
               time_detail: $$(val).children('td:eq(5)').html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
-                text: [`${$$(val).children("td:eq(9)").html()}/${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+                text: [`${$$(val).children("td:eq(8)").html()}(${$$(val).children("td:eq(9)").html()}) / ${$$(val).children("td:eq(7)").html()}`],
                 action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {
