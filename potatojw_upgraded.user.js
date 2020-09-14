@@ -1946,11 +1946,11 @@ function ClassListPlugin() {
       this.priority = 0;
 
       // Set expand / collapse event of class container
-      this.sub.on("mouseenter", null, {
+      this.dom.on("mouseenter", null, {
         target: this
       }, (e) => {
         if (!e.data.target.list.move_to_expand) return;
-        var t = jQuery(e.delegateTarget).parent();
+        var t = jQuery(e.delegateTarget);
         t.removeClass("pjw-class-container--compressed");
       });
 
