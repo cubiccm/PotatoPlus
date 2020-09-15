@@ -62,11 +62,13 @@ function injectStyleFromString(str) {
   // injectStyle("css/material-components-web.min.css");
   // injectStyle("css/pjw.css");
   // injectStyle("css/pjw-classlist.css");
+  // injectStyle("css/pjw-filter.css");
 
   injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");
   injectScript("js/material-components-web.min.js");
   injectScript("js/tinypinyin.js");
+  injectScript("js/pjw-console.js");
 
   injectScriptFromString(`
     var pjw_mode = "${pjw_mode}";
@@ -77,8 +79,14 @@ function injectStyleFromString(str) {
     injectScriptFromString(`alert = function(x) {window.alert_data = x;};`);
   }
 
-  injectScript("js/pjw-lib.js");
-  injectScript("js/pjw-captcha.js");
+  if (["login_page", "freshmen_exam"].includes(pjw_mode)) {
+    injectScript("js/pjw-lib.js");
+  }
+  if (pjw_mode == "login_page") {
+    injectScript("js/pjw-captcha.js");
+  }
+
+  injectScript("js/pjw-filter.js");
   injectScript("js/pjw-classlist.js");
   injectScript("js/pjw-core.js");
 })();

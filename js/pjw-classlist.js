@@ -66,7 +66,7 @@ function ClassListPlugin() {
     }
 
     getHTML(data, attr, options = {}) {
-      function parseTitle(content) {
+      function getTitle(content) {
         return data.title;
       }
 
@@ -84,6 +84,9 @@ function ClassListPlugin() {
         var appear_accu = "", hidden_accu = "";
         for (var item of content) {
           if ("key" in item) {
+            if (item.key == "课程编号") {
+              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=0');">${item.val}</span>`;
+            }
             if (item.val == "") continue;
             if (!item.hidden)
               appear_accu += `<p>${item.key}：${item.val}</p>`;
@@ -203,8 +206,8 @@ function ClassListPlugin() {
         return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>`;
       }
 
-      function getCommentButton(data) {
-        var text = "";
+      function getCommentButton(data, ID) {
+        var text = ID;
         if (data.text) text = data.text;
         if (!data.status) return "";
         else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
@@ -214,7 +217,7 @@ function ClassListPlugin() {
       switch(attr) {
         case "title":
           if ("title" in data)
-            return parseTitle(data.title);
+            return getTitle(data.title);
           else return "";
 
         case "teachers":
@@ -259,7 +262,7 @@ function ClassListPlugin() {
 
         case "commentbutton":
           if ("comment_button" in data)
-            return getCommentButton(data.comment_button);
+            return getCommentButton(data.comment_button, data.classID);
           else return "";
       }
     }
@@ -355,7 +358,7 @@ function ClassListPlugin() {
       this.dom.on("click", null, {
         target: this
       }, (e) => {
-        if ($$(e.target).parent().hasClass("pjw-class-select-button")) return;
+        if ($$(e.target).parent().hasClass("mdc-button")) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
         else
@@ -377,7 +380,7 @@ function ClassListPlugin() {
         window.setTimeout( () => {
           comp_height = (comp_height - t.height()) / 2;
           t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
-          t.animate({ "margin-top": "4px", "margin-bottom": "4px" }, 100, (x) => {
+          t.animate({ "margin-top": "2px", "margin-bottom": "2px" }, 100, (x) => {
             return 1 - Math.cos(x * Math.PI / 2);
           });
           t.css("opacity", "1");
@@ -435,6 +438,9 @@ function ClassListPlugin() {
       } else {
         // Conduct hard refresh
         this.soft_refresh = false;
+
+        if (!("classID" in data)) data.classID = this.auto_inc;
+
         var item = {
           data: data,
           obj: new PJWClass(this.body, data, this),
@@ -472,7 +478,7 @@ function ClassListPlugin() {
         str = str.toUpperCase();
         var pos = str.search(keyword);
 
-        // Pinyin
+        // Generate Pinyin initials
         if (pos == -1 && /^[a-zA-Z]+$/.test(keyword)) {
           var initials = "";
           for (var char of str)
@@ -489,6 +495,7 @@ function ClassListPlugin() {
           if (str.search(keyword[1]) > str.search(keyword[0]) 
             && str.search(keyword[0]) != -1) {
             if (str.search(keyword[0]) == 0) return 0.5;
+            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.1;
             else return 0.3;
           }
         }
@@ -544,10 +551,13 @@ function ClassListPlugin() {
       var priority = 0.0;
 
       if (this.filter_enabled == true) {
-        /* Load filter modules here */
-        if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select") {
-          data.priority = -1;
-          return false;
+        for (var name in this.filters) {
+          var res = this.filters[name].check(this.filters[name], data);
+          if (res === false) {
+            data.priority = -1;
+            return false;
+          }
+          priority += res;
         }
       }
       
@@ -608,6 +618,10 @@ function ClassListPlugin() {
     parseTeacherNames = function(text) {
       if (text == "") return [];
       return text.split(/[,，]\s/g);
+    }
+
+    parseClassNumber = function(obj) {
+      return obj.children("a").children("u").html();
     }
 
     // Converts class time string to friendly array
@@ -712,19 +726,27 @@ function ClassListPlugin() {
         for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
           this.class_data[i].obj.show();
         this.max_classes_loaded += this.class_load_size;
+        window.mdc.autoInit();
+        setTimeout((t) => {t.scroll_lock = false;}, 100, this);
+      } else {
+        this.scroll_lock = false;
       }
-      window.mdc.autoInit();
-      this.scroll_lock = false;
     }
 
     refresh(hard_load = false, disable_log = false) {
-      if (hard_load) this.clear();
+      if (hard_load) {
+        this.clear();
+        this.body.css("transition", "");
+        this.body.css("opacity", "0");
+      }
       return this.load().then(() => {
         if (disable_log) return;
         if (this.class_data.length == 0)
           this.console.info("没有找到课程 : (");
         else
           this.console.debug(`已加载${this.class_data.length}门课程`);
+        this.body.css("transition", "opacity .7s cubic-bezier(0.5, 0.5, 0, 1)");
+        this.body.css("opacity", "1");
       }).catch((e) => {
         this.console.error("无法加载课程列表：" + e);
       });
@@ -803,7 +825,7 @@ function ClassListPlugin() {
           return res;
         }
 
-        $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
+        $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(16, 141, 255))");
 
         var auto_refresh_loss_rate = 0.2;
 
@@ -818,10 +840,10 @@ function ClassListPlugin() {
           window.setTimeout(function(target) {
             if ($$("#autorefresh-switch").hasClass("off")) return;
 
-            $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px red)");
+            $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(255, 109, 75))");
             target.refresh(false, true).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
-                $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px blue)");
+                $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(16, 141, 255))");
               target.console.debug("自动刷新计数：" + auto_refresh_count++, "auto-refresh-count");
             }).catch((e) => {
               target.console.error(e);
@@ -861,13 +883,21 @@ function ClassListPlugin() {
       }
     }
 
+    // Triggered by filter button
+    showFilter() {
+      if (this.filter_panel.css("display") == "none")
+        this.filter_panel.show();
+      else
+        this.filter_panel.hide();
+    }
+
     handleResize() {
       var width = this.dom.width();
       if (width < 1050) this.dom.addClass("narrow-desktop");
       else this.dom.removeClass("narrow-desktop");
     }
 
-    getClassIDFromFuncStr(obj) {
+    getClassID(obj) {
       if (obj.children("a").length == 0) return false;
       var str = obj.children("a").attr("href");
       if (str == "" || !str) return false;
@@ -887,13 +917,20 @@ function ClassListPlugin() {
       }
 
       var res = str.match(/(?:')(.*?)(?:')/);
-      if (res.length >= 1)
+      if (res.length >= 2)
         return res[1];
       return false;
     }
 
     constructor(parent) {
-      const list_html = `
+      this.filter_modules = ["avail"];
+
+      // Deploy filter DOM
+      var filter_modules = "";
+      for (var item of this.filter_modules)
+        filter_modules += pjw_filter[item].html;
+
+      var list_html = `
       <div class="pjw-classlist">
         <div class="pjw-classlist-heading">
           <div class="pjw-classlist-selectors">
@@ -906,7 +943,7 @@ function ClassListPlugin() {
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">刷新</div>
               </button>
 
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
+              <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
               </button>
@@ -919,7 +956,7 @@ function ClassListPlugin() {
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
               </button>
 
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="filter-switch">
+              <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="filter-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
               </button>
@@ -939,7 +976,18 @@ function ClassListPlugin() {
             </section>
           </div>
         </div>
+        <div class="pjw-filter-panel">
+          <div class="pjw-filter-panel__content">
+            ${filter_modules}
+            <div class="pjw-classlist-bottom">
+              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
+            </div>
+          </div>
+        </div>
         <div class="pjw-classlist-body"></div>
+        <div class="pjw-classlist-bottom">
+          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>potatoplus Class List</p>
+        </div>
       </div>`;
 
       this.dom = $$(list_html).appendTo(parent);
@@ -948,17 +996,29 @@ function ClassListPlugin() {
       this.controls = this.heading.children(".pjw-classlist-controls");
       this.body = this.dom.children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
+      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
+      this.filter_panel = this.dom.children(".pjw-filter-panel");
 
       this.class_load_size = 30;
 
       this.search_input.on("input", null, {
         target: this
       }, (e) => {
-        e.data.target.search_string = this.search_input.val();
-        e.data.target.max_classes_loaded = this.class_load_size;
-        e.data.target.update();
+        if (typeof(e.data.target.input_timeout_id) != "undefined")
+          clearTimeout(e.data.target.input_timeout_id);
+        if (e.data.target.class_data.length <= 200) {
+          e.data.target.search_string = this.search_input.val();
+          e.data.target.max_classes_loaded = this.class_load_size;
+          e.data.target.update();
+        } else {
+          e.data.target.input_timeout_id = setTimeout( (e) => {
+            e.data.target.search_string = this.search_input.val();
+            e.data.target.max_classes_loaded = this.class_load_size;
+            e.data.target.update();
+          }, 150, e);
+        }
       });
 
       this.refresh_button.on("click", null, {
@@ -966,6 +1026,12 @@ function ClassListPlugin() {
       }, (e) => {
         if ($$("#autorefresh-switch").hasClass("off"))
           e.data.target.refresh(true);
+      });
+
+      this.filter_button.on("click", null, {
+        target: this
+      }, (e) => {
+        e.data.target.showFilter();
       });
 
       this.refresh_button.on("mousedown", null, {
@@ -1010,10 +1076,15 @@ function ClassListPlugin() {
         e.data.target.handleResize();
       });
 
+      // Initialize filters
+      this.filters = {};
+      for (var name of this.filter_modules) {
+        this.filters[name] = pjw_filter[name];
+        this.filters[name].intl(this.filters[name], this);
+      }
+
       this.clear();
-
       this.handleResize();
-
       window.mdc.autoInit();
 
       this.console = new PJWConsole();
@@ -1063,7 +1134,7 @@ function ClassListPlugin() {
       this.count = 0;
     }
 
-    constructor(id, name, target, start = 1) {
+    constructor(id, name, target, start = 1, select_index = 0) {
       var list;
       if (typeof(id) == "string") {
         list = $$(`#${id}`)[0].options;
@@ -1118,142 +1189,7 @@ function ClassListPlugin() {
       this.dom = $$(html).appendTo(target);
       this.obj = new mdc.select.MDCSelect(this.dom[0]);
       this.list = this.dom.children(".mdc-menu-surface").children(".pjw-select-list");
-      this.obj.selectedIndex = 0;
-    }
-  }
-
-  window.PJWConsole = class {
-    show(stay = false) {
-      this.dom.css({
-        "bottom": "10px",
-        "opacity": "1"
-      });
-      if (typeof(this.stay_timeout) != "undefined")
-        clearTimeout(this.stay_timeout);
-      if (stay) this.mouse_stay = true;
-      if (!this.mouse_stay)
-        this.stay_timeout = setTimeout((target) => {
-          target.hide();
-        }, 2500, this);
-    }
-
-    hide() {
-      this.collapse();
-      this.dom.css({
-        "bottom": "-70px",
-        "opacity": "0"
-      });
-      this.setColor();
-    }
-
-    expand() {
-      this.history.css("display", "flex");
-      this.history[0].scrollTop = this.history[0].scrollHeight;
-    }
-
-    collapse() {
-      this.history.css("display", "none");
-    }
-
-    setColor(color = "rgba(0, 0, 0, .2)") {
-      this.dom.css("filter", `drop-shadow(0px 0px 6px ${color}`);
-    }
-
-    // type: error warning info done code
-    log(text, channel = null, type = "info") {
-      if (channel) {
-        channel = `data-channel="${channel}"`;
-        this.dom.find(`[${channel}]`).remove();
-      }
-      var html = `
-        <div class="pjw-console-item" ${channel}>
-          <div class="pjw-console-icon material-icons-round ${type}"></div>
-          <div class="pjw-console-text">${text}</div>
-        </div>
-      `;
-      if (type == "code") {
-        this.history.append(html);
-      } else {
-        this.dom.children(".pjw-console-item").appendTo(this.history);
-        this.dom.append(html);
-      }
-      
-      if (["error", "warning"].include(type)) {
-        this.setColor("#b74710");
-        this.show(true);
-      } else if (["done"].include(type)) {
-        this.setColor("limegreen");
-        this.show(true);
-      } else if (["info"].include(type)) {
-        this.setColor();
-        this.show(false);
-      }
-    }
-
-    error(text, channel = null) {
-      this.log(text, channel, "error");
-    }
-
-    success(text, channel = null) {
-      this.log(text, channel, "done");
-    }
-
-    warn(text, channel = null) {
-      this.log(text, channel, "warning");
-    }
-
-    debug(text, channel = null) {
-      this.log(text, channel, "code");
-    }
-
-    info(text, channel = null) {
-      this.log(text, channel, "info");
-    }
-
-    constructor() {
-      var html = `
-      <div id="pjw-console" class="mdc-card">
-        <div id="pjw-console-history">
-        </div>
-        <div class="pjw-console-item">
-          <div class="pjw-console-icon material-icons-round">emoji_people</div>
-          <div class="pjw-console-text">potatoplus v${window.pjw_version}</div>
-        </div>
-      </div>`;
-
-      this.dom = $$(html).appendTo("body");
-      this.history = this.dom.children("#pjw-console-history");
-
-      $$(document).on("mousemove", null, {
-        target: this
-      }, function(e) {
-        if (e.clientY >= $$(window).height() - 60)
-          e.data.target.show();
-      });
-
-      this.dom.on("click", null, {
-        target: this
-      }, function(e) {
-        e.data.target.expand();
-      });
-
-      this.dom.on("mouseenter", null, {
-        target: this
-      }, function(e) {
-        var target = e.data.target;
-        target.mouse_stay = true;
-        clearTimeout(target.stay_timeout);
-      });
-
-      this.dom.on("mouseleave", null, {
-        target: this
-      }, function(e) {
-        var target = e.data.target;
-        target.mouse_stay = false;
-        target.stay_timeout = setTimeout((target) => {
-          target.hide();
-        }, 600, target);
-      });
+      this.obj.selectedIndex = select_index;
     }
   }
 }

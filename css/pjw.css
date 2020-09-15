@@ -75,7 +75,10 @@
   font-family: 'Material Icons Round';
   font-style: normal;
   font-weight: 400;
-  src: url("chrome-extension://__MSG_@@extension_id__/fonts/Material Icons Round.woff2") format('woff2'), url("https://fonts.gstatic.com/s/materialiconsround/v24/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmPq_HTTw.woff2") format('woff2');
+  src: 
+    url("chrome-extension://__MSG_@@extension_id__/fonts/Material Icons Round.woff2") format('woff2'),
+    url("https://fonts.gstatic.com/s/materialiconsround/v26/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmPq_HTTw.woff2") format('woff2'),
+    url("https://cubiccm.github.io/Material%20Icons%20Round.woff2") format('woff2');
 }
 
 .material-icons-round {
@@ -222,4 +225,103 @@ body {
 
 .Line {
   opacity: 0;
+}
+
+#pjw-welcome {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px 5%;
+  background: linear-gradient(-70deg, #f8c7d5, #9995ef);
+  border-radius: 30px;
+  color: rgba(255, 255, 255, .82) !important;
+  padding: 12px 24px;
+}
+
+#pjw-welcome heading {
+  margin: 6px 0;
+  font-weight: bold;
+  font-size: 24px;
+  color: rgba(255, 255, 255, .9) !important;
+}
+
+#pjw-welcome p {
+  margin: 4px 0;
+  font-size: 18px;
+  color: rgba(255, 255, 255, .82) !important;
+}
+
+#pjw-welcome note {
+  margin: 2px 0;
+  display: inline-block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, .75) !important;
+}
+
+
+#potatojw_mask {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  opacity: 0.5;
+  z-index: 9000;
+}
+#potatojw_filter_setting_frame {
+  display: none;
+  position: fixed;
+  left: 15%;
+  top: 15%;
+  bottom: 5px;
+  width: 70%;
+  height: auto;
+  z-index: 9001;
+  background-color: #63065f;
+  border-radius: 8px;
+  padding: 15px;
+  color: white;
+  overflow: auto;
+}
+.filter_section {
+  display: none;
+}
+#filter-control-bar {
+  user-select: none;
+}
+#filter-control-bar > section {
+  float: left;
+  margin-right: 25px;
+  margin-bottom: 5px;
+}
+#pjw-toolbar-collapse-bg {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  height: 100%;
+  width: 50px;
+  margin: 0;
+  padding: 0;
+  background-color: #63065f;
+  border-radius: 18px 0 0 18px;
+  transition: background-color .2s ease-out;
+  cursor: pointer;
+}
+#pjw-toolbar-collapse-bg:hover {
+  background-color: rgba(255, 255, 255, .6);
+}
+#pjw-toolbar-collapse {
+  background-color: white;
+  cursor: pointer;
+  border: 2px solid #63065f;
+  position: absolute;
+  margin: 0 10px;
+  width: 30px;
+  height: 30px;
+  left: 0;
+  top: calc(50% - 17px);
+  border-radius: 50%;
+  padding: 0;
+  transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
 }

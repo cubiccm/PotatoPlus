@@ -1,0 +1,24 @@
+.pjw-filter-panel {
+  display: none;
+  color: rgba(0, 0, 0, .4);
+  margin: 10px 12%;
+  border-radius: 20px;
+  width: 76%;
+  background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
+  --mdc-theme-secondary: #4b00ff;
+}
+
+.pjw-filter-panel__content {
+  margin: 20px 24px;
+}
+
+.pjw-filter-panel .mdc-switch {
+  margin: 5px 10px;
+}
+
+#pjw-avail-filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}

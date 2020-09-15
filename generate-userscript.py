@@ -1,7 +1,7 @@
 import sys
 
 version = "beta"
-if len(sys.argv) == 2:
+if len(sys.argv) >= 2:
   version = sys.argv[1]
 
 prefix = '''// ==UserScript==
@@ -34,7 +34,9 @@ with open("js/inject.js", "r") as fin:
         with open(filename, "r") as lib:
           lines2 = lib.readlines()
           for line2 in lines2:
-            if line2.find("@version@") != -1:
+            if line2.find("@platform@") != -1:
+              fout.write(line2.replace("@platform@", "Userscript"))
+            elif line2.find("@version@") != -1:
               fout.write(line2.replace("@version@", version))
             else:
               fout.write(line2)
