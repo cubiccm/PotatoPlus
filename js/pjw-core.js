@@ -782,9 +782,13 @@ window.potatojw_intl = function() {
           type: "GET"
         }).done(function(res) {
           res = res.slice(res.search("function initSelectedList()"));
-          var start = res.search(/\"*\"/);
-          var end = res.search(/\"\)/);
-          res = res.slice(start + 1, end);
+          if (/\{\s*\}/.test(res) == true) {
+            res = "没有应答信息。";
+          } else {
+            var start = res.search(/\"*\"/);
+            var end = res.search(/\"\)/);
+            res = res.slice(start + 1, end);
+          }
           if (res.search("成功！") != -1)
             target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           else
@@ -900,9 +904,13 @@ window.potatojw_intl = function() {
           type: "GET"
         }).done(function(res) {
           res = res.slice(res.search("function initSelectedList()"));
-          var start = res.search(/\"*\"/);
-          var end = res.search(/\"\)/);
-          res = res.slice(start + 1, end);
+          if (/\{\s*\}/.test(res) == true) {
+            res = "没有应答信息。";
+          } else {
+            var start = res.search(/\"*\"/);
+            var end = res.search(/\"\)/);
+            res = res.slice(start + 1, end);
+          }
           if (res.search("成功！") != -1)
             target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           else
@@ -1090,9 +1098,13 @@ window.potatojw_intl = function() {
           type: "GET"
         }).done(function(res) {
           res = res.slice(res.search("function initSelectedList()"));
-          var start = res.search(/\"*\"/);
-          var end = res.search(/\"\)/);
-          res = res.slice(start + 1, end);
+          if (/\{\s*\}/.test(res) == true) {
+            res = "没有应答信息。";
+          } else {
+            var start = res.search(/\"*\"/);
+            var end = res.search(/\"\)/);
+            res = res.slice(start + 1, end);
+          }
           if (res.search("成功！") != -1)
             target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
           else
