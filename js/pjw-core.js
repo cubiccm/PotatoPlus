@@ -646,9 +646,7 @@ window.potatojw_intl = function() {
       readSelect(event, class_ID, true);
     };
 
-    $$(document).ready(function() {
-      $$("#comment").html("[potatojw_upgraded Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatojw_upgraded<br><br>" + $$("#comment").html());
-    });
+    $$("#comment").html("[potatojwplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可先暂时关闭potatojwplus<br><br>" + $$("#comment").html());
   } else if (pjw_mode == "read_view") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};

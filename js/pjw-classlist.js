@@ -431,9 +431,10 @@ function ClassListPlugin() {
         this.class_data[this.auto_inc].data = data;
         var target = this.class_data[this.auto_inc].obj;
         target.data = data;
-        if (data_compare_res == 1) { 
+        if (data_compare_res !== false) { 
           target.updateSelectButton(data.select_button);
-          target.updateNumInfo(data);
+          if (data_compare_res == 1)
+            target.updateNumInfo(data);
         }
       } else {
         // Conduct hard refresh
