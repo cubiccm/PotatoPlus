@@ -2157,9 +2157,14 @@ function ClassListPlugin() {
     checkFilter(data) {
       var priority = 0.0;
 
-      /* Load filter modules here */
-
-
+      if (this.filter_enabled == true) {
+        /* Load filter modules here */
+        if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select") {
+          data.priority = -1;
+          return false;
+        }
+      }
+      
       /* Search module */
       var search_priority = this.search(data, this.search_string);
       if (search_priority === false) {
@@ -2167,7 +2172,6 @@ function ClassListPlugin() {
         return false;
       }
       priority += search_priority;
-
 
       data.priority = priority;
       return priority;
@@ -2445,7 +2449,7 @@ function ClassListPlugin() {
       }
     }
 
-    // Triggered by auto-refreshment switch
+    // Triggered by auto-refreshment and filter switch
     triggerSwitch(id) {
       var status = $$("#"+id).hasClass("on");
       if (id == "autorefresh-switch") {
@@ -2463,7 +2467,11 @@ function ClassListPlugin() {
         this.auto_refresh_frequency = 1.0;
         this.toggleAutoRefresh(status);
       } else if (id == "filter-switch") {
-
+        if (!this.filter_enabled)
+          this.filter_enabled = true;
+        else
+          this.filter_enabled = false;
+        this.update();
       }
     }
 
