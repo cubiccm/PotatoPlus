@@ -2116,7 +2116,12 @@ function ClassListPlugin() {
         return 0;
       }
       var priority = 0.0;
-      var priority_map = [[data.title, 4], [data.teachers, 2], [data.info.map((item) => (item.val)), 1]];
+      var priority_map = [
+        [data.title, 4], 
+        [data.teachers, 2], 
+        [data.info.map((item) => (item.val)), 1],
+        [data.time_detail, 1]
+      ];
       for (var item of priority_map) {
         var res = this.matchDegree(search_str, item[0]);
         if (res === false) return false;
