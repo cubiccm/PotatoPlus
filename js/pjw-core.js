@@ -1270,15 +1270,15 @@ window.potatojw_intl = function() {
                 num: parseInt(td(3).html()),
                 label: "学分"
               }, {
-                num: parseInt(td(8).html()) + `<span style="font-size: 60%; color: rgba(0, 0, 0, .6);">(${parseInt(td(9).html())})</span> / ` + parseInt(td(7).html()),
-                label: "已选<span style=\"font-size: 9px;\">（专业意向）</span>/限额"
+                num: `<span style="font-size: 60%; color: rgba(0, 0, 0, .6);">${parseInt(td(9).html())}/ </span>${parseInt(td(8).html())}/${parseInt(td(7).html())}`,
+                label: "<span style=\"font-size: 9px;\">专业意向/</span>已选/限额"
               }],
               lesson_time: res.lesson_time,
               time_detail: td(5).html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
-                text: `${td(8).html()}(${td(9).html()}) / ${td(7).html()}`,
+                text: `${td(8).html()}/${td(7).html()}`,
                 action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {
