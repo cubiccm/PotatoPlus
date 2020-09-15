@@ -1641,7 +1641,7 @@ function ClassListPlugin() {
       }, ...],
       select_button: {
         status: <String>, // "Select", "Deselect", "Full", "Selected", false
-        text: [<String>, ...],
+        text: <String>,
         action: <Function>
       }
       comment_button: {
@@ -1681,16 +1681,7 @@ function ClassListPlugin() {
 
     getHTML(data, attr, options = {}) {
       function parseTitle(content) {
-        content = content.split("<br>");
-        if (content.length > 1) {
-          if (!("info" in data)) data["info"] = [];
-          data["info"].push({
-            key: "附加信息",
-            val: "".concat(content.slice(1)),
-            hidden: true
-          });
-        }
-        return data.title = content[0];
+        return data.title;
       }
 
       function getTeachers(content) {
@@ -1812,11 +1803,11 @@ function ClassListPlugin() {
             label_text = "已选";
         }
 
-        var select_info = "";
+        var info_text = "";
         if (data.text)
-          for (var item of data.text)
-            select_info += `<div class="pjw-class-select-button__status">${item}</div>`;
-        var inner_html = `<div class="mdc-button__ripple"></div><div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${select_info}</div>`;
+          info_text = `<div class="pjw-class-select-button__status">${data.text}</div>`;
+
+        var inner_html = `<div class="mdc-button__ripple"></div><div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${info_text}</div>`;
         if (get_inner === true)
           return {
             html: inner_html,
@@ -2010,6 +2001,7 @@ function ClassListPlugin() {
   };
 
   window.PJWClassList = class {
+    // Adds class into list
     add(data) {
       if (!this.prepared_to_add) {
         this.intl();
@@ -2018,22 +2010,45 @@ function ClassListPlugin() {
 
       function compareData(data1, data2) {
         if ("title" in data2 && data1.title == data2.title)
-          if ("teachers" in data2 && data1.teachers[0] == data2.teachers[0])
-            return true;
+          if ("teachers" in data2 && data1.teachers.join() == data2.teachers.join()) {
+            if (!("select_button" in data2) || data2.select_button.text == data1.select_button.text)
+              return 2;
+            return 1;
+          }
         return false;
       }
 
+      // Process Title
       if (data.title.trim() == "&nbsp;" || data.title.trim() == "") return;
 
-      if ((this.auto_inc < this.class_data.length && !compareData(data, this.class_data[this.auto_inc].data)) || this.auto_inc >= this.class_data.length)
-        this.soft_refresh = false;
+      data.title = data.title.split("<br>");
+      if (data.title.length > 1) {
+        if (!("info" in data)) data["info"] = [];
+        data["info"].push({
+          key: "附加信息",
+          val: "".concat(data.title.slice(1)),
+          hidden: true
+        });
+      }
+      data.title = data.title[0];
 
-      if (this.soft_refresh == true) {
+      // Check soft refresh
+      var data_compare_res = false;
+      if (this.soft_refresh && this.auto_inc < this.class_data.length)
+        data_compare_res = compareData(data, this.class_data[this.auto_inc].data);
+
+      if (data_compare_res) {
+        // Conduct soft refresh
         this.class_data[this.auto_inc].data = data;
         var target = this.class_data[this.auto_inc].obj;
         target.data = data;
-        target.updateSelectButton(data.select_button);
+        if (data_compare_res == 1) { 
+          target.updateSelectButton(data.select_button);
+          target.updateNumInfo(data);
+        }
       } else {
+        // Conduct hard refresh
+        this.soft_refresh = false;
         var item = {
           data: data,
           obj: new PJWClass(this.body, data, this),
@@ -2049,6 +2064,7 @@ function ClassListPlugin() {
       this.auto_inc++;
     }
 
+    // Resets classlist
     clear() {
       this.class_data = [];
       this.body.html("");
@@ -2056,6 +2072,7 @@ function ClassListPlugin() {
       this.max_classes_loaded = this.class_load_size;
     }
 
+    // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
       function testString(keyword, str) {
         if (keyword.length != 1 && keyword[0] == "-") {
@@ -2111,6 +2128,7 @@ function ClassListPlugin() {
       return 100.0 * (matched_num / pattern_num);
     }
 
+    // Searches search_str in data
     search(data, search_str) {
       if (typeof(search_str) == "undefined" || search_str == "") {
         return 0;
@@ -2134,34 +2152,28 @@ function ClassListPlugin() {
       }
     }
 
+    // Returns class priority
+    // Returns false when the class do not match the filter
     checkFilter(data) {
       var priority = 0.0;
-      /* Load filter modules... */
 
+      /* Load filter modules here */
+
+
+      /* Search module */
       var search_priority = this.search(data, this.search_string);
       if (search_priority === false) {
         data.priority = -1;
         return false;
       }
       priority += search_priority;
+
+
       data.priority = priority;
       return priority;
     }
 
-    switchFilter() { 
-      if (this.heading.children(".pjw-class-filter-switch-button").hasClass("on")) {
-        this.filter_switch_button.removeClass("on");
-        this.filter_switch_button.addClass("off");
-        this.filter_switch_button.children(":eq(0)").html("toggle_off");
-        this.filter_switch_button.children(":eq(1)").html("关");
-      } else {
-        this.filter_switch_button.removeClass("off");
-        this.filter_switch_button.addClass("on");
-        this.filter_switch_button.children(":eq(0)").html("toggle_on");
-        this.filter_switch_button.children(":eq(1)").html("开");
-      }
-    }
-
+    // Initializes class_data before adding first class
     intl() {
       this.class_data.sort(function(a, b) {
         return a.id - b.id;
@@ -2170,6 +2182,8 @@ function ClassListPlugin() {
       this.soft_refresh = true;
     }
 
+    // Rearranges classes
+    // Call this function when class_data is updated
     update() {
       if (this.auto_inc < this.class_data.length) {
         for (var item of this.class_data.slice(this.auto_inc))
@@ -2206,6 +2220,19 @@ function ClassListPlugin() {
       return text.split(/[,，]\s/g);
     }
 
+    // Converts class time string to friendly array
+    /* Returns object {
+      lesson_time: [{
+        weekday: Integer,
+        start: Integer,
+        end: Integer,
+        type: String ("normal", "odd", "even")
+      }],
+      ans_weeks: [{
+        start: Integer,
+        end: Integer
+      }, ...]
+    }*/
     parseClassTime = function(text) {
       var classes = text.split("<br>");
       const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
@@ -2313,6 +2340,54 @@ function ClassListPlugin() {
       });
     }
 
+    // Increases refresh speed when pressing speed adjustment button
+    speedUp() {
+      const max_frequency = 10.0;
+      if (this.auto_refresh_frequency <= 4.0)
+        this.auto_refresh_frequency *= 1.1;
+      else if (this.auto_refresh_frequency <= 8.0)
+        this.auto_refresh_frequency += 0.4;
+      else if (this.auto_refresh_frequency < max_frequency)
+        this.auto_refresh_frequency += 0.1;
+      else
+        this.auto_refresh_frequency = max_frequency;
+
+      // Updates button label to current speed
+      $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
+    }
+
+    // Triggered by speed adjustment button
+    autoRefreshButtonEvent(status) {
+      if ($$("#autorefresh-switch").hasClass("off")) return;
+      if (status) {
+        if (typeof(this.show_refresh_level_timeout_id) != "undefined")
+          clearInterval(this.show_refresh_level_timeout_id);
+        this.toggleAutoRefresh(false);
+        this.auto_refresh_frequency = 1.0;
+        $$("#autorefresh-label").html("1.0x");
+        this.refresh_button_interval_id = window.setInterval((target) => {
+          target.speedUp();
+        }, 50, this);
+      } else {
+        // Shows speed in natural language after releasing speed adjustment button
+        var text = "";
+        if (this.auto_refresh_frequency <= 4.0)
+          text = "标准";
+        else if (this.auto_refresh_frequency <= 8.0)
+          text = "快";
+        else if (this.auto_refresh_frequency < 10.0)
+          text = "极速";
+        else
+          text = "封号退学";
+        this.show_refresh_level_timeout_id = setTimeout( (text) => {
+          $$("#autorefresh-label").html(text);
+        }, 1000, text);
+        this.toggleAutoRefresh(true);
+        clearInterval(this.refresh_button_interval_id);
+      }
+    }
+
+    // Toggle auto refresh
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
@@ -2370,48 +2445,7 @@ function ClassListPlugin() {
       }
     }
 
-    updateRefreshButton() {
-      const max_frequency = 10.0;
-      if (this.auto_refresh_frequency <= 4.0)
-        this.auto_refresh_frequency *= 1.1;
-      else if (this.auto_refresh_frequency <= 8.0)
-        this.auto_refresh_frequency += 0.4;
-      else if (this.auto_refresh_frequency < max_frequency)
-        this.auto_refresh_frequency += 0.1;
-      else
-        this.auto_refresh_frequency = max_frequency;
-      $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
-    }
-
-    autoRefreshButtonEvent(status) {
-      if ($$("#autorefresh-switch").hasClass("off")) return;
-      if (status) {
-        if (typeof(this.show_refresh_level_timeout_id) != "undefined")
-          clearInterval(this.show_refresh_level_timeout_id);
-        this.toggleAutoRefresh(false);
-        this.auto_refresh_frequency = 1.0;
-        $$("#autorefresh-label").html("1.0x");
-        this.refresh_button_interval_id = window.setInterval((target) => {
-          target.updateRefreshButton();
-        }, 50, this);
-      } else {
-        var text = "";
-        if (this.auto_refresh_frequency <= 4.0)
-          text = "标准";
-        else if (this.auto_refresh_frequency <= 8.0)
-          text = "快";
-        else if (this.auto_refresh_frequency < 10.0)
-          text = "极速";
-        else
-          text = "封号退学";
-        this.show_refresh_level_timeout_id = setTimeout( (text) => {
-          $$("#autorefresh-label").html(text);
-        }, 1000, text);
-        this.toggleAutoRefresh(true);
-        clearInterval(this.refresh_button_interval_id);
-      }
-    }
-
+    // Triggered by auto-refreshment switch
     triggerSwitch(id) {
       var status = $$("#"+id).hasClass("on");
       if (id == "autorefresh-switch") {
@@ -2439,7 +2473,7 @@ function ClassListPlugin() {
       else this.dom.removeClass("narrow-desktop");
     }
 
-    getClassIDFromCourseNum(obj) {
+    getClassIDFromFuncStr(obj) {
       if (obj.children("a").length == 0) return false;
       var str = obj.children("a").attr("href");
       if (str == "" || !str) return false;
@@ -2449,7 +2483,7 @@ function ClassListPlugin() {
       return false;
     }
 
-    getClassNameFromCourseNum(obj) {
+    getClassNameFromFuncStr(obj) {
       if (typeof(obj) == "string") {
         var str = obj;
       } else {
@@ -3104,35 +3138,36 @@ window.potatojw_intl = function() {
           $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
           var table = $$("#ghost-div").find("table.TABLE_BODY > tbody");
           table.find("tr:gt(0)").each((index, val) => {
-            var res = this.parseClassTime($$(val).children("td:eq(8)").html());
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+            var res = this.parseClassTime(td(8).html());
             data = {
-              title: $$(val).children("td:eq(1)").html(),
-              teachers: this.parseTeacherNames($$(val).children("td:eq(7)").html()),
+              title: td(1).html(),
+              teachers: this.parseTeacherNames(td(7).html()),
               info: [{
                 key: "课程编号",
-                val: $$(val).children('td:eq(0)').html()
+                val: td(0).html()
               }, {
                 key: "课程性质",
-                val: $$(val).children('td:eq(2)').html(),
+                val: td(2).html(),
                 hidden: true
               }, {
                 key: "开课院系",
-                val: $$(val).children('td:eq(3)').html(),
+                val: td(3).html(),
                 hidden: true
               }, {
                 key: "校区",
-                val: $$(val).children('td:eq(6)').html(),
+                val: td(6).html(),
                 hidden: true
               }],
               num_info: [{
-                num: parseInt($$(val).children("td:eq(4)").html()),
+                num: parseInt(td(4).html()),
                 label: "学分"
               }, {
-                num: parseInt($$(val).children("td:eq(5)").html()),
+                num: parseInt(td(5).html()),
                 label: "学时"
               }],
               lesson_time: res.lesson_time,
-              time_detail: $$(val).children('td:eq(8)').html(),
+              time_detail: td(8).html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: false
@@ -3376,7 +3411,7 @@ window.potatojw_intl = function() {
                 class_weeknum: res.class_weeknum,
                 select_button: {
                   status: select_status,
-                  text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
+                  text: `${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`,
                   action: (e) => { e.data.target.list.select(classID); }
                 },
                 comment_button: {
@@ -3504,30 +3539,32 @@ window.potatojw_intl = function() {
         try {
           var rows = $$(data).find("tbody").find("tr");
           rows.each((index, val) => {
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+
             // Prepare select button
-            var classID = this.getClassNameFromCourseNum($$(val).children("td:eq(6)").attr("onclick"));
-            var select_status = ($$(val).children("td:eq(6)").children("a").html() == "选择" ? "Select" : "Deselect");
+            var classID = this.getClassNameFromFuncStr(td(6).attr("onclick"));
+            var select_status = (td(6).children("a").html() == "选择" ? "Select" : "Deselect");
 
             // Construct class data
             data = {
               classID: classID,
-              title: $$(val).children("td:eq(1)").html(),
-              teachers: this.parseTeacherNames($$(val).children("td:eq(2)").html()),
+              title: td(1).html(),
+              teachers: this.parseTeacherNames(td(2).html()),
               info: [{
                 key: "类别",
-                val: $$(val).children("td:eq(3)").html()
+                val: td(3).html()
               }, {
                 key: "课程编号",
-                val: $$(val).children('td:eq(0)').html(),
+                val: td(0).html(),
                 hidden: true
               }],
               num_info: [{
-                num: '' + parseInt($$(val).children("td:eq(5)").html()) + '/' + parseInt($$(val).children("td:eq(4)").html()),
+                num: '' + parseInt(td(5).html()) + '/' + parseInt(td(4).html()),
                 label: "已选/限额"
               }],
               select_button: {
                 status: select_status,
-                text: [`${parseInt($$(val).children("td:eq(5)").html())}/${parseInt($$(val).children("td:eq(4)").html())}`],
+                text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   e.data.button_target.prop("disabled", true);
                   e.data.target.list.select(classID, e.data.target.data);
@@ -3585,7 +3622,6 @@ window.potatojw_intl = function() {
       } );
       list.refresh();
     });
-
   } else if (pjw_mode == "common") {
     window.list = new PJWClassList($$("body"));
 
@@ -3620,37 +3656,38 @@ window.potatojw_intl = function() {
         try {
           var table = $$(data).find("table > tbody");
           table.find("tr").each((index, val) => {
-            var res = this.parseClassTime($$(val).children("td:eq(4)").html());
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+            var res = this.parseClassTime(td(4).html());
             var classID = "0", class_kind = "13";
-            if ($$(val).children("td:eq(9)").html() != "") {
+            if (td(9).html() != "") {
               select_status = "Select";
-              var parse_class_res = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
+              var parse_class_res = Function(td(9).children("a").attr("href").replace("javascript:", "return "))();
               classID = parse_class_res[0], class_kind = parse_class_res[1];
             } else {
               select_status = "Full";
             }
             
             data = {
-              title: $$(val).children("td:eq(2)").html(),
-              teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
+              title: td(2).html(),
+              teachers: this.parseTeacherNames(td(5).html()),
               info: [{
                 key: "课程编号",
-                val: $$(val).children('td:eq(0)').html()
+                val: td(0).html()
               }, {
                 key: "备注",
-                val: $$(val).children('td:eq(8)').html(),
+                val: td(8).html(),
                 hidden: true
               }],
               num_info: [{
-                num: parseInt($$(val).children("td:eq(3)").html()),
+                num: parseInt(td(3).html()),
                 label: "学分"
               }],
               lesson_time: res.lesson_time,
-              time_detail: $$(val).children('td:eq(4)').html(),
+              time_detail: td(4).html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
-                text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
+                text: `${td(7).html()}/${td(6).html()}`,
                 action: ((e) => { e.data.target.list.select(classID, class_kind, e.data.target.data); })
               },
               comment_button: {
@@ -3737,33 +3774,35 @@ window.potatojw_intl = function() {
           var table = $$(data).find("table#tbCourseList");
           table.find("tbody").each((index, val) => {
             if ($$(val).css("display") == "none") return;
+
             $$(val).find("tr").each((index, val) => {
-              var res = this.parseClassTime($$(val).children("td:eq(4)").html());
-              if ($$(val).children("td:eq(9)").html() != "") select_status = "Select";
+              var td = (i) => ($$(val).children(`td:eq(${i})`));
+              var res = this.parseClassTime(td(4).html());
+              if (td(9).html() != "") select_status = "Select";
               else select_status = "Full";
-              var classID = $$(val).children("td:eq(9)").children("input").val();
+              var classID = td(9).children("input").val();
               data = {
-                title: $$(val).children("td:eq(2)").html(),
-                teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
+                title: td(2).html(),
+                teachers: this.parseTeacherNames(td(5).html()),
                 info: [{
                   key: "课程编号",
-                  val: $$(val).children('td:eq(0)').html(),
+                  val: td(0).html(),
                   hidden: false
                 }, {
                   key: "备注",
-                  val: $$(val).children('td:eq(8)').html(),
+                  val: td(8).html(),
                   hidden: true
                 }],
                 num_info: [{
-                  num: parseInt($$(val).children("td:eq(3)").html()),
+                  num: parseInt(td(3).html()),
                   label: "学分"
                 }],
                 lesson_time: res.lesson_time,
-                time_detail: $$(val).children('td:eq(4)').html(),
+                time_detail: td(4).html(),
                 class_weeknum: res.class_weeknum,
                 select_button: {
                   status: select_status,
-                  text: [`${$$(val).children("td:eq(7)").html()}/${$$(val).children("td:eq(6)").html()}`],
+                  text: `${td(7).html()}/${td(6).html()}`,
                   action: (e) => { e.data.target.list.select(classID, e.data.target.data); }
                 },
                 comment_button: {
@@ -3841,7 +3880,7 @@ window.potatojw_intl = function() {
             class_weeknum: res.class_weeknum,
             select_button: {
               status: "Select",
-              text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+              text: `${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`,
               action: (() => {})
             },
             comment_button: {
@@ -3921,14 +3960,16 @@ window.potatojw_intl = function() {
         try {
           var rows = $$(data).find("table > tbody").find("tr:gt(0)");
           rows.each((index, val) => {
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+
             // Prepare lesson time
-            var res = this.parseClassTime($$(val).children("td:eq(5)").html());
+            var res = this.parseClassTime(td(5).html());
 
             // Prepare select button
             var classID = "0";
-            if ($$(val).children("td:eq(9)").html() != "" && $$(val).children("td:eq(9)").html() != "&nbsp;") {
+            if (td(9).html() != "" && td(9).html() != "&nbsp;") {
               select_status = "Select";
-              classID = Function($$(val).children("td:eq(9)").children("a").attr("href").replace("javascript:", "return "))();
+              classID = Function(td(9).children("a").attr("href").replace("javascript:", "return "))();
             } else {
               select_status = "Full";
             }
@@ -3936,14 +3977,14 @@ window.potatojw_intl = function() {
             // Construct class data
             data = {
               classID: classID,
-              title: $$(val).children("td:eq(2)").html(),
-              teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
+              title: td(2).html(),
+              teachers: this.parseTeacherNames(td(6).html()),
               info: [{
                 key: "开课年级",
-                val: $$(val).children("td:eq(4)").html()
+                val: td(4).html()
               }, {
                 key: "课程编号",
-                val: $$(val).children('td:eq(0)').html(),
+                val: td(0).html(),
                 hidden: true
               }, {
                 key: "开课院系",
@@ -3951,15 +3992,15 @@ window.potatojw_intl = function() {
                 hidden: true
               }],
               num_info: [{
-                num: parseInt($$(val).children("td:eq(3)").html()),
+                num: parseInt(td(3).html()),
                 label: "学分"
               }],
               lesson_time: res.lesson_time,
-              time_detail: $$(val).children('td:eq(5)').html(),
+              time_detail: td(5).html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
-                text: [`${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`],
+                text: `${td(8).html()}/${td(7).html()}`,
                 action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {
@@ -4050,26 +4091,28 @@ window.potatojw_intl = function() {
         try {
           var rows = $$(data).find("tbody").find("tr:gt(0)");
           rows.each((index, val) => {
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+
             // Prepare lesson time
-            var res = this.parseClassTime($$(val).children("td:eq(5)").html());
+            var res = this.parseClassTime(td(5).html());
 
             // Prepare select button
-            var classID = this.getClassIDFromCourseNum($$(val).children("td:eq(0)"));
-            var class_name_for_list = this.getClassNameFromCourseNum($$(val).children("td:eq(10)"));
+            var classID = this.getClassIDFromFuncStr(td(0));
+            var class_name_for_list = this.getClassNameFromFuncStr(td(10));
             var select_status = "Select";
 
             // Construct class data
             data = {
               classID: classID,
               class_name_for_list: class_name_for_list,
-              title: $$(val).children("td:eq(2)").html(),
-              teachers: this.parseTeacherNames($$(val).children("td:eq(6)").html()),
+              title: td(2).html(),
+              teachers: this.parseTeacherNames(td(6).html()),
               info: [{
                 key: "开课年级",
-                val: $$(val).children("td:eq(4)").html()
+                val: td(4).html()
               }, {
                 key: "课程编号",
-                val: $$(val).children('td:eq(0)').html(),
+                val: td(0).html(),
                 hidden: true
               }, {
                 key: "开课院系",
@@ -4077,18 +4120,18 @@ window.potatojw_intl = function() {
                 hidden: true
               }],
               num_info: [{
-                num: parseInt($$(val).children("td:eq(3)").html()),
+                num: parseInt(td(3).html()),
                 label: "学分"
               }, {
-                num: parseInt($$(val).children("td:eq(8)").html()) + `<span style="font-size: 60%; color: rgba(0, 0, 0, .6);">(${parseInt($$(val).children("td:eq(9)").html())})</span> / ` + parseInt($$(val).children("td:eq(7)").html()),
+                num: parseInt(td(8).html()) + `<span style="font-size: 60%; color: rgba(0, 0, 0, .6);">(${parseInt(td(9).html())})</span> / ` + parseInt(td(7).html()),
                 label: "已选<span style=\"font-size: 9px;\">（专业意向）</span>/限额"
               }],
               lesson_time: res.lesson_time,
-              time_detail: $$(val).children('td:eq(5)').html(),
+              time_detail: td(5).html(),
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
-                text: [`${$$(val).children("td:eq(8)").html()}(${$$(val).children("td:eq(9)").html()}) / ${$$(val).children("td:eq(7)").html()}`],
+                text: `${td(8).html()}(${td(9).html()}) / ${td(7).html()}`,
                 action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
               },
               comment_button: {
