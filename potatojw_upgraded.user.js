@@ -2100,7 +2100,7 @@ function ClassListPlugin() {
           var t = testString(keyword, str);
           if (t !== false) matched_num += t;
           else return false;
-        } else {
+        } else if (typeof(str) == "object") {
           for (var substr of str) {
             var t = testString(keyword, substr);
             if (t !== false) matched_num += t;
