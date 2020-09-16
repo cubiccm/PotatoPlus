@@ -3,7 +3,7 @@ var pjw_filter = {
     html: `
       <div id="pjw-avail-filter">
         <heading><span class="material-icons-round">add_task</span>空余课程</heading>
-        <div class="content">
+        <div class="content pjw-switch-box">
           <div class="mdc-switch" id="pjw-avail-switch">
             <div class="mdc-switch__track"></div>
             <div class="mdc-switch__thumb-underlay">
@@ -278,7 +278,7 @@ var pjw_filter = {
     html: `
       <div id="pjw-potatoes-filter">
         <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
-        <div class="content">
+        <div class="content pjw-switch-box">
           <div class="mdc-switch" id="pjw-potatoes-switch">
             <div class="mdc-switch__track"></div>
             <div class="mdc-switch__thumb-underlay">

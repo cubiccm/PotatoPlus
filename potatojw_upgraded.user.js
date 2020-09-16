@@ -424,6 +424,7 @@ injectStyleFromString(`/* PJW ClassList */
   width: 100%;
   display: flex;
   flex-direction: column;
+  --pjw-dark-background: rgba(54, 79, 125, 1);
 }
 
 /* Heading */
@@ -653,7 +654,6 @@ injectStyleFromString(`/* PJW ClassList */
   background-color: rgba(0, 0, 0, .05);
   padding: 6px;
   justify-content: space-around;
-  width: fit-content;
   user-select: none;
 }
 
@@ -691,7 +691,7 @@ injectStyleFromString(`/* PJW ClassList */
 
 .pjw-class-weekcal-heading-day.selected {
   color: white;
-  background-color: rgba(54, 79, 125, 1);
+  background-color: var(--pjw-dark-background);
   margin: 0 2px;
 }
 
@@ -735,7 +735,7 @@ injectStyleFromString(`/* PJW ClassList */
   border-radius: 0;
   color: white;
   font-weight: bold;
-  background-color: rgba(54, 79, 125, 1);
+  background-color: var(--pjw-dark-background);
   height: 23px;
   margin: 0 7px;
   white-space: nowrap;
@@ -802,7 +802,7 @@ injectStyleFromString(`/* PJW ClassList */
   position: absolute;
   height: 16px;
   border-radius: 9px;
-  background: linear-gradient(95deg, rgba(54, 79, 125, 1), rgba(123, 11, 94, 1));
+  background: linear-gradient(95deg, var(--pjw-dark-background), rgba(123, 11, 94, 1));
   color: white;
   text-align: center;
   vertical-align: middle;
@@ -1052,7 +1052,7 @@ injectStyleFromString(`.pjw-filter-panel {
   border-radius: 20px;
   width: 76%;
   background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
-  --mdc-theme-secondary: #4b00ff;
+  --mdc-theme-secondary: rgb(16, 89, 223);
 }
 
 .pjw-filter-panel__content > div {
@@ -1086,18 +1086,26 @@ injectStyleFromString(`.pjw-filter-panel {
   margin: 5px 10px;
 }
 
-#pjw-avail-filter > .content {
+.pjw-switch-box {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
 }
 
+#pjw-hours-filter > .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 #pjw-hours-filter .pjw-class-weekcal-heading-day {
+  cursor: pointer;
   transition: color .1s ease-out;
 }
 
 #pjw-hours-filter .select-time > span {
+  cursor: pointer;
   transition: color .1s ease-out;
 }
 
@@ -1131,6 +1139,14 @@ injectStyleFromString(`.pjw-filter-panel {
   display: flex;
   margin: 10px 0;
   opacity: 1;
+}
+
+#pjw-hours-filter-control > .pjw-mini-button {
+  color: var(--pjw-dark-background);
+}
+
+#pjw-hours-filter-control > .pjw-mini-button:hover {
+  color: rgb(208, 196, 16);
 }`);
 
 
@@ -1991,7 +2007,7 @@ var pjw_filter = {
     html: `
       <div id="pjw-avail-filter">
         <heading><span class="material-icons-round">add_task</span>空余课程</heading>
-        <div class="content">
+        <div class="content pjw-switch-box">
           <div class="mdc-switch" id="pjw-avail-switch">
             <div class="mdc-switch__track"></div>
             <div class="mdc-switch__thumb-underlay">
@@ -2266,7 +2282,7 @@ var pjw_filter = {
     html: `
       <div id="pjw-potatoes-filter">
         <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
-        <div class="content">
+        <div class="content pjw-switch-box">
           <div class="mdc-switch" id="pjw-potatoes-switch">
             <div class="mdc-switch__track"></div>
             <div class="mdc-switch__thumb-underlay">

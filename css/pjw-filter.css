@@ -5,7 +5,7 @@
   border-radius: 20px;
   width: 76%;
   background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
-  --mdc-theme-secondary: #4b00ff;
+  --mdc-theme-secondary: rgb(16, 89, 223);
 }
 
 .pjw-filter-panel__content > div {
@@ -39,18 +39,26 @@
   margin: 5px 10px;
 }
 
-#pjw-avail-filter > .content {
+.pjw-switch-box {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
 }
 
+#pjw-hours-filter > .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 #pjw-hours-filter .pjw-class-weekcal-heading-day {
+  cursor: pointer;
   transition: color .1s ease-out;
 }
 
 #pjw-hours-filter .select-time > span {
+  cursor: pointer;
   transition: color .1s ease-out;
 }
 
@@ -84,4 +92,12 @@
   display: flex;
   margin: 10px 0;
   opacity: 1;
+}
+
+#pjw-hours-filter-control > .pjw-mini-button {
+  color: var(--pjw-dark-background);
+}
+
+#pjw-hours-filter-control > .pjw-mini-button:hover {
+  color: rgb(208, 196, 16);
 }

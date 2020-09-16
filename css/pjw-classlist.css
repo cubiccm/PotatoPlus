@@ -7,6 +7,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  --pjw-dark-background: rgba(54, 79, 125, 1);
 }
 
 /* Heading */
@@ -236,7 +237,6 @@
   background-color: rgba(0, 0, 0, .05);
   padding: 6px;
   justify-content: space-around;
-  width: fit-content;
   user-select: none;
 }
 
@@ -274,7 +274,7 @@
 
 .pjw-class-weekcal-heading-day.selected {
   color: white;
-  background-color: rgba(54, 79, 125, 1);
+  background-color: var(--pjw-dark-background);
   margin: 0 2px;
 }
 
@@ -318,7 +318,7 @@
   border-radius: 0;
   color: white;
   font-weight: bold;
-  background-color: rgba(54, 79, 125, 1);
+  background-color: var(--pjw-dark-background);
   height: 23px;
   margin: 0 7px;
   white-space: nowrap;
@@ -385,7 +385,7 @@
   position: absolute;
   height: 16px;
   border-radius: 9px;
-  background: linear-gradient(95deg, rgba(54, 79, 125, 1), rgba(123, 11, 94, 1));
+  background: linear-gradient(95deg, var(--pjw-dark-background), rgba(123, 11, 94, 1));
   color: white;
   text-align: center;
   vertical-align: middle;
