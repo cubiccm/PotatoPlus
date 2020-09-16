@@ -27,7 +27,8 @@
   border: 0; border-radius: 7px;
   background-color: white; color: #63065f;
   user-select: none; cursor: pointer;
-  padding: 1px 7px; margin: 5px;
+  padding: 1px 7px;
+  margin: 2px 5px;
   transition: all .1s ease-in;
 }
 .pjw-mini-button:hover {
@@ -205,6 +206,7 @@ body {
   border-radius: 12px;
   transition: all .1s ease-out;
   cursor: pointer;
+  user-select: none;
 }
 
 #pjw-user-info:hover {

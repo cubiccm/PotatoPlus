@@ -23,6 +23,11 @@ window.potatojw_intl = function() {
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
+    if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
+    $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
+      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 5000);} if (window.click_count >= 10) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+      e.stopPropagation();
+    });
     $$("#TopLink").children("img").remove();
   }
 
@@ -245,6 +250,7 @@ window.potatojw_intl = function() {
   
   if (!checkStorageVersion()) {
     store.set("is_toolbar_collapsed", false);
+    store.remove("privilege");
     store.set("version", pjw_version);
   }
 
@@ -666,12 +672,12 @@ window.potatojw_intl = function() {
           type: "POST"
         }).done(function(res) {
           if ($$(res).is("#successMsg"))
-            target.console.success(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
           else if ($$(res).is("#errMsg"))
-            target.console.error(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.console.error(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
           target.refresh(false, true).then(resolve);
         }).fail((res) => {
-          target.console.error(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")} 操作失败：${res}`);
+          target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
           reject(res);
         });
       });
@@ -788,9 +794,9 @@ window.potatojw_intl = function() {
             res = res.slice(start + 1, end);
           }
           if (res.search("成功！") != -1)
-            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           else
-            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -910,9 +916,9 @@ window.potatojw_intl = function() {
             res = res.slice(start + 1, end);
           }
           if (res.search("成功！") != -1)
-            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           else
-            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -1104,9 +1110,9 @@ window.potatojw_intl = function() {
             res = res.slice(start + 1, end);
           }
           if (res.search("成功！") != -1)
-            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           else
-            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -1241,7 +1247,7 @@ window.potatojw_intl = function() {
       
       g_selectedLeft--;
 
-      this.console.log(`《${class_data.title}》（${class_data.teachers.join("，")}） 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加。` : ""));
+      this.console.log(`${this.getClassInfoForAlert(class_data)} 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加。` : ""));
     }
 
     list.parse = function(data) {

@@ -236,6 +236,8 @@
   background-color: rgba(0, 0, 0, .05);
   padding: 6px;
   justify-content: space-around;
+  width: fit-content;
+  user-select: none;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal {
@@ -311,7 +313,7 @@
   margin: 2px 6px;
 }
 
-.pjw-class-weekcal-calendar-day > span.selected {
+.pjw-classlist-body .pjw-class-weekcal-calendar-day > span.selected {
   border: 0;
   border-radius: 0;
   color: white;

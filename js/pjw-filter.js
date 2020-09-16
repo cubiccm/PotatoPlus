@@ -2,19 +2,22 @@ var pjw_filter = {
   avail: {
     html: `
       <div id="pjw-avail-filter">
-        <div class="mdc-switch">
-          <div class="mdc-switch__track"></div>
-          <div class="mdc-switch__thumb-underlay">
-            <div class="mdc-switch__thumb"></div>
-            <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+        <heading><span class="material-icons-round">add_task</span>空余课程</heading>
+        <div class="content">
+          <div class="mdc-switch" id="pjw-avail-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
           </div>
+          <label for="pjw-avail-switch-input">过滤不可选课程</label>
         </div>
-        <label for="basic-switch">过滤不可选课程</label>
       </div>
     `,
     intl: (space, list) => {
       space.dom = $$("#pjw-avail-filter");
-      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-avail-filter > .mdc-switch")[0]);
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-avail-switch")[0]);
       space.switch.checked = true;
       space.status = true;
       space.dom.find(".mdc-switch__native-control").on("change", null, {
@@ -30,6 +33,281 @@ var pjw_filter = {
       if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select") {
         return false;
       }
+      return 0;
+    }
+  }, 
+
+  hours: {
+    html: `
+      <div id="pjw-hours-filter">
+        <heading><span class="material-icons-round">schedule</span>课程时间 *Beta</heading>
+        <div class="content">
+          <div class="pjw-class-weekcal">
+            <div class="pjw-class-weekcal-heading">
+              <div class="pjw-class-weekcal-heading-day select-all">ALL</div>
+              <div class="pjw-class-weekcal-heading-day">MO</div>
+              <div class="pjw-class-weekcal-heading-day">TU</div>
+              <div class="pjw-class-weekcal-heading-day">WE</div>
+              <div class="pjw-class-weekcal-heading-day">TH</div>
+              <div class="pjw-class-weekcal-heading-day">FR</div>
+              <div class="pjw-class-weekcal-heading-day">SA</div>
+              <div class="pjw-class-weekcal-heading-day">SU</div>
+            </div>
+            <div class="pjw-class-weekcal-calendar">
+              <div class="pjw-class-weekcal-calendar-day select-time">
+                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+            </div>
+          </div>
+          <div id="pjw-hours-filter-control">
+            <div id="clear-calendar" class="pjw-mini-button">清空</div>
+            <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
+            <div id="reset-calendar-allow-all" class="pjw-mini-button">重置并允许单双周课程</div>
+          </div>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.data = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ];
+      space.dom = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
+
+      // Value: 0, false
+      space.setValue = function(day, lesson, val) {
+        this.data[day][lesson] = val;
+        var target_lesson = this.dom.find(`div.pjw-class-weekcal-calendar-day:eq(${day})`).children(`span:eq(${lesson - 1})`);
+        if (val === false) target_lesson.addClass("selected");
+        else target_lesson.removeClass("selected");
+      };
+
+      space.clear = function() {
+        for (var i = 1; i <= 7; i++)
+          for (var j = 1; j <= 11; j++)
+            space.setValue(i, j, 0);
+      };
+
+      space.loadMyClass = function(include_odd_even = true) {
+        $$.ajax({
+          url: "http://elite.nju.edu.cn/jiaowu/student/teachinginfo/courseList.do",
+          data: {
+            method: "currentTermCourse"
+          },
+          method: "GET"
+        }).done((res) => {
+          $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
+            var lesson_time = list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time;
+            for (var item of lesson_time) {
+              if (include_odd_even || item.type == "normal") {
+                for (var i = item.start; i <= item.end; i++)
+                  space.setValue(item.weekday, i, false);
+              }
+            }
+          });
+        });
+      };
+
+      space.loadMyClass();
+
+      $$("#clear-calendar").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.clear();
+      });
+
+      $$("#reset-calendar").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.clear();
+        e.data.space.loadMyClass();
+      });
+
+      $$("#reset-calendar-allow-all").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.clear();
+        e.data.space.loadMyClass(false);
+      });
+
+      space.mouse_select = false;
+      space.handleMouseUp = function() {
+        if (space.mouse_select == false) return;
+        space.mouse_select = false;
+        delete space.mouse_select_start;
+        list.update();
+      };
+
+      space.dom.on("mousedown", null, {
+        space: space
+      }, (e) => {
+        e.data.space.mouse_select = true;
+      });
+
+      space.dom.on("mouseup", null, {
+        space: space
+      }, (e) => {
+        e.data.space.handleMouseUp();
+      });
+
+      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
+        space: space
+      }, (e) => {
+        if (!e.data.space.mouse_select) return;
+        var elem = $$(e.delegateTarget);
+        var day = elem.parent().index();
+        var lesson = elem.index() + 1;
+        var val = false;
+        if (elem.hasClass("selected")) val = 0;
+        if (typeof(e.data.space.mouse_select_start) == "undefined")
+          e.data.space.mouse_select_start = val;
+        else
+          val = e.data.space.mouse_select_start;
+        e.data.space.setValue(day, lesson, val);
+      });
+
+      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousedown", null, {
+        space: space
+      }, (e) => {
+        var elem = $$(e.delegateTarget);
+        var day = elem.parent().index();
+        var lesson = elem.index() + 1;
+        var val = false;
+        if (elem.hasClass("selected")) val = 0;
+        if (typeof(e.data.space.mouse_select_start) == "undefined")
+          e.data.space.mouse_select_start = val;
+        else
+          val = e.data.space.mouse_select_start;
+        e.data.space.setValue(day, lesson, val);
+      });
+
+      space.dom.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("span").on("click", null, {
+        space: space
+      }, (e) => {
+        var elem = $$(e.delegateTarget);
+        var lesson = elem.index() + 1;
+        var val = 0;
+        for (var i = 1; i <= 7; i++)
+          if (e.data.space.data[i][lesson] !== false) {
+            val = false;
+            break;
+          }
+        for (var i = 1; i <= 7; i++)
+          e.data.space.setValue(i, lesson, val);
+      });
+
+      space.dom.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
+        space: space
+      }, (e) => {
+        var elem = $$(e.delegateTarget);
+        var day = elem.index();
+        var val = 0;
+        for (var j = 1; j <= 11; j++)
+          if (e.data.space.data[day][j] !== false) {
+            val = false;
+            break;
+          }
+        for (var j = 1; j <= 11; j++)
+          e.data.space.setValue(day, j, val);
+      });
+
+      space.dom.find("div.pjw-class-weekcal-heading-day.select-all").on("click", null, {
+        space: space
+      }, (e) => {
+        var val = 0;
+        for (var i = 1; i <= 7; i++)
+          for (var j = 1; j <= 11; j++)
+            if (e.data.space.data[i][j] !== false) {
+              val = false;
+              break;
+            }
+        for (var i = 1; i <= 7; i++)
+          for (var j = 1; j <= 11; j++)
+            e.data.space.setValue(i, j, val);
+      });
+
+      $$("body").on("mouseup", null, {
+        target: space
+      }, (e) => {
+        e.data.target.handleMouseUp();
+      });
+    }, 
+    check: (space, data) => {
+      if (!data.lesson_time || !data.lesson_time.length) return 0;
+      var priority = 0.0;
+      for (var item of data.lesson_time) {
+        for (var i = item.start; i <= item.end; i++) {
+          var this_priority = space.data[item.weekday][i];
+          if (this_priority === false)
+            return false;
+          else priority += this_priority / (item.end - item.start + 1);
+        }
+      }
+      return priority / data.lesson_time.length;
+    }
+  },
+
+  potatoes: {
+    html: `
+      <div id="pjw-potatoes-filter">
+        <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
+        <div class="content">
+          <div class="mdc-switch" id="pjw-potatoes-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-potatoes-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+          <label for="pjw-potatoes-switch-input">自动选课</label>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.dom = $$("#pjw-potatoes-filter");
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-switch")[0]);
+      space.status = false;
+      space.dom.find(".mdc-switch__native-control").on("change", null, {
+        target: space,
+        list: list
+      }, (e) => {
+        e.data.target.status = e.data.target.switch.checked;
+      });
+    },
+    check: (space, data, class_obj) => {
+      if (!space.status) return 0;
+      if (data.select_button && data.select_button.action)
+        if (data.select_button.status == "Select") {
+          var e = {data: {target: class_obj}};
+          data.select_button.action(e);
+        }
       return 0;
     }
   }

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         potatojw_upgraded
-// @version      0.2 Beta 6
+// @version      0.2 Beta 7
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -113,7 +113,8 @@ injectStyleFromString(`#pjw-toolbar {
   border: 0; border-radius: 7px;
   background-color: white; color: #63065f;
   user-select: none; cursor: pointer;
-  padding: 1px 7px; margin: 5px;
+  padding: 1px 7px;
+  margin: 2px 5px;
   transition: all .1s ease-in;
 }
 .pjw-mini-button:hover {
@@ -291,6 +292,7 @@ body {
   border-radius: 12px;
   transition: all .1s ease-out;
   cursor: pointer;
+  user-select: none;
 }
 
 #pjw-user-info:hover {
@@ -651,6 +653,8 @@ injectStyleFromString(`/* PJW ClassList */
   background-color: rgba(0, 0, 0, .05);
   padding: 6px;
   justify-content: space-around;
+  width: fit-content;
+  user-select: none;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal {
@@ -726,7 +730,7 @@ injectStyleFromString(`/* PJW ClassList */
   margin: 2px 6px;
 }
 
-.pjw-class-weekcal-calendar-day > span.selected {
+.pjw-classlist-body .pjw-class-weekcal-calendar-day > span.selected {
   border: 0;
   border-radius: 0;
   color: white;
@@ -1051,6 +1055,29 @@ injectStyleFromString(`.pjw-filter-panel {
   --mdc-theme-secondary: #4b00ff;
 }
 
+.pjw-filter-panel__content > div {
+  margin: 20px 0;
+}
+
+.pjw-filter-panel heading {
+  display: block;
+  color: rgba(0, 0, 0, .7);
+  margin: 6px 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.pjw-filter-panel .content {
+  margin: 10px 16px;
+}
+
+.pjw-filter-panel heading > .material-icons-round {
+  font-size: 26px;
+  margin: 0 5px;
+  color: rgba(0, 0, 0, .7);
+}
+
 .pjw-filter-panel__content {
   margin: 20px 24px;
 }
@@ -1059,11 +1086,34 @@ injectStyleFromString(`.pjw-filter-panel {
   margin: 5px 10px;
 }
 
-#pjw-avail-filter {
+#pjw-avail-filter > .content {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
+  color: rgba(255, 255, 255, .7);
+  text-decoration: line-through;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day.select-time > span {
+  font-weight: bold;
+  border-color: transparent;
+}
+
+#pjw-hours-filter-control {
+  display: flex;
+  margin: 10px 0;
+  opacity: 0.3;
+}
+
+#pjw-hours-filter-control:hover {
+  display: flex;
+  margin: 10px 0;
+  opacity: 1;
 }`);
 
 
@@ -1923,19 +1973,22 @@ var pjw_filter = {
   avail: {
     html: `
       <div id="pjw-avail-filter">
-        <div class="mdc-switch">
-          <div class="mdc-switch__track"></div>
-          <div class="mdc-switch__thumb-underlay">
-            <div class="mdc-switch__thumb"></div>
-            <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+        <heading><span class="material-icons-round">add_task</span>空余课程</heading>
+        <div class="content">
+          <div class="mdc-switch" id="pjw-avail-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
           </div>
+          <label for="pjw-avail-switch-input">过滤不可选课程</label>
         </div>
-        <label for="basic-switch">过滤不可选课程</label>
       </div>
     `,
     intl: (space, list) => {
       space.dom = $$("#pjw-avail-filter");
-      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-avail-filter > .mdc-switch")[0]);
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-avail-switch")[0]);
       space.switch.checked = true;
       space.status = true;
       space.dom.find(".mdc-switch__native-control").on("change", null, {
@@ -1951,6 +2004,281 @@ var pjw_filter = {
       if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select") {
         return false;
       }
+      return 0;
+    }
+  }, 
+
+  hours: {
+    html: `
+      <div id="pjw-hours-filter">
+        <heading><span class="material-icons-round">schedule</span>课程时间 *Beta</heading>
+        <div class="content">
+          <div class="pjw-class-weekcal">
+            <div class="pjw-class-weekcal-heading">
+              <div class="pjw-class-weekcal-heading-day select-all">ALL</div>
+              <div class="pjw-class-weekcal-heading-day">MO</div>
+              <div class="pjw-class-weekcal-heading-day">TU</div>
+              <div class="pjw-class-weekcal-heading-day">WE</div>
+              <div class="pjw-class-weekcal-heading-day">TH</div>
+              <div class="pjw-class-weekcal-heading-day">FR</div>
+              <div class="pjw-class-weekcal-heading-day">SA</div>
+              <div class="pjw-class-weekcal-heading-day">SU</div>
+            </div>
+            <div class="pjw-class-weekcal-calendar">
+              <div class="pjw-class-weekcal-calendar-day select-time">
+                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+              <div class="pjw-class-weekcal-calendar-day">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+              </div>
+            </div>
+          </div>
+          <div id="pjw-hours-filter-control">
+            <div id="clear-calendar" class="pjw-mini-button">清空</div>
+            <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
+            <div id="reset-calendar-allow-all" class="pjw-mini-button">重置并允许单双周课程</div>
+          </div>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.data = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ];
+      space.dom = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
+
+      // Value: 0, false
+      space.setValue = function(day, lesson, val) {
+        this.data[day][lesson] = val;
+        var target_lesson = this.dom.find(`div.pjw-class-weekcal-calendar-day:eq(${day})`).children(`span:eq(${lesson - 1})`);
+        if (val === false) target_lesson.addClass("selected");
+        else target_lesson.removeClass("selected");
+      };
+
+      space.clear = function() {
+        for (var i = 1; i <= 7; i++)
+          for (var j = 1; j <= 11; j++)
+            space.setValue(i, j, 0);
+      };
+
+      space.loadMyClass = function(include_odd_even = true) {
+        $$.ajax({
+          url: "http://elite.nju.edu.cn/jiaowu/student/teachinginfo/courseList.do",
+          data: {
+            method: "currentTermCourse"
+          },
+          method: "GET"
+        }).done((res) => {
+          $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
+            var lesson_time = list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time;
+            for (var item of lesson_time) {
+              if (include_odd_even || item.type == "normal") {
+                for (var i = item.start; i <= item.end; i++)
+                  space.setValue(item.weekday, i, false);
+              }
+            }
+          });
+        });
+      };
+
+      space.loadMyClass();
+
+      $$("#clear-calendar").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.clear();
+      });
+
+      $$("#reset-calendar").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.clear();
+        e.data.space.loadMyClass();
+      });
+
+      $$("#reset-calendar-allow-all").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.clear();
+        e.data.space.loadMyClass(false);
+      });
+
+      space.mouse_select = false;
+      space.handleMouseUp = function() {
+        if (space.mouse_select == false) return;
+        space.mouse_select = false;
+        delete space.mouse_select_start;
+        list.update();
+      };
+
+      space.dom.on("mousedown", null, {
+        space: space
+      }, (e) => {
+        e.data.space.mouse_select = true;
+      });
+
+      space.dom.on("mouseup", null, {
+        space: space
+      }, (e) => {
+        e.data.space.handleMouseUp();
+      });
+
+      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
+        space: space
+      }, (e) => {
+        if (!e.data.space.mouse_select) return;
+        var elem = $$(e.delegateTarget);
+        var day = elem.parent().index();
+        var lesson = elem.index() + 1;
+        var val = false;
+        if (elem.hasClass("selected")) val = 0;
+        if (typeof(e.data.space.mouse_select_start) == "undefined")
+          e.data.space.mouse_select_start = val;
+        else
+          val = e.data.space.mouse_select_start;
+        e.data.space.setValue(day, lesson, val);
+      });
+
+      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousedown", null, {
+        space: space
+      }, (e) => {
+        var elem = $$(e.delegateTarget);
+        var day = elem.parent().index();
+        var lesson = elem.index() + 1;
+        var val = false;
+        if (elem.hasClass("selected")) val = 0;
+        if (typeof(e.data.space.mouse_select_start) == "undefined")
+          e.data.space.mouse_select_start = val;
+        else
+          val = e.data.space.mouse_select_start;
+        e.data.space.setValue(day, lesson, val);
+      });
+
+      space.dom.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("span").on("click", null, {
+        space: space
+      }, (e) => {
+        var elem = $$(e.delegateTarget);
+        var lesson = elem.index() + 1;
+        var val = 0;
+        for (var i = 1; i <= 7; i++)
+          if (e.data.space.data[i][lesson] !== false) {
+            val = false;
+            break;
+          }
+        for (var i = 1; i <= 7; i++)
+          e.data.space.setValue(i, lesson, val);
+      });
+
+      space.dom.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
+        space: space
+      }, (e) => {
+        var elem = $$(e.delegateTarget);
+        var day = elem.index();
+        var val = 0;
+        for (var j = 1; j <= 11; j++)
+          if (e.data.space.data[day][j] !== false) {
+            val = false;
+            break;
+          }
+        for (var j = 1; j <= 11; j++)
+          e.data.space.setValue(day, j, val);
+      });
+
+      space.dom.find("div.pjw-class-weekcal-heading-day.select-all").on("click", null, {
+        space: space
+      }, (e) => {
+        var val = 0;
+        for (var i = 1; i <= 7; i++)
+          for (var j = 1; j <= 11; j++)
+            if (e.data.space.data[i][j] !== false) {
+              val = false;
+              break;
+            }
+        for (var i = 1; i <= 7; i++)
+          for (var j = 1; j <= 11; j++)
+            e.data.space.setValue(i, j, val);
+      });
+
+      $$("body").on("mouseup", null, {
+        target: space
+      }, (e) => {
+        e.data.target.handleMouseUp();
+      });
+    }, 
+    check: (space, data) => {
+      if (!data.lesson_time || !data.lesson_time.length) return 0;
+      var priority = 0.0;
+      for (var item of data.lesson_time) {
+        for (var i = item.start; i <= item.end; i++) {
+          var this_priority = space.data[item.weekday][i];
+          if (this_priority === false)
+            return false;
+          else priority += this_priority / (item.end - item.start + 1);
+        }
+      }
+      return priority / data.lesson_time.length;
+    }
+  },
+
+  potatoes: {
+    html: `
+      <div id="pjw-potatoes-filter">
+        <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
+        <div class="content">
+          <div class="mdc-switch" id="pjw-potatoes-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-potatoes-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+          <label for="pjw-potatoes-switch-input">自动选课</label>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.dom = $$("#pjw-potatoes-filter");
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-switch")[0]);
+      space.status = false;
+      space.dom.find(".mdc-switch__native-control").on("change", null, {
+        target: space,
+        list: list
+      }, (e) => {
+        e.data.target.status = e.data.target.switch.checked;
+      });
+    },
+    check: (space, data, class_obj) => {
+      if (!space.status) return 0;
+      if (data.select_button && data.select_button.action)
+        if (data.select_button.status == "Select") {
+          var e = {data: {target: class_obj}};
+          data.select_button.action(e);
+        }
       return 0;
     }
   }
@@ -2390,9 +2718,10 @@ function ClassListPlugin() {
         this.class_data[this.auto_inc].data = data;
         var target = this.class_data[this.auto_inc].obj;
         target.data = data;
-        if (data_compare_res == 1) { 
+        if (data_compare_res !== false) { 
           target.updateSelectButton(data.select_button);
-          target.updateNumInfo(data);
+          if (data_compare_res == 1)
+            target.updateNumInfo(data);
         }
       } else {
         // Conduct hard refresh
@@ -2506,12 +2835,12 @@ function ClassListPlugin() {
 
     // Returns class priority
     // Returns false when the class do not match the filter
-    checkFilter(data) {
+    checkFilter(data, class_obj) {
       var priority = 0.0;
 
       if (this.filter_enabled == true) {
         for (var name in this.filters) {
-          var res = this.filters[name].check(this.filters[name], data);
+          var res = this.filters[name].check(this.filters[name], data, class_obj);
           if (res === false) {
             data.priority = -1;
             return false;
@@ -2551,7 +2880,7 @@ function ClassListPlugin() {
       }
 
       for (var item of this.class_data)
-        if (this.checkFilter(item.data) === false)
+        if (this.checkFilter(item.data, item.obj) === false)
           item.obj.hide();
 
       this.class_data.sort(function(a, b) {
@@ -2572,6 +2901,12 @@ function ClassListPlugin() {
       }
       this.prepared_to_add = false;
       window.mdc.autoInit();
+    }
+
+    getClassInfoForAlert = function(data) {
+      if (data.teachers.length == 0)
+        return `《${data.title}》`;
+      return `《${data.title}》（${data.teachers.join("，")}）`;
     }
 
     parseTeacherNames = function(text) {
@@ -2711,17 +3046,28 @@ function ClassListPlugin() {
       });
     }
 
+    // Loads a filter module by name
+    loadModule(name) {
+      if (this.filter_modules.include(name)) return false;
+      this.filter_modules.push(name);
+      this.filter_panel.find(".pjw-classlist-bottom").before(pjw_filter[name].html);
+      this.filters[name] = pjw_filter[name];
+      this.filters[name].intl(this.filters[name], this);
+      return this.filters[name];
+    }
+
     // Increases refresh speed when pressing speed adjustment button
     speedUp() {
-      const max_frequency = 10.0;
-      if (this.auto_refresh_frequency <= 4.0)
-        this.auto_refresh_frequency *= 1.1;
-      else if (this.auto_refresh_frequency <= 8.0)
-        this.auto_refresh_frequency += 0.4;
-      else if (this.auto_refresh_frequency < max_frequency)
+      if (!this.max_frequency)
+        this.max_frequency = 8.0;
+      if (this.auto_refresh_frequency <= 3.0)
+        this.auto_refresh_frequency *= 1.06;
+      else if (this.auto_refresh_frequency <= 6.0)
+        this.auto_refresh_frequency += 0.2;
+      else if (this.auto_refresh_frequency < this.max_frequency)
         this.auto_refresh_frequency += 0.1;
       else
-        this.auto_refresh_frequency = max_frequency;
+        this.auto_refresh_frequency = this.max_frequency;
 
       // Updates button label to current speed
       $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
@@ -2742,11 +3088,11 @@ function ClassListPlugin() {
       } else {
         // Shows speed in natural language after releasing speed adjustment button
         var text = "";
-        if (this.auto_refresh_frequency <= 4.0)
+        if (this.auto_refresh_frequency <= 3.0)
           text = "标准";
-        else if (this.auto_refresh_frequency <= 8.0)
+        else if (this.auto_refresh_frequency <= 6.0)
           text = "快";
-        else if (this.auto_refresh_frequency < 10.0)
+        else if (this.auto_refresh_frequency < 8.0)
           text = "极速";
         else
           text = "封号退学";
@@ -2762,7 +3108,7 @@ function ClassListPlugin() {
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
-        this.console.info("自动刷新已打开。")
+        this.console.debug("自动刷新已打开。")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -2810,7 +3156,7 @@ function ClassListPlugin() {
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
       } else {
-        this.console.info("自动刷新已关闭。")
+        this.console.debug("自动刷新已关闭。")
         $$("#autoreload-control-section").css("filter", "");
         window.clearInterval(this.auto_refresh_interval_id);
       }
@@ -2881,8 +3227,8 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent) {
-      this.filter_modules = ["avail"];
+    constructor(parent, modules = ["avail", "hours"]) {
+      this.filter_modules = modules;
 
       // Deploy filter DOM
       var filter_modules = "";
@@ -2959,6 +3305,11 @@ function ClassListPlugin() {
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
       this.filter_panel = this.dom.children(".pjw-filter-panel");
+      this.filters = {};
+      for (var name of this.filter_modules) {
+        this.filters[name] = pjw_filter[name];
+        this.filters[name].intl(this.filters[name], this);
+      }
 
       this.class_load_size = 30;
 
@@ -2979,6 +3330,7 @@ function ClassListPlugin() {
           }, 150, e);
         }
       });
+      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {this.loadModule("potatoes"); this.max_frequency = 15.0;}
 
       this.refresh_button.on("click", null, {
         target: this
@@ -3034,13 +3386,6 @@ function ClassListPlugin() {
       }, (e) => {
         e.data.target.handleResize();
       });
-
-      // Initialize filters
-      this.filters = {};
-      for (var name of this.filter_modules) {
-        this.filters[name] = pjw_filter[name];
-        this.filters[name].intl(this.filters[name], this);
-      }
 
       this.clear();
       this.handleResize();
@@ -3161,7 +3506,7 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2 Beta 6";
+  window.pjw_version = "0.2 Beta 7";
   if (window.pjw_version[0] == "@")
     window.pjw_version = "0.2 beta";
   window.$$ = jQuery.noConflict();
@@ -3179,6 +3524,11 @@ window.potatojw_intl = function() {
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
+    if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
+    $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
+      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 5000);} if (window.click_count >= 10) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+      e.stopPropagation();
+    });
     $$("#TopLink").children("img").remove();
   }
 
@@ -3401,6 +3751,7 @@ window.potatojw_intl = function() {
   
   if (!checkStorageVersion()) {
     store.set("is_toolbar_collapsed", false);
+    store.remove("privilege");
     store.set("version", pjw_version);
   }
 
@@ -3802,9 +4153,7 @@ window.potatojw_intl = function() {
       readSelect(event, class_ID, true);
     };
 
-    $$(document).ready(function() {
-      $$("#comment").html("[potatojw_upgraded Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可在插件菜单中暂时关闭potatojw_upgraded<br><br>" + $$("#comment").html());
-    });
+    $$("#comment").html("[potatojwplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可先暂时关闭potatojwplus<br><br>" + $$("#comment").html());
   } else if (pjw_mode == "read_view") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
@@ -3824,12 +4173,12 @@ window.potatojw_intl = function() {
           type: "POST"
         }).done(function(res) {
           if ($$(res).is("#successMsg"))
-            target.console.success(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
           else if ($$(res).is("#errMsg"))
-            target.console.error(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.console.error(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
           target.refresh(false, true).then(resolve);
         }).fail((res) => {
-          target.console.error(`${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")} 操作失败：${res}`);
+          target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
           reject(res);
         });
       });
@@ -3946,9 +4295,9 @@ window.potatojw_intl = function() {
             res = res.slice(start + 1, end);
           }
           if (res.search("成功！") != -1)
-            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           else
-            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -4068,9 +4417,9 @@ window.potatojw_intl = function() {
             res = res.slice(start + 1, end);
           }
           if (res.search("成功！") != -1)
-            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           else
-            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -4262,9 +4611,9 @@ window.potatojw_intl = function() {
             res = res.slice(start + 1, end);
           }
           if (res.search("成功！") != -1)
-            target.console.success(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           else
-            target.console.warn(`选择《${class_data.title}》（${class_data.teachers.join("，")}）：${res}`);
+            target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           resolve();
         }).fail((res) => {
           reject(res);
@@ -4399,7 +4748,7 @@ window.potatojw_intl = function() {
       
       g_selectedLeft--;
 
-      this.console.log(`《${class_data.title}》（${class_data.teachers.join("，")}） 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加。` : ""));
+      this.console.log(`${this.getClassInfoForAlert(class_data)} 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加。` : ""));
     }
 
     list.parse = function(data) {

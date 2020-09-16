@@ -548,12 +548,12 @@ function ClassListPlugin() {
 
     // Returns class priority
     // Returns false when the class do not match the filter
-    checkFilter(data) {
+    checkFilter(data, class_obj) {
       var priority = 0.0;
 
       if (this.filter_enabled == true) {
         for (var name in this.filters) {
-          var res = this.filters[name].check(this.filters[name], data);
+          var res = this.filters[name].check(this.filters[name], data, class_obj);
           if (res === false) {
             data.priority = -1;
             return false;
@@ -593,7 +593,7 @@ function ClassListPlugin() {
       }
 
       for (var item of this.class_data)
-        if (this.checkFilter(item.data) === false)
+        if (this.checkFilter(item.data, item.obj) === false)
           item.obj.hide();
 
       this.class_data.sort(function(a, b) {
@@ -614,6 +614,12 @@ function ClassListPlugin() {
       }
       this.prepared_to_add = false;
       window.mdc.autoInit();
+    }
+
+    getClassInfoForAlert = function(data) {
+      if (data.teachers.length == 0)
+        return `《${data.title}》`;
+      return `《${data.title}》（${data.teachers.join("，")}）`;
     }
 
     parseTeacherNames = function(text) {
@@ -753,17 +759,28 @@ function ClassListPlugin() {
       });
     }
 
+    // Loads a filter module by name
+    loadModule(name) {
+      if (this.filter_modules.include(name)) return false;
+      this.filter_modules.push(name);
+      this.filter_panel.find(".pjw-classlist-bottom").before(pjw_filter[name].html);
+      this.filters[name] = pjw_filter[name];
+      this.filters[name].intl(this.filters[name], this);
+      return this.filters[name];
+    }
+
     // Increases refresh speed when pressing speed adjustment button
     speedUp() {
-      const max_frequency = 10.0;
-      if (this.auto_refresh_frequency <= 4.0)
-        this.auto_refresh_frequency *= 1.1;
-      else if (this.auto_refresh_frequency <= 8.0)
-        this.auto_refresh_frequency += 0.4;
-      else if (this.auto_refresh_frequency < max_frequency)
+      if (!this.max_frequency)
+        this.max_frequency = 8.0;
+      if (this.auto_refresh_frequency <= 3.0)
+        this.auto_refresh_frequency *= 1.06;
+      else if (this.auto_refresh_frequency <= 6.0)
+        this.auto_refresh_frequency += 0.2;
+      else if (this.auto_refresh_frequency < this.max_frequency)
         this.auto_refresh_frequency += 0.1;
       else
-        this.auto_refresh_frequency = max_frequency;
+        this.auto_refresh_frequency = this.max_frequency;
 
       // Updates button label to current speed
       $$("#autorefresh-label").html(this.auto_refresh_frequency.toFixed(1) + "x");
@@ -784,11 +801,11 @@ function ClassListPlugin() {
       } else {
         // Shows speed in natural language after releasing speed adjustment button
         var text = "";
-        if (this.auto_refresh_frequency <= 4.0)
+        if (this.auto_refresh_frequency <= 3.0)
           text = "标准";
-        else if (this.auto_refresh_frequency <= 8.0)
+        else if (this.auto_refresh_frequency <= 6.0)
           text = "快";
-        else if (this.auto_refresh_frequency < 10.0)
+        else if (this.auto_refresh_frequency < 8.0)
           text = "极速";
         else
           text = "封号退学";
@@ -804,7 +821,7 @@ function ClassListPlugin() {
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
-        this.console.info("自动刷新已打开。")
+        this.console.debug("自动刷新已打开。")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -852,7 +869,7 @@ function ClassListPlugin() {
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
       } else {
-        this.console.info("自动刷新已关闭。")
+        this.console.debug("自动刷新已关闭。")
         $$("#autoreload-control-section").css("filter", "");
         window.clearInterval(this.auto_refresh_interval_id);
       }
@@ -923,8 +940,8 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent) {
-      this.filter_modules = ["avail"];
+    constructor(parent, modules = ["avail", "hours"]) {
+      this.filter_modules = modules;
 
       // Deploy filter DOM
       var filter_modules = "";
@@ -1001,6 +1018,11 @@ function ClassListPlugin() {
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
       this.filter_panel = this.dom.children(".pjw-filter-panel");
+      this.filters = {};
+      for (var name of this.filter_modules) {
+        this.filters[name] = pjw_filter[name];
+        this.filters[name].intl(this.filters[name], this);
+      }
 
       this.class_load_size = 30;
 
@@ -1021,6 +1043,7 @@ function ClassListPlugin() {
           }, 150, e);
         }
       });
+      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {this.loadModule("potatoes"); this.max_frequency = 15.0;}
 
       this.refresh_button.on("click", null, {
         target: this
@@ -1076,13 +1099,6 @@ function ClassListPlugin() {
       }, (e) => {
         e.data.target.handleResize();
       });
-
-      // Initialize filters
-      this.filters = {};
-      for (var name of this.filter_modules) {
-        this.filters[name] = pjw_filter[name];
-        this.filters[name].intl(this.filters[name], this);
-      }
 
       this.clear();
       this.handleResize();

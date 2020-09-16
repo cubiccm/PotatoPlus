@@ -8,6 +8,29 @@
   --mdc-theme-secondary: #4b00ff;
 }
 
+.pjw-filter-panel__content > div {
+  margin: 20px 0;
+}
+
+.pjw-filter-panel heading {
+  display: block;
+  color: rgba(0, 0, 0, .7);
+  margin: 6px 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.pjw-filter-panel .content {
+  margin: 10px 16px;
+}
+
+.pjw-filter-panel heading > .material-icons-round {
+  font-size: 26px;
+  margin: 0 5px;
+  color: rgba(0, 0, 0, .7);
+}
+
 .pjw-filter-panel__content {
   margin: 20px 24px;
 }
@@ -16,9 +39,32 @@
   margin: 5px 10px;
 }
 
-#pjw-avail-filter {
+#pjw-avail-filter > .content {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
+  color: rgba(255, 255, 255, .7);
+  text-decoration: line-through;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day.select-time > span {
+  font-weight: bold;
+  border-color: transparent;
+}
+
+#pjw-hours-filter-control {
+  display: flex;
+  margin: 10px 0;
+  opacity: 0.3;
+}
+
+#pjw-hours-filter-control:hover {
+  display: flex;
+  margin: 10px 0;
+  opacity: 1;
 }
