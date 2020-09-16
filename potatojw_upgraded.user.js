@@ -1093,6 +1093,22 @@ injectStyleFromString(`.pjw-filter-panel {
   align-items: center;
 }
 
+#pjw-hours-filter .pjw-class-weekcal-heading-day {
+  transition: color .1s ease-out;
+}
+
+#pjw-hours-filter .select-time > span {
+  transition: color .1s ease-out;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-heading-day:hover {
+  color: var(--white);
+}
+
+#pjw-hours-filter .select-time > span:hover {
+  color: var(--white);
+}
+
 #pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
   color: rgba(255, 255, 255, .7);
   text-decoration: line-through;
@@ -1107,7 +1123,8 @@ injectStyleFromString(`.pjw-filter-panel {
 #pjw-hours-filter-control {
   display: flex;
   margin: 10px 0;
-  opacity: 0.3;
+  opacity: 0.65;
+  transition: opacity .1s ease-out;
 }
 
 #pjw-hours-filter-control:hover {
