@@ -1,4 +1,5 @@
 var pjw_filter = {
+  /* avail module v1.0 */
   avail: {
     html: `
       <div id="pjw-avail-filter">
@@ -37,6 +38,7 @@ var pjw_filter = {
     }
   }, 
 
+  /* hours module v0.1 */
   hours: {
     html: `
       <div id="pjw-hours-filter">
@@ -138,23 +140,29 @@ var pjw_filter = {
       space.loadMyClass();
 
       $$("#clear-calendar").on("click", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         e.data.space.clear();
+        e.data.list.update();
       });
 
       $$("#reset-calendar").on("click", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         e.data.space.clear();
         e.data.space.loadMyClass();
+        e.data.list.update();
       });
 
       $$("#reset-calendar-allow-all").on("click", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         e.data.space.clear();
         e.data.space.loadMyClass(false);
+        e.data.list.update();
       });
 
       space.mouse_select = false;
@@ -274,39 +282,66 @@ var pjw_filter = {
     }
   },
 
+  /* potatoes module v0.1 */
   potatoes: {
     html: `
       <div id="pjw-potatoes-filter">
         <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
-        <div class="content pjw-switch-box">
-          <div class="mdc-switch" id="pjw-potatoes-switch">
-            <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" id="pjw-potatoes-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+        <div class="content">
+          <div class="pjw-switch-box">
+            <div class="mdc-switch" id="pjw-potatoes-switch">
+              <div class="mdc-switch__track"></div>
+              <div class="mdc-switch__thumb-underlay">
+                <div class="mdc-switch__thumb"></div>
+                <input type="checkbox" id="pjw-potatoes-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              </div>
             </div>
+            <label for="pjw-potatoes-switch-input">自动选课</label>
           </div>
-          <label for="pjw-potatoes-switch-input">自动选课</label>
+          <div class="pjw-switch-box">
+            <div class="mdc-switch" id="pjw-potatoes-continue-on-success">
+              <div class="mdc-switch__track"></div>
+              <div class="mdc-switch__thumb-underlay">
+                <div class="mdc-switch__thumb"></div>
+                <input type="checkbox" id="pjw-potatoes-continue-on-success-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              </div>
+            </div>
+            <label for="pjw-potatoes-continue-on-success-input">选择全部符合课程（谨慎使用）</label>
+          </div>
         </div>
       </div>
     `,
     intl: (space, list) => {
       space.dom = $$("#pjw-potatoes-filter");
       space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-switch")[0]);
+      space.continue_on_success_switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-continue-on-success")[0]);
+
       space.status = false;
-      space.dom.find(".mdc-switch__native-control").on("change", null, {
+      space.dom.find("#pjw-potatoes-switch-input").on("change", null, {
         target: space,
-        list: list
       }, (e) => {
         e.data.target.status = e.data.target.switch.checked;
+      });
+
+      space.dom.find("#pjw-potatoes-continue-on-success-input").on("change", null, {
+        target: space,
+      }, (e) => {
+        e.data.target.continue_on_success = e.data.target.continue_on_success_switch.checked;
       });
     },
     check: (space, data, class_obj) => {
       if (!space.status) return 0;
       if (data.select_button && data.select_button.action)
         if (data.select_button.status == "Select") {
+          if (!space.continue_on_success)
+            space.switch.checked = space.status = false;
+
           var e = {data: {target: class_obj}};
-          data.select_button.action(e);
+          data.select_button.action(e).then(() => {
+            class_obj.list.console.debug("Got a success from the potatoes module!");
+          }).catch((res) => {
+            class_obj.list.console.debug("Got an error from the potatoes module: " + res);
+          });
         }
       return 0;
     }

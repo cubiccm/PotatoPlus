@@ -44,6 +44,7 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  margin: 15px;
 }
 
 #pjw-hours-filter > .content {

@@ -715,8 +715,14 @@ window.potatojw_intl = function() {
                 status: select_status,
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
-                  e.data.button_target.prop("disabled", true);
-                  e.data.target.list.select(classID, e.data.target.data);
+                  return new Promise((resolve, reject) => {
+                    e.data.button_target.prop("disabled", true);
+                    e.data.target.list.select(classID, e.data.target.data).then(() => {
+                      resolve();
+                    }).catch((res) => {
+                      reject(res);
+                    });
+                  });
                 }
               },
               comment_button: {
@@ -842,7 +848,15 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: `${td(7).html()}/${td(6).html()}`,
-                action: ((e) => { e.data.target.list.select(classID, class_kind, e.data.target.data); })
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.target.list.select(classID, class_kind, e.data.target.data).then(() => {
+                      resolve();
+                    }).catch((res) => {
+                      reject(res);
+                    });
+                  });
+                }
               },
               comment_button: {
                 status: true,
@@ -965,7 +979,15 @@ window.potatojw_intl = function() {
                 select_button: {
                   status: select_status,
                   text: `${td(7).html()}/${td(6).html()}`,
-                  action: (e) => { e.data.target.list.select(classID, e.data.target.data); }
+                  action: (e) => {
+                    return new Promise((resolve, reject) => {
+                      e.data.target.list.select(classID, e.data.target.data).then(() => {
+                        resolve();
+                      }).catch((res) => {
+                        reject(res);
+                      });
+                    });
+                  }
                 },
                 comment_button: {
                   status: true,
@@ -1165,7 +1187,15 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: `${td(8).html()}/${td(7).html()}`,
-                action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.target.list.select(classID, e.data.target.data).then(() => {
+                      resolve();
+                    }).catch((res) => {
+                      reject(res);
+                    }); 
+                  });
+                }
               },
               comment_button: {
                 status: true,
@@ -1295,7 +1325,12 @@ window.potatojw_intl = function() {
               select_button: {
                 status: select_status,
                 text: `${td(8).html()}/${td(7).html()}`,
-                action: ((e) => { e.data.target.list.select(classID, e.data.target.data); })
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.target.list.select(classID, e.data.target.data);
+                    resolve();
+                  });
+                }
               },
               comment_button: {
                 status: true,
