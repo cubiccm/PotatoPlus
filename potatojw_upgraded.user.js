@@ -2123,21 +2123,27 @@ var pjw_filter = {
       };
 
       space.loadMyClass = function(include_odd_even = true) {
-        $$.ajax({
-          url: "http://elite.nju.edu.cn/jiaowu/student/teachinginfo/courseList.do",
-          data: {
-            method: "currentTermCourse"
-          },
-          method: "GET"
-        }).done((res) => {
-          $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
-            var lesson_time = list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time;
-            for (var item of lesson_time) {
-              if (include_odd_even || item.type == "normal") {
-                for (var i = item.start; i <= item.end; i++)
-                  space.setValue(item.weekday, i, false);
+        return new Promise((resolve, reject) => {
+          $$.ajax({
+            url: "http://elite.nju.edu.cn/jiaowu/student/teachinginfo/courseList.do",
+            data: {
+              method: "currentTermCourse"
+            },
+            method: "GET"
+          }).done((res) => {
+            $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
+              var lesson_time = list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time;
+              for (var item of lesson_time) {
+                if (include_odd_even || item.type == "normal") {
+                  for (var i = item.start; i <= item.end; i++)
+                    space.setValue(item.weekday, i, false);
+                }
               }
-            }
+            });
+            resolve();
+          }).catch((res) => {
+            list.console.error("课程时间模块无法加载已有课程：" + res);
+            reject();
           });
         });
       };
@@ -2157,8 +2163,7 @@ var pjw_filter = {
         list: list
       }, (e) => {
         e.data.space.clear();
-        e.data.space.loadMyClass();
-        e.data.list.update();
+        e.data.space.loadMyClass().then(() => {e.data.list.update();});
       });
 
       $$("#reset-calendar-allow-all").on("click", null, {
@@ -2166,16 +2171,15 @@ var pjw_filter = {
         list: list
       }, (e) => {
         e.data.space.clear();
-        e.data.space.loadMyClass(false);
-        e.data.list.update();
+        e.data.space.loadMyClass(false).then(() => {e.data.list.update();});
       });
 
       space.mouse_select = false;
       space.handleMouseUp = function() {
-        if (space.mouse_select == false) return;
-        space.mouse_select = false;
-        delete space.mouse_select_start;
-        list.update();
+        if (space.mouse_select == true) {
+          space.mouse_select = false;
+          delete space.mouse_select_start;
+        }
       };
 
       space.dom.on("mousedown", null, {
@@ -2188,10 +2192,12 @@ var pjw_filter = {
         space: space
       }, (e) => {
         e.data.space.handleMouseUp();
+
       });
 
       space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         if (!e.data.space.mouse_select) return;
         var elem = $$(e.delegateTarget);
@@ -2207,7 +2213,8 @@ var pjw_filter = {
       });
 
       space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousedown", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         var elem = $$(e.delegateTarget);
         var day = elem.parent().index();
@@ -2221,8 +2228,16 @@ var pjw_filter = {
         e.data.space.setValue(day, lesson, val);
       });
 
+      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mouseup", null, {
+        space: space,
+        list: list
+      }, (e) => {
+        e.data.list.update();
+      });
+
       space.dom.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("span").on("click", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         var elem = $$(e.delegateTarget);
         var lesson = elem.index() + 1;
@@ -2237,7 +2252,8 @@ var pjw_filter = {
       });
 
       space.dom.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         var elem = $$(e.delegateTarget);
         var day = elem.index();
@@ -2249,10 +2265,12 @@ var pjw_filter = {
           }
         for (var j = 1; j <= 11; j++)
           e.data.space.setValue(day, j, val);
+        e.data.list.update();
       });
 
       space.dom.find("div.pjw-class-weekcal-heading-day.select-all").on("click", null, {
-        space: space
+        space: space,
+        list: list
       }, (e) => {
         var val = 0;
         for (var i = 1; i <= 7; i++)
@@ -2264,6 +2282,7 @@ var pjw_filter = {
         for (var i = 1; i <= 7; i++)
           for (var j = 1; j <= 11; j++)
             e.data.space.setValue(i, j, val);
+        e.data.list.update();
       });
 
       $$("body").on("mouseup", null, {
@@ -2340,6 +2359,10 @@ var pjw_filter = {
         if (data.select_button.status == "Select") {
           if (!space.continue_on_success)
             space.switch.checked = space.status = false;
+          else {
+            if ($$("#autorefresh-switch").hasClass("on"))
+              $$("#autorefresh-switch").click();
+          }
 
           var e = {data: {target: class_obj}};
           data.select_button.action(e).then(() => {
@@ -2907,6 +2930,15 @@ function ClassListPlugin() {
     checkFilter(data, class_obj) {
       var priority = 0.0;
 
+      /* Search module */
+      var search_priority = this.search(data, this.search_string);
+      if (search_priority === false) {
+        data.priority = -1;
+        return false;
+      }
+      priority += search_priority;
+
+      /* Filter modules */
       if (this.filter_enabled == true) {
         for (var name in this.filters) {
           var res = this.filters[name].check(this.filters[name], data, class_obj);
@@ -2917,14 +2949,6 @@ function ClassListPlugin() {
           priority += res;
         }
       }
-      
-      /* Search module */
-      var search_priority = this.search(data, this.search_string);
-      if (search_priority === false) {
-        data.priority = -1;
-        return false;
-      }
-      priority += search_priority;
 
       data.priority = priority;
       return priority;

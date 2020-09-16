@@ -551,6 +551,15 @@ function ClassListPlugin() {
     checkFilter(data, class_obj) {
       var priority = 0.0;
 
+      /* Search module */
+      var search_priority = this.search(data, this.search_string);
+      if (search_priority === false) {
+        data.priority = -1;
+        return false;
+      }
+      priority += search_priority;
+
+      /* Filter modules */
       if (this.filter_enabled == true) {
         for (var name in this.filters) {
           var res = this.filters[name].check(this.filters[name], data, class_obj);
@@ -561,14 +570,6 @@ function ClassListPlugin() {
           priority += res;
         }
       }
-      
-      /* Search module */
-      var search_priority = this.search(data, this.search_string);
-      if (search_priority === false) {
-        data.priority = -1;
-        return false;
-      }
-      priority += search_priority;
 
       data.priority = priority;
       return priority;
