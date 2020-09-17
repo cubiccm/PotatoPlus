@@ -36,8 +36,10 @@ I've been searching my whole life to find my own place, and maybe it's the party
 And it's nothing like I've ever known before!
 Love is an open door!
 Love is an open door, with you, with you, with you, with you
-Love can be so much more, with you, with you, with you, with you
-Our mental synchronization Can have but one explanation
+Love can be so much more, with you, with you, with you, with you!
+Our mental synchronization, can have but one explanation
+You and I, were just meant to be!
+Say goodbye, say goodbye, to the pain of the past, we don't have to feel it anymore!
 Can I say something crazy? Will you marry me?
 Can I say something even crazier? Yes!
 Born of cold and winter air and mountain rain combining, this icy force both foul and fair has a frozen heart worth mining.
