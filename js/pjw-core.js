@@ -48,7 +48,7 @@ window.potatojw_intl = function() {
       <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/2019/09/potatojw-upgraded')">v${pjw_version}</span>
       <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
-  console.log("potatoplus v" + pjw_version + " by Limosity");
+  console.log("Potato Overgrow v" + pjw_version + " by Limosity");
 
   if (pjw_mode == "") return;
 
@@ -107,7 +107,7 @@ window.potatojw_intl = function() {
   };
 
   const about_this_project = `
-  <span style="user-select: text;">potatoplus v` + pjw_version + `</span>
+  <span style="user-select: text;">Potato Overgrow v` + pjw_version + `</span>
   `;
 
   if (pjw_mode in filter_mode_list) {
@@ -263,7 +263,7 @@ window.potatojw_intl = function() {
     const welcome_html = `
       <div id="pjw-welcome">
         <heading> Hello </heading>
-        <p> 感谢您参与 potatoplus 的测试！ </p>
+        <p> 感谢您参与 Potato Overgrow 的测试！ </p>
         <br><br>
         <div style="height: 30px; opacity: .8;">
           <button class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatojw_upgraded/raw/beta/potatojw_upgraded.user.js');">更新测试版 (Userscript)</button>
@@ -272,7 +272,7 @@ window.potatojw_intl = function() {
         <br>
         <note> ${pjw_platform} </note>
         <note> ${navigator.userAgent} </note>
-        <note> potatoplus ${pjw_version} </note>
+        <note> Potato Overgrow ${pjw_version} </note>
       </div>
     `;
     $$(".Line").before(welcome_html);
@@ -671,11 +671,13 @@ window.potatojw_intl = function() {
           },
           type: "POST"
         }).done(function(res) {
-          if ($$(res).is("#successMsg"))
+          if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-          else if ($$(res).is("#errMsg"))
-            target.console.error(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-          target.refresh(false, true).then(resolve);
+            target.refresh(false, true).then(() => {resolve(res);});
+          } else if ($$(res).is("#errMsg")) {
+            target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.refresh(false, true).then(() => {reject(res);});
+          }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
           reject(res);
@@ -799,12 +801,15 @@ window.potatojw_intl = function() {
             var end = res.search(/\"\)/);
             res = res.slice(start + 1, end);
           }
-          if (res.search("成功！") != -1)
+          if (res.search("成功！") != -1) {
             target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
-          else
+            resolve();
+          } else {
             target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
-          resolve();
+            reject();
+          }
         }).fail((res) => {
+          target.console.error(`请求失败：${res}`);
           reject(res);
         });
       });
@@ -929,12 +934,15 @@ window.potatojw_intl = function() {
             var end = res.search(/\"\)/);
             res = res.slice(start + 1, end);
           }
-          if (res.search("成功！") != -1)
+          if (res.search("成功！") != -1) {
             target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
-          else
+            resolve();
+          } else {
             target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
-          resolve();
+            reject();
+          }
         }).fail((res) => {
+          target.console.error(`请求失败：${res}`);
           reject(res);
         });
       });
@@ -1131,12 +1139,15 @@ window.potatojw_intl = function() {
             var end = res.search(/\"\)/);
             res = res.slice(start + 1, end);
           }
-          if (res.search("成功！") != -1)
+          if (res.search("成功！") != -1) {
             target.console.success(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
-          else
+            resolve();
+          } else {
             target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
-          resolve();
+            reject();
+          }
         }).fail((res) => {
+          target.console.error(`请求失败：${res}`);
           reject(res);
         });
       });

@@ -1,3 +1,220 @@
+var frozen_quotes = `
+The snow glows white on the mountain tonight, not a footprint to be seen.
+A kingdom of isolation, and it looks like I'm the queen.
+The wind is howling like this swirling storm inside.
+Don't let them in, don't let them see, be the good girl you always have to be
+Conceal, don't feel, don't let them know
+Let it go, let it go, can't hold it back anymore
+Let it go, let it go, turn away and slam the door!
+I don't care, what they're going to say, let the storm rage on
+The cold never bothered me anyway!
+It's funny how some distance, makes everything seem small, and the fears that once controlled me, can't get to me at all!
+It's time to see what I can do, to test the limits and break through
+No right, no wrong, no rules for me, I'm free!
+Let it go, let it go, I am one with the wind and sky
+Let it go, let it go, you'll never see me cry!
+Here I stand, and here I'll stay
+Let the storm rage on!
+My power flurries through the air into the ground, my soul is spiraling in frozen fractals all around, and one thought crystallizes like an icy blast
+I'm never going back, the past is in the past!
+Let it go, let it go, and I'll rise like the break of dawn
+Let it go, let it go, that perfect girl is gone!
+Here I stand, in the light of day
+Do you wanna build a snowman? Come on, let's go and play!
+I never see you anymore, come out the door, it's like you've gone away
+We used to be best buddies, and now we're not, I wish you would tell me why!
+Do you wanna build a snowman? It doesn't have to be a snowman...
+Do you wanna build a snowman? Or ride our bike around the halls?
+I think some company is overdue, I've started talking to the pictures on the walls!
+It gets a little lonely, all these empty rooms, just watching the hours tick by...
+Elsa, please I know you're in there, people are asking where you've been
+They say have courage, and I'm trying to, I'm right out here for you, just let me in
+We only have each other, it's just you and me, what are we gonna do?
+Do you wanna build a snowman?
+All my life has been a series of doors in my face, and then suddenly I bump into you
+I've been searching my whole life to find my own place, and maybe it's the party talking or the chocolate fondue?
+And it's nothing like I've ever known before!
+Love is an open door!
+Love is an open door, with you, with you, with you, with you
+Love can be so much more, with you, with you, with you, with you
+Our mental synchronization Can have but one explanation
+Can I say something crazy? Will you marry me?
+Can I say something even crazier? Yes!
+Born of cold and winter air and mountain rain combining, this icy force both foul and fair has a frozen heart worth mining.
+Beautiful! Powerful! Dangerous! Cold! Ice has a magic, can't be controlled.
+Stronger than one! Stronger than ten! Stronger than a hundred men!
+Cut through the heart, cold and clear! Strike for love and strike for fear!
+There's beauty and there's danger here, split the ice apart! Beware the frozen heart...
+The window is open, so's that door, I didn't know they did that anymore, who knew we owned eight thousand salad plates?
+For years I've roamed these empty halls, why have a ballroom with no balls? Finally, they're opening up the gates
+There'll be actual, real, live people, it'll be totally strange, but wow am I so ready for this change!
+'Cause for the first time in forever, there'll be music, there'll be light
+For the first time in forever, I'll be dancing through the night
+Don't know if I'm elated or gassy, but I'm somewhere in that zone
+'Cause for the first time in forever, I won't be alone
+Tonight, imagine me gown and all, fetchingly draped against the wall, the picture of sophisticated grace
+I suddenly see him standing there, a beautiful stranger, tall and fair, I wanna stuff some chocolate in my face
+But then we laugh and talk all evening, which is totally bizarre, nothing like the life I've led so far!
+For the first time in forever, there'll be magic, there'll be fun
+For the first time in forever, I could be noticed by someone
+And I know it is totally crazy, to dream I'd find romance, but for the first time in forever, at least I've got a chance.
+Don't let them in, don't let them see, be the good girl you always have to be
+Conceal, don't feel, put on a show, make one wrong move and everyone will know
+For the first time in forever, I'm getting what I'm dreaming of
+A chance to change my lonely world, a chance to find true love
+I know it all ends tomorrow, so it has to be today!
+'Cause for the first time in forever, for the first time in forever, nothing's in my way!
+Bees'll buzz, kids'll blow dandelion fuzz, and I'll be doing whatever snow does in summer.
+A drink in my hand, my snow up against the burning sand, probably getting gorgeously tanned in summer.
+I'll finally see a summer breeze, blow away a winter storm, and find out what happens to solid water when it gets warm!
+And I can't wait to see, what my buddies all think of me, just imagine how much cooler I'll be in summer.
+Dah dah, da doo, uh bah bah bah bah bah woo
+The hot and the cold are both so intense, put 'em together it just makes sense!
+Rrr Raht da daht dah dah dah dah dah do
+Winter's a good time to stay in and cuddle, but put me in summer and I'll be a - happy snowman!
+When life gets rough, I like to hold on to my dream, of relaxing in the summer sun, just lettin' off steam.
+Oh the sky will be blue, and you guys will be there too.
+When I finally do what frozen things do in summer!
+Is it the clumpy way he walks? Or the grumpy way he talks? Or the pear-shaped, square-shaped weirdness of his feet?
+And though we know he washes well, he always ends up sort of smelly, but you'll never meet a fellow who's as sensitive and sweet!
+So he's a bit of a fixer-upper, but this we're certain of, you can fix this fixer-upper up with a little bit of love!
+Are you holding back your fondness due to his unmanly blondness?
+He's just a bit of a fixer-upper, he's got a couple of bugs, his isolation is confirmation of his desperation for human hugs!
+The way to fix up this fixer-upper is to fix him up with you!
+Her quote 'engagement' is a flex arrangement, and by the way I don't see no ring!
+So she's a bit of a fixer-upper, her brain's a bit betwixt, get the fiancé out of the way and the whole thing will be fixed!
+We're not sayin' you can change him, 'cause people don't really change, we're only saying that love's a force that's powerful and strange!
+People make bad choices if they're mad, or scared, or stressed.
+Throw a little love their way, and you'll bring out their best, true love brings out their best!
+Everyone's a bit of a fixer-upper, that's what it's all about!
+Father! Sister! Brother! We need each other, to raise us up and round us out!
+Everyone's a bit of a fixer-upper, but when push comes to shove
+The only fixer-upper fixer that can fix up a fixer-upper is True! true! True, true, true! Love (True love) Love, love, love, love, love Love! (True love!)
+Do you, Anna, take Kristoff to be your troll-fully wedded...
+Reindeers are better than people, Sven, don't you think that's true?
+Yeah, people will beat you and curse you and cheat you, every one of them's bad except you!
+But people smell better than reindeers, Sven, don't you think I'm right?
+That's once again true, for all except you!
+You got me, let's call it a night.
+Good night. Don't let the frostbite bite.
+Please don't shut me out again, please don't slam the door, you don't have to keep your distance anymore.
+'Cause for the first time in forever, I finally understand
+For the first time in forever, we can fix this hand in hand!
+We can head down this mountain together, you don't have to live in fear!
+'Cause for the first time in forever, I will be right here.
+Arendelle's in deep, deep, deep, deep snow
+Sure you can, I know you can!
+'Cause for the first time in forever, you don't have to be afraid!
+Oh I'm such a fool, I can't be free! No escape from the storm inside of me!
+We can work this out together, we'll reverse the storm you've made!
+Anna, please, you'll only make it worse!
+Don't panic, we'll make the sun shine bright!
+We can face this thing together, we can change this winter weather, and everything will be alright!
+Yes, the wind blows a little bit colder, and we're all getting older, and the clouds are moving on with every autumn breeze
+Yes, some things never change, like the feel of your hand in mine
+Some things stay the same, like how we get along just fine
+Like an old stone wall that'll never fall, some things are always true!
+Some things never change, like how I'm holding on tight to you.
+Yeah, some things never change, like the love that I feel for her
+Some things stay the same, like how reindeers are easier
+But if I commit and I go for it, I'll know what to say and do, right?
+These days are precious, can't let them slip away
+I can't freeze this moment, but I can still go out and seize this day!
+The wind blows a little bit colder, and you all look a little bit older
+It's time to count our blessings beneath an autumn sky
+We'll always live in a kingdom of plenty, that stands for the good and the many!
+Some things never change, turn around and the time has flown
+Some things stay the same, though the future remains unknown
+May our good luck last, may our past be past, time's moving fast, it's true!
+Some things never change, and I'm holding on tight to you.
+Where the north wind meets the sea, there's a river full of memory.
+Sleep, my darling, safe and sound, for in this river all is found.
+In her waters, deep and true, lie the answers and a path for you.
+Dive down deep into her sound, but not too far or you'll be drowned.
+Yes, she will sing to those who'll hear, and in her song, all magic flows
+But can you brave what you most fear? Can you face what the river knows?
+Where the north wind meets the sea, there's a mother full of memory.
+Come, my darling, homeward bound, when all is lost, then all is found.
+I can hear you, but I won't, some look for trouble, while others don't.
+There's a thousand reasons I should go about my day, and ignore your whispers which I wish would go away.
+You're not a voice, you're just a ringing in my ear, and if I heard you, which I don't, I'm spoken for I fear.
+Everyone I've ever loved is here within these walls, I'm sorry, secret siren, but I'm blocking out your calls!
+I've had my adventure, I don't need something new
+I'm afraid of what I'm risking if I follow you, into the unknown, into the unknown, into the unknown!
+What do you want? 'Cause you've been keeping me awake, are you here to distract me so I make a big mistake?
+Or are you someone out there who's a little bit like me, who knows deep down I'm not where I'm meant to be?
+Every day's a little harder, as I feel my power grow
+Don't you know there's part of me that longs to go… Into the unknown?
+Are you out there? Do you know me? Can you feel me? Can you show me?
+Where are you going? Don't leave me alone! How do I, follow you, into the unknown?
+Every inch of me is trembling, but not from the cold.
+Something is familiar, like a dream I can reach but not quite hold.
+I can sense you there, like a friend I've always known
+I'm arriving, and it feels like I am home
+I have always been a fortress, cold secrets deep inside
+You have secrets, too, but you don't have to hide
+Show yourself, I'm dying to meet you
+Show yourself, It's your turn
+Are you the one I've been looking for, all of my life?
+Show yourself, I'm ready to learn
+I've never felt so certain, all my life I've been torn
+But I'm here for a reason, could it be the reason I was born?
+I have always been so different, normal rules did not apply
+Is this the day, are you the way, I finally find out why?
+Show yourself, I'm no longer trembling
+Here I am, I've come so far
+You are the answer I've waited for, all of my life!
+Oh, show yourself, let me see who you are
+Come to me now, open your door, don't make me wait, one moment more!
+I am found!
+Show yourself, step into your power
+Grow yourself, into something new
+You are the one you've been waiting for, all of your life!
+Oh, show yourself!
+This will all make sense when I am older, someday I will see that this makes sense.
+One day when I'm old and wise, I'll think back and realize, that these were all completely normal events!
+I'll have all the answers when I'm older, like why we're in this dark enchanted wood
+I know in a couple years, these will seem like childish fears
+And so I know this isn't bad, it's good.
+Growing up means adapting, puzzling at your world and your place
+When I'm more mature, I'll feel totally secure, being watched by something with a creepy, creepy face
+See, that will all make sense when I am older, so there's no need to be terrified or tense
+I'll just dream about a time, when I'm in my aged prime!
+'Cause when you're older, absolutely everything makes sense!
+This is fine.
+Again, you're gone, off on a different path than mine
+I'm left behind, wondering if I should follow?
+But is this what it feels like to be growing apart?
+When did I become the one who's always chasing your heart?
+Now I turn around and find, I am lost in the woods.
+North is south, right is left, when you're gone!
+I'm the one who sees you home, but now I'm lost in the woods
+And I don't know what path you are on, I'm lost in the woods.
+Up 'til now, the next step was a question of how, I never thought it was a question of whether
+Who am I, if I'm not your guy? Where am I, if we're not together, forever?
+Now I know you're my true north, 'cause I am lost in the woods
+Up is down, day is night, when you're not there!
+Oh, you're my only landmark, so I'm lost in the woods, wondering if you still care...
+But I'll wait, for a sign, that I'm your path, 'cause you are mine!
+Until then, I'm lost in the woods!
+I've seen dark before, but not like this, this is cold, this is empty, this is numb.
+The life I knew is over, the lights are out, hello darkness, I'm ready to succumb.
+I follow you around, I always have, but you've gone to a place I cannot find.
+This grief has a gravity, it pulls me down.
+But a tiny voice, whispers in my mind
+You are lost, hope is gone, but you must go on. And do the next right thing.
+Can there be a day beyond this night? I don't know anymore what is true.
+I can't find my direction, I'm all alone, the only star that guided me was you!
+How to rise from the floor, when it's not you I'm rising for?
+Just do the next right thing
+Take a step, step again, it is all that I can to do, the next right thing.
+I won't look too far ahead, it's too much for me to take.
+But break it down to this next breath, this next step, this next choice is one that I can make!
+So I'll walk through this night, stumbling blindly toward the light, and do the next right thing!
+And with the dawn, what comes then? When it's clear that everything will never be the same again!
+Then I'll make the choice, to hear that voice, and do, the next, right, thing.
+`;
+
 var lib = `
 C.③;  下列情况中，不属于考试作弊而属于一般考试违纪的是:①在允许用的工具书上写有考试有关的内容或书中夹带有关的材料者(不论是否抄用) ;②在桌面、手上等处写有与考试课程有关内容者;③不配合监考教师履行检查学生证件等职责者;④抢夺、窃取他人试卷、答卷、草稿纸或者强拿他人答卷或草稿纸为自己抄袭提供方便者(不论是否抄用)。
 B.①②③;  以下行为与违规认定、处分对应关系正确的是:①经监考老师提醒后，仍未在试卷、答卷、草稿纸上填写姓名、学号、考号等信息者。一严重违反考试纪律，严重警告处分。②在发放试卷时领取超过一.份试卷、答卷且未将多余试卷返还监考教师者;一一般违反考试纪律， 警告处分。③故意销毁试卷、答卷或者考试材料者。一考 试作弊，记过处分。④涂改他人试卷姓名占为已有者。一严 重违反考试纪律，严重警告处分。

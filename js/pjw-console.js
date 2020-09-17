@@ -99,7 +99,7 @@ window.PJWConsole = class {
       </div>
       <div class="pjw-console-item">
         <div class="pjw-console-icon material-icons-round">emoji_people</div>
-        <div class="pjw-console-text">potatoplus v${window.pjw_version}</div>
+        <div class="pjw-console-text">Potato Overgrow v${window.pjw_version}</div>
       </div>
     </div>`;
 

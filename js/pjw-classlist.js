@@ -475,9 +475,11 @@ function ClassListPlugin() {
             return 0;
         }
 
+        if (keyword == "*") return 1;
+
         keyword = keyword.toUpperCase();
         str = str.toUpperCase();
-        var pos = str.search(keyword);
+        var pos = str.indexOf(keyword);
 
         // Generate Pinyin initials
         if (pos == -1 && /^[a-zA-Z]+$/.test(keyword)) {
@@ -485,7 +487,7 @@ function ClassListPlugin() {
           for (var char of str)
             initials += Pinyin.convertToPinyin(char)[0];
           str = initials;
-          pos = str.search(keyword);
+          pos = str.indexOf(keyword);
         }
 
         if (pos == 0) {
@@ -493,20 +495,23 @@ function ClassListPlugin() {
         } else if (pos != -1) {
           return 0.3 + (keyword.length / str.length) / 2;
         } else if (keyword.length == 2) {
-          if (str.search(keyword[1]) > str.search(keyword[0]) 
-            && str.search(keyword[0]) != -1) {
-            if (str.search(keyword[0]) == 0) return 0.5;
+          if (str.indexOf(keyword[1]) > str.indexOf(keyword[0]) 
+            && str.indexOf(keyword[0]) != -1) {
+            if (str.indexOf(keyword[0]) == 0) return 0.5;
             else if (/^[a-zA-Z]+$/.test(keyword)) return 0.1;
             else return 0.3;
           }
         }
         return 0;
       }
+
       pattern = pattern.trim().split(" ");
       if (pattern[0] == "") return 0;
       var pattern_num = pattern.length;
-      var matched_num = 0;
+      var total_matched_num = 0;
+
       for (var keyword of pattern) {
+        var matched_num = 0;
         if (typeof(str) == "string") {
           var t = testString(keyword, str);
           if (t !== false) matched_num += t;
@@ -517,9 +522,11 @@ function ClassListPlugin() {
             if (t !== false) matched_num += t;
             else return false;
           }
+          if (str.length) matched_num /= str.length;
         }
+        total_matched_num += matched_num;
       }
-      return 100.0 * (matched_num / pattern_num);
+      return 100.0 * (total_matched_num / pattern_num);
     }
 
     // Searches search_str in data
@@ -529,9 +536,9 @@ function ClassListPlugin() {
       }
       var priority = 0.0;
       var priority_map = [
-        [data.title, 4], 
-        [data.teachers, 2], 
-        [data.info.map((item) => (item.val)), 1],
+        [data.title, 8], 
+        [data.teachers, 6], 
+        [data.info.map((item) => (item.val)), 3],
         [data.time_detail, 1]
       ];
       for (var item of priority_map) {
@@ -562,6 +569,7 @@ function ClassListPlugin() {
       /* Filter modules */
       if (this.filter_enabled == true) {
         for (var name in this.filters) {
+          if (typeof(this.filters[name]["check"]) != "function") continue;
           var res = this.filters[name].check(this.filters[name], data, class_obj);
           if (res === false) {
             data.priority = -1;
@@ -575,8 +583,9 @@ function ClassListPlugin() {
       return priority;
     }
 
-    // Initializes class_data before adding first class
+    // Initializes class data before adding first class
     intl() {
+      this.addFilterHook("handleParseComplete");
       this.class_data.sort(function(a, b) {
         return a.id - b.id;
       });
@@ -748,6 +757,8 @@ function ClassListPlugin() {
         this.body.css("opacity", "0");
       }
       return this.load().then(() => {
+        this.addFilterHook("handleRefreshComplete");
+
         if (disable_log) return;
         if (this.class_data.length == 0)
           this.console.info("没有找到课程 : (");
@@ -758,6 +769,12 @@ function ClassListPlugin() {
       }).catch((e) => {
         this.console.error("无法加载课程列表：" + e);
       });
+    }
+
+    addFilterHook(name) {
+      for (var filter in this.filters)
+        if (typeof(this.filters[filter][name]) == "function")
+          this.filters[filter][name](this.filters[filter], this);
     }
 
     // Loads a filter module by name
@@ -904,10 +921,14 @@ function ClassListPlugin() {
 
     // Triggered by filter button
     showFilter() {
-      if (this.filter_panel.css("display") == "none")
-        this.filter_panel.show();
-      else
-        this.filter_panel.hide();
+      if (this.filter_panel.css("pointer-events") == "none") {
+        this.addFilterHook("handleShow");
+        this.filter_panel.addClass("shown");
+        this.filter_panel.children("div").css("opacity", 1);
+      } else {
+        this.filter_panel.removeClass("shown");
+        this.filter_panel.children("div").css("opacity", 0);
+      }
     }
 
     handleResize() {
@@ -941,7 +962,7 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent, modules = ["avail", "hours"]) {
+    constructor(parent, modules = ["avail", "hours", "frozen"]) {
       this.filter_modules = modules;
 
       // Deploy filter DOM
@@ -998,14 +1019,14 @@ function ClassListPlugin() {
         <div class="pjw-filter-panel">
           <div class="pjw-filter-panel__content">
             ${filter_modules}
-            <div class="pjw-classlist-bottom">
+            <div class="pjw-classlist-bottom" style="order: 10;">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
             </div>
           </div>
         </div>
         <div class="pjw-classlist-body"></div>
         <div class="pjw-classlist-bottom">
-          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>potatoplus Class List</p>
+          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>Potato Overgrow Class List</p>
         </div>
       </div>`;
 
@@ -1022,7 +1043,8 @@ function ClassListPlugin() {
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
-        this.filters[name].intl(this.filters[name], this);
+        if (typeof(this.filters[name]["intl"]) == "function")
+          this.filters[name].intl(this.filters[name], this);
       }
 
       this.class_load_size = 30;

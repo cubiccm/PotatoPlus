@@ -301,7 +301,7 @@ var pjw_filter = {
     }
   },
 
-  /* potatoes module v0.1 */
+  /* potatoes module v0.2 */
   potatoes: {
     html: `
       <div id="pjw-potatoes-filter">
@@ -318,6 +318,16 @@ var pjw_filter = {
             <label for="pjw-potatoes-switch-input">自动选课</label>
           </div>
           <div class="pjw-switch-box">
+            <div class="mdc-switch" id="pjw-potatoes-continue-on-failure">
+              <div class="mdc-switch__track"></div>
+              <div class="mdc-switch__thumb-underlay">
+                <div class="mdc-switch__thumb"></div>
+                <input type="checkbox" id="pjw-potatoes-continue-on-failure-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              </div>
+            </div>
+            <label for="pjw-potatoes-continue-on-failure-input">选课失败后继续</label>
+          </div>
+          <div class="pjw-switch-box">
             <div class="mdc-switch" id="pjw-potatoes-continue-on-success">
               <div class="mdc-switch__track"></div>
               <div class="mdc-switch__thumb-underlay">
@@ -325,8 +335,9 @@ var pjw_filter = {
                 <input type="checkbox" id="pjw-potatoes-continue-on-success-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
               </div>
             </div>
-            <label for="pjw-potatoes-continue-on-success-input">选择全部符合课程（谨慎使用）</label>
+            <label for="pjw-potatoes-continue-on-success-input">选课成功后继续</label>
           </div>
+          <p>Take Care & Good Luck!</p>
         </div>
       </div>
     `,
@@ -334,6 +345,7 @@ var pjw_filter = {
       space.dom = $$("#pjw-potatoes-filter");
       space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-switch")[0]);
       space.continue_on_success_switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-continue-on-success")[0]);
+      space.continue_on_failure_switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-continue-on-failure")[0]);
 
       space.status = false;
       space.dom.find("#pjw-potatoes-switch-input").on("change", null, {
@@ -347,26 +359,100 @@ var pjw_filter = {
       }, (e) => {
         e.data.target.continue_on_success = e.data.target.continue_on_success_switch.checked;
       });
+
+      space.dom.find("#pjw-potatoes-continue-on-failure-input").on("change", null, {
+        target: space,
+      }, (e) => {
+        e.data.target.continue_on_failure = e.data.target.continue_on_failure_switch.checked;
+      });
+
+      space.potatoes_queue = [];
+      space.is_select_ongoing = false;
     },
     check: (space, data, class_obj) => {
-      if (!space.status) return 0;
-      if (data.select_button && data.select_button.action)
-        if (data.select_button.status == "Select") {
-          if (!space.continue_on_success)
-            space.switch.checked = space.status = false;
-          else {
-            if ($$("#autorefresh-switch").hasClass("on"))
-              $$("#autorefresh-switch").click();
-          }
-
-          var e = {data: {target: class_obj}};
-          data.select_button.action(e).then(() => {
-            class_obj.list.console.debug("Got a success from the potatoes module!");
-          }).catch((res) => {
-            class_obj.list.console.debug("Got an error from the potatoes module: " + res);
-          });
-        }
+      if (!space.status || space.queue_lock) return 0;
+      space.potatoes_queue.push([data, class_obj]);
       return 0;
+    },
+    handlePotatoes: (space) => {
+      if (space.potatoes_queue.length == 0 || space.is_select_ongoing == false || space.switch.checked == false) {
+        space.is_select_ongoing = false;
+        return;
+      }
+      data = space.potatoes_queue[0][0];
+      class_obj = space.potatoes_queue[0][1];
+      space.potatoes_queue = space.potatoes_queue.slice(1);
+      if (data.select_button && data.select_button.action && data.select_button.status == "Select") {
+        var e = {data: {target: class_obj}};
+        data.select_button.action(e).then(() => {
+          class_obj.list.console.debug("Got a success from the potatoes module!");
+          if (space.continue_on_success == true)
+            space.handlePotatoes(space);
+          else
+            space.switch.checked = space.status = is_select_ongoing = false;
+        }).catch((res) => {
+          class_obj.list.console.debug("Got an error from the potatoes module: " + res);
+          if (space.continue_on_failure == true)
+            space.handlePotatoes(space);
+          else 
+            space.switch.checked = space.status = is_select_ongoing = false;
+        });
+      } else {
+        space.handlePotatoes(space);
+      }
+    },
+    handleParseComplete: (space, list) => {
+      space.is_select_ongoing = false;
+      space.potatoes_queue = [];
+      space.queue_lock = false;
+    },
+    handleRefreshComplete: (space, list) => {
+      if (!space.status) return;
+      space.is_select_ongoing = true;
+      space.queue_lock = true;
+      space.handlePotatoes(space);
+    }
+  },
+
+  /* frozen module v1.0 */
+  frozen: {
+    html: `
+      <div id="pjw-frozen-filter" style="order: 3;">
+        <heading><span class="material-icons-round">ac_unit</span><span id="frozen-quotes"></span></heading>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.target = $$("#frozen-quotes");
+    },
+    handleShow: (space, list) => {
+      space.target.html(space.getRandomQuotes());
+    },
+    handleParseComplete: (space, list) => {
+      space.target.html(space.getRandomQuotes());
+    },
+    getRandomQuotes: () => {
+      var quotes_lib = frozen_quotes.split("\n");
+      return quotes_lib[Math.floor(Math.random() * quotes_lib.length)];
     }
   }
 }
+
+/*
+if (!space.status) return 0;
+if (data.select_button && data.select_button.action)
+  if (data.select_button.status == "Select") {
+    if (!space.continue_on_success)
+      space.switch.checked = space.status = false;
+    else {
+      if ($$("#autorefresh-switch").hasClass("on"))
+        $$("#autorefresh-switch").click();
+    }
+
+    var e = {data: {target: class_obj}};
+    data.select_button.action(e).then(() => {
+      class_obj.list.console.debug("Got a success from the potatoes module!");
+    }).catch((res) => {
+      class_obj.list.console.debug("Got an error from the potatoes module: " + res);
+    });
+  }
+return 0;*/

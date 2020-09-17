@@ -79,9 +79,7 @@ function injectStyleFromString(str) {
     injectScriptFromString(`alert = function(x) {window.alert_data = x;};`);
   }
 
-  if (["login_page", "freshmen_exam"].includes(pjw_mode)) {
-    injectScript("js/pjw-lib.js");
-  }
+  injectScript("js/pjw-lib.js");
   if (pjw_mode == "login_page") {
     injectScript("js/pjw-captcha.js");
   }
