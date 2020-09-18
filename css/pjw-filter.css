@@ -1,0 +1,127 @@
+.pjw-filter-panel {
+  color: rgba(0, 0, 0, .4);
+  margin: 0 12%;
+  border-radius: 20px;
+  width: 76%;
+  background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
+  --mdc-theme-secondary: rgb(16, 89, 223);
+  transition: transform .2s ease-in, opacity .2s ease-in;
+
+  pointer-events: none;
+  transform: translate(-20px, -40px) scale(1.1, 1.1);
+  opacity: 0;
+  height: 0;
+}
+
+.pjw-filter-panel.shown {
+  height: auto;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.pjw-filter-panel__content {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pjw-filter-panel__content > div {
+  margin: 20px 0;
+}
+
+.pjw-filter-panel heading {
+  display: block;
+  color: rgba(0, 0, 0, .7);
+  margin: 6px 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.pjw-filter-panel .content {
+  margin: 10px 16px;
+}
+
+.pjw-filter-panel heading > .material-icons-round {
+  font-size: 26px;
+  margin: 0 5px;
+  color: rgba(0, 0, 0, .7);
+}
+
+.pjw-filter-panel__content {
+  margin: 20px 24px;
+}
+
+.pjw-filter-panel .mdc-switch {
+  margin: 5px 10px;
+}
+
+.pjw-switch-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 15px;
+}
+
+#pjw-hours-filter > .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-heading-day {
+  cursor: pointer;
+  transition: color .1s ease-out;
+}
+
+#pjw-hours-filter .select-time > span {
+  cursor: pointer;
+  transition: color .1s ease-out;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-heading-day:hover {
+  color: var(--white);
+}
+
+#pjw-hours-filter .select-time > span:hover {
+  color: var(--white);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
+  color: rgba(255, 255, 255, .7);
+  text-decoration: line-through;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day.select-time > span {
+  font-weight: bold;
+  border-color: transparent;
+}
+
+#pjw-hours-filter-control {
+  display: flex;
+  margin: 10px 0;
+  opacity: 0.65;
+  transition: opacity .1s ease-out;
+}
+
+#pjw-hours-filter-control:hover {
+  display: flex;
+  margin: 10px 0;
+  opacity: 1;
+}
+
+#pjw-hours-filter-control > .pjw-mini-button {
+  color: var(--pjw-dark-background);
+}
+
+#pjw-hours-filter-control > .pjw-mini-button:hover {
+  color: rgb(208, 196, 16);
+}
+
+#frozen-quotes {
+  font-size: 12px;
+  color: rgba(0, 0, 0, .35);
+}
