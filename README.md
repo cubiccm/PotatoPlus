@@ -6,18 +6,38 @@ NJU土豆改善工程
 ## 介绍 Introduction
 
 为教务网化上妆容，面貌焕然一新！
-精心设计的课程列表让重要信息一览无余，并提供了丰富的搜索与过滤功能；更有自动刷新等多个增强模块，它们融合交织，将体验提升到前所未有的高度。
+
+精心设计的课程列表让重要信息一览无余，并提供了丰富的搜索与过滤功能；更有自动刷新等多个增强模块融合交织，将体验提升到前所未有的高度。
+
 差点忘了，它还只是一个插件。
 
 ## 安装 Installation
 
 ### 安装插件
 
+#### Chrome
+
+访问Chrome网上应用店页面，再点击“添加至Chrome”即可。
+
+如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程：
+
+首先下载项目源代码（需要解压），点击Chrome右上方的“插件”按钮并选择“管理插件”，或直接访问`chrome://extensions/`；
+
+打开右上角的“开发者模式”开关，并选择左上方按钮“加载未打包的扩展”，选择刚刚下载的源代码文件夹即可。
+
+#### Edge
+
+访问Microsoft Store中的页面，再安装即可。
+
+#### Firefox
+
+在Firefox中访问下面链接，并点击“添加”即可。
+
 ### 安装Userscript版本
 
 请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)等可以执行Userscript的插件，之后访问下面的链接获取脚本。
 
-[获取Raw](https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js)
+[获取最新Userscript](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js)
 
 要及时获得最新的功能和错误修复，您可以调快插件的自动更新频率，或加入[邮件列表](https://cubiccm.ddns.net/potato-mailing-list/)接收最新动态。
 
