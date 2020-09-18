@@ -3,7 +3,7 @@ window.potatojw_intl = function() {
 
   window.pjw_platform = "@platform@";
   if (window.pjw_platform[0] == "@")
-    window.pjw_platform = "Chrome Plugin";
+    window.pjw_platform = "General Plugin";
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
