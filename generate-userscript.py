@@ -5,7 +5,7 @@ if len(sys.argv) >= 2:
   version = sys.argv[1]
 
 prefix = '''// ==UserScript==
-// @name         potatoplus
+// @name         PotatoPlus
 // @version      ''' + version + '''
 // @description  土豆改善工程！
 // @author       Limos

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         potatoplus
+// @name         PotatoPlus
 // @version      0.2
 // @description  土豆改善工程！
 // @author       Limos
