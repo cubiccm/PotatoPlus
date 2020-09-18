@@ -113,6 +113,10 @@ body {
   background: rgba(0, 0, 0, .05) !important;
 }
 
+body * {
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
 #courseList {
   height: auto !important;
   overflow: hidden !important;
@@ -233,14 +237,18 @@ body {
   width: 90%;
   max-width: 600px;
   margin: 20px 5%;
-  background: linear-gradient(-70deg, #f8c7d5, #9995ef);
+  background: linear-gradient(-70deg, #ff6390, #9995ef);
   border-radius: 30px;
   color: rgba(255, 255, 255, .82) !important;
   padding: 12px 24px;
 }
 
-#pjw-welcome heading {
+#pjw-welcome > * {
   margin: 6px 0;
+}
+
+#pjw-welcome heading {
+  margin: 10px 0;
   font-weight: bold;
   font-size: 24px;
   color: rgba(255, 255, 255, .9) !important;
@@ -248,15 +256,27 @@ body {
 
 #pjw-welcome p {
   margin: 4px 0;
-  font-size: 18px;
+  font-size: 15px;
   color: rgba(255, 255, 255, .82) !important;
 }
 
 #pjw-welcome note {
   margin: 2px 0;
-  display: inline-block;
-  font-size: 14px;
+  display: block;
+  font-size: 12px;
   color: rgba(255, 255, 255, .75) !important;
+}
+
+#pjw-welcome a {
+  margin-right: 15px;
+  font-size: 12px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, .75) !important;
+  transition: color .1s ease-out;
+}
+
+#pjw-welcome a:hover {
+  color: rgba(255, 255, 255, 1) !important;
 }
 
 

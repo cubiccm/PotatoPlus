@@ -1,13 +1,14 @@
 {
   "manifest_version": 2,
-  "name": "potatoplus",
+  "name": "PotatoPlus",
   "version": "0.2",
-  "description": "土豆改善工程！",
+  "description": "Potato Overflow! NJU土豆改善工程",
   "icons": {
     "16": "img/logo.png",
     "48": "img/logo.png",
     "128": "img/logo.png"
   },
+  "author": "Limos",
   "content_scripts": [
     {
       "matches": ["*://*.nju.edu.cn/jiaowu*"],

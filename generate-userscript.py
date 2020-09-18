@@ -5,7 +5,7 @@ if len(sys.argv) >= 2:
   version = sys.argv[1]
 
 prefix = '''// ==UserScript==
-// @name         potatojw_upgraded
+// @name         potatoplus
 // @version      ''' + version + '''
 // @description  土豆改善工程！
 // @author       Limos
@@ -18,7 +18,7 @@ prefix = '''// ==UserScript==
 '''
 
 with open("js/inject.js", "r") as fin:
-  with open("potatojw_upgraded.user.js", "w") as fout:
+  with open("potatoplus.user.js", "w") as fout:
     fout.write(prefix);
     lines = fin.readlines()
     for line in lines:

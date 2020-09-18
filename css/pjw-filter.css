@@ -22,8 +22,6 @@
 
 .pjw-filter-panel__content {
   margin: 10px 0;
-  opacity: 0;
-  transition: opacity .2s ease-in;
   display: flex;
   flex-direction: column;
 }

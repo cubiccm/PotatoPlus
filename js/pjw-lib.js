@@ -47,15 +47,15 @@ Beautiful! Powerful! Dangerous! Cold! Ice has a magic, can't be controlled.
 Stronger than one! Stronger than ten! Stronger than a hundred men!
 Cut through the heart, cold and clear! Strike for love and strike for fear!
 There's beauty and there's danger here, split the ice apart! Beware the frozen heart...
-The window is open, so's that door, I didn't know they did that anymore, who knew we owned eight thousand salad plates?
+The window is open so's that door, I didn't know they did that anymore, who knew we owned eight thousand salad plates?
 For years I've roamed these empty halls, why have a ballroom with no balls? Finally, they're opening up the gates
 There'll be actual, real, live people, it'll be totally strange, but wow am I so ready for this change!
 'Cause for the first time in forever, there'll be music, there'll be light
 For the first time in forever, I'll be dancing through the night
 Don't know if I'm elated or gassy, but I'm somewhere in that zone
 'Cause for the first time in forever, I won't be alone
-Tonight, imagine me gown and all, fetchingly draped against the wall, the picture of sophisticated grace
-I suddenly see him standing there, a beautiful stranger, tall and fair, I wanna stuff some chocolate in my face
+Tonight imagine me gown and all, fetchingly draped against the wall, the picture of sophisticated grace
+I suddenly see him standing there, a beautiful stranger tall and fair, I wanna stuff some chocolate in my face
 But then we laugh and talk all evening, which is totally bizarre, nothing like the life I've led so far!
 For the first time in forever, there'll be magic, there'll be fun
 For the first time in forever, I could be noticed by someone

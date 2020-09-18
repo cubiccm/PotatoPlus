@@ -426,6 +426,8 @@ function ClassListPlugin() {
       if (this.soft_refresh && this.auto_inc < this.class_data.length)
         data_compare_res = compareData(data, this.class_data[this.auto_inc].data);
 
+      if (!("classID" in data)) data.classID = "#" + this.auto_inc;
+
       if (data_compare_res) {
         // Conduct soft refresh
         this.class_data[this.auto_inc].data = data;
@@ -439,8 +441,6 @@ function ClassListPlugin() {
       } else {
         // Conduct hard refresh
         this.soft_refresh = false;
-
-        if (!("classID" in data)) data.classID = this.auto_inc;
 
         var item = {
           data: data,
@@ -626,18 +626,18 @@ function ClassListPlugin() {
       window.mdc.autoInit();
     }
 
-    getClassInfoForAlert = function(data) {
+    getClassInfoForAlert(data) {
       if (data.teachers.length == 0)
         return `《${data.title}》`;
       return `《${data.title}》（${data.teachers.join("，")}）`;
     }
 
-    parseTeacherNames = function(text) {
+    parseTeacherNames(text) {
       if (text == "") return [];
       return text.split(/[,，]\s/g);
     }
 
-    parseClassNumber = function(obj) {
+    parseClassNumber(obj) {
       return obj.children("a").children("u").html();
     }
 
@@ -654,7 +654,7 @@ function ClassListPlugin() {
         end: Integer
       }, ...]
     }*/
-    parseClassTime = function(text) {
+    parseClassTime(text) {
       var classes = text.split("<br>");
       const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
 
@@ -924,10 +924,8 @@ function ClassListPlugin() {
       if (this.filter_panel.css("pointer-events") == "none") {
         this.addFilterHook("handleShow");
         this.filter_panel.addClass("shown");
-        this.filter_panel.children("div").css("opacity", 1);
       } else {
         this.filter_panel.removeClass("shown");
-        this.filter_panel.children("div").css("opacity", 0);
       }
     }
 
@@ -1026,7 +1024,7 @@ function ClassListPlugin() {
         </div>
         <div class="pjw-classlist-body"></div>
         <div class="pjw-classlist-bottom">
-          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>Potato Overgrow Class List</p>
+          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
         </div>
       </div>`;
 

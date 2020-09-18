@@ -3,11 +3,11 @@ window.potatojw_intl = function() {
 
   window.pjw_platform = "@platform@";
   if (window.pjw_platform[0] == "@")
-    window.pjw_platform = "General Plugin";
+    window.pjw_platform = "Chrome Plugin";
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2 beta";
+    window.pjw_version = "0.2";
   window.$$ = jQuery.noConflict();
 
   var head_metadata = `
@@ -44,11 +44,11 @@ window.potatojw_intl = function() {
   }
   if ($$("div#TopLink").length > 0)
     $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
-      <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatojw_upgraded')">GitHub</span>
+      <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatoplus')">GitHub</span>
       <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/2019/09/potatojw-upgraded')">v${pjw_version}</span>
       <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
-  console.log("Potato Overgrow v" + pjw_version + " by Limosity");
+  console.log("PotatoPlus v" + pjw_version + " by Limosity");
 
   if (pjw_mode == "") return;
 
@@ -107,7 +107,7 @@ window.potatojw_intl = function() {
   };
 
   const about_this_project = `
-  <span style="user-select: text;">Potato Overgrow v` + pjw_version + `</span>
+  <span style="user-select: text;">PotatoPlus v` + pjw_version + `</span>
   `;
 
   if (pjw_mode in filter_mode_list) {
@@ -260,19 +260,25 @@ window.potatojw_intl = function() {
     if (typeof(window.alert_data) != "undefined") {
       pconsole.alert(window.alert_data);
     }
+    var update_html = "";
+    if (pjw_platform == "Userscript") {
+      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a>`;
+    } else if (pjw_platform == "Firefox Plugin") {
+      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi">&gt; 获取更新 - Firefox插件</a>`;
+    }
     const welcome_html = `
       <div id="pjw-welcome">
-        <heading> Hello </heading>
-        <p> 感谢您参与 Potato Overgrow 的测试！ </p>
-        <br><br>
+        <heading>焕然一新！</heading>
+        <p> 这次更新对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
+        <br>
+        <note>邀请您加入邮件列表，可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
         <div style="height: 30px; opacity: .8;">
-          <button class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatojw_upgraded/raw/beta/potatojw_upgraded.user.js');">更新测试版 (Userscript)</button>
-          <button class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatojw_upgraded/raw/master/potatojw_upgraded.user.js');">安装正式版 (Userscript)</button>
+          <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
         </div>
         <br>
-        <note> ${pjw_platform} </note>
-        <note> ${navigator.userAgent} </note>
-        <note> Potato Overgrow ${pjw_version} </note>
+        <note>${pjw_platform}</note>
+        <div class="pjw-welcome-get-update">${update_html}</div>
+        <note>PotatoPlus ${pjw_version}</note>
       </div>
     `;
     $$(".Line").before(welcome_html);
@@ -1850,9 +1856,6 @@ window.potatojw_intl = function() {
       initClassList();
     };
   }
-
-
-
 };
 
 var google_analytics_js = `
@@ -1865,7 +1868,7 @@ var google_analytics_js = `
   gtag('config', 'UA-173014211-1', {
     'custom_map': {'dimension1': 'version'}
   });
-  gtag('event', 'version_dimension', {'version': pjw_version});
+  gtag('event', 'version_dimension', {'version': pjw_version + " " + pjw_platform});
 </script>
 `;
 
