@@ -13,11 +13,11 @@ NJU土豆改善工程
 
 ## 安装 Installation
 
-### 安装插件
+### 通过插件安装
 
 #### Chrome
 
-访问Chrome网上应用店页面，再点击“添加至Chrome”即可。
+访问Chrome网上应用店页面（暂未上线），再点击“添加至Chrome”即可。
 
 _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程：_
 
@@ -27,7 +27,7 @@ _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装�
 
 #### Edge
 
-访问Microsoft Store中的页面，再安装即可。
+访问Microsoft Store中的页面（暂未上线），再安装即可。
 
 #### Firefox
 
@@ -35,7 +35,9 @@ _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装�
 
 [获取最新 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)
 
-### 安装Userscript版本
+### 通过Userscript安装
+
+Userscript安装较为方便、更新速度快，但在很多体验上不如插件，建议优先以插件方式安装。
 
 请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)等可以执行Userscript的插件，之后访问下面的链接获取脚本。
 
