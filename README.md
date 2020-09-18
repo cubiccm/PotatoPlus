@@ -19,7 +19,7 @@ NJU土豆改善工程
 
 访问Chrome网上应用店页面，再点击“添加至Chrome”即可。
 
-如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程：
+_如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程：_
 
 首先下载项目源代码（需要解压），点击Chrome右上方的“插件”按钮并选择“管理插件”，或直接访问`chrome://extensions/`；
 
@@ -32,6 +32,8 @@ NJU土豆改善工程
 #### Firefox
 
 在Firefox中访问下面链接，并点击“添加”即可。
+
+[获取最新 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)
 
 ### 安装Userscript版本
 
