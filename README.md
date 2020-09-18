@@ -1,6 +1,6 @@
 # PotatoPlus
 
-potato**overgrow**
+potato **overgrow**
 NJU土豆改善工程
 
 ## 介绍 Introduction
