@@ -33,7 +33,7 @@ _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装�
 
 在Firefox中访问下面链接，并点击“添加”即可。
 
-[获取最新 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)
+[获取 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)
 
 ### 通过Userscript安装
 
@@ -41,7 +41,7 @@ Userscript安装较为方便、更新速度快，但在很多体验上不如插�
 
 请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)等可以执行Userscript的插件，之后访问下面的链接获取脚本。
 
-[获取最新Userscript](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js)
+[获取 Userscript](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js)
 
 要及时获得最新的功能和错误修复，您可以调快插件的自动更新频率，或加入[邮件列表](https://cubiccm.ddns.net/potato-mailing-list/)接收最新动态。
 
@@ -118,7 +118,7 @@ Userscript安装较为方便、更新速度快，但在很多体验上不如插�
     - 专业选课
     - 除课程列表外其它含有功能的页面
     
-## 测试功能
+## 测试功能 Beta Features
   
 截至目前，部分功能仍在测试，相关源码已经存在于项目中，但默认不启用。
 如需临时启用过滤器模块，请在控制台执行
