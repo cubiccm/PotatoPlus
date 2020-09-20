@@ -27,7 +27,9 @@ _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装�
 
 #### Edge
 
-访问Microsoft Store中的页面（暂未上线），再安装即可。
+访问Microsoft Store中的页面（将于稍后上线），再安装即可。
+
+亦可在Chrome网上应用店下载或手动安装。
 
 #### Firefox
 
@@ -121,7 +123,7 @@ Userscript安装较为方便、更新速度快，但在很多体验上不如插�
 ## 测试功能 Beta Features
   
 截至目前，部分功能仍在测试，相关源码已经存在于项目中，但默认不启用。
-如需临时启用过滤器模块，请在控制台执行
+如需临时启用某个过滤器模块，请在控制台执行
 ```javascript
 list.loadModule("potatoes");
 ```
