@@ -19,9 +19,9 @@ NJU土豆改善工程
 
 访问[Chrome网上应用店页面](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)，再点击“添加至Chrome”即可。
 
-_如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程：_
+_如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程（无法自动更新）：_
 
-首先下载项目源代码（需要解压），点击Chrome右上方的“插件”按钮并选择“管理插件”，或直接访问`chrome://extensions/`；
+首先下载项目源代码并解压，点击Chrome右上方的“插件”按钮并选择“管理插件”，或直接访问`chrome://extensions/`；
 
 打开右上角的“开发者模式”开关，并选择左上方按钮“加载未打包的扩展”，选择刚刚下载的源代码文件夹即可。
 
