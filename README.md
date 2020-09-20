@@ -17,7 +17,7 @@ NJU土豆改善工程
 
 #### Chrome
 
-访问Chrome网上应用店页面（暂未上线），再点击“添加至Chrome”即可。
+访问[Chrome网上应用店页面](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)，再点击“添加至Chrome”即可。
 
 _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程：_
 
