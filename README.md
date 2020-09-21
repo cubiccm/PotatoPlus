@@ -33,7 +33,7 @@ _如果您无法访问Chrome网上应用店，可以尝试下面的手动安装�
 
 #### Firefox
 
-在Firefox中访问下面链接，并点击“添加”即可。
+在Firefox中访问下面链接，并点击“添加”即可（暂时不能自动更新）。
 
 [获取 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)
 
