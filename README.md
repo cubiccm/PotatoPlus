@@ -13,17 +13,17 @@ NJU土豆改善工程
 
 ## 安装 Installation
 
-[较详细的安装教程](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
+[较详细的安装教程](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/?_blank)
 
 ### 通过插件安装
 
 #### Chrome
 
-[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
+[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba?_blank)
 
 #### Edge
 
-Microsoft Store（将于稍后上线）或[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
+Microsoft Store（将于稍后上线）或[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba?_blank)
 
 #### Firefox
 
@@ -35,7 +35,7 @@ Microsoft Store（将于稍后上线）或[Chrome网上应用店](https://chrome
 
 [获取 Userscript](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js)
 
-要及时获得最新的功能和错误修复，您可以调快插件的自动更新频率，及加入[邮件列表](https://cubiccm.ddns.net/potato-mailing-list/)接收最新动态。
+要及时获得最新的功能和错误修复，您可以调快插件的自动更新频率，及加入[邮件列表](https://cubiccm.ddns.net/potato-mailing-list/?_blank)接收最新动态。
 
 ## 功能 Features
 
@@ -121,4 +121,4 @@ list.loadModule("potatoes");
     
 ## 更多信息 More Info
 
-[项目页面及更新日志](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
+[项目页面及更新日志](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/?_blank)
