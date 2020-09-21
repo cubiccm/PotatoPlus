@@ -23,7 +23,7 @@ NJU土豆改善工程
 
 #### Edge
 
-Microsoft Store（将于稍后上线）或[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
+[Microsoft Store](https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib)或[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
 
 #### Firefox
 
