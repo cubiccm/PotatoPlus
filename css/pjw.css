@@ -247,6 +247,11 @@ body * {
   margin: 6px 0;
 }
 
+#pjw-welcome hr {
+  border-style: dotted;
+  opacity: .6;
+}
+
 #pjw-welcome heading {
   margin: 10px 0;
   font-weight: bold;
@@ -268,7 +273,7 @@ body * {
 }
 
 #pjw-welcome a {
-  margin-right: 15px;
+  margin: 0 5px;
   font-size: 12px;
   text-decoration: none;
   color: rgba(255, 255, 255, .75) !important;

@@ -3,11 +3,11 @@ The snow glows white on the mountain tonight, not a footprint to be seen.
 A kingdom of isolation, and it looks like I'm the queen.
 The wind is howling like this swirling storm inside.
 Don't let them in, don't let them see, be the good girl you always have to be
-Conceal, don't feel, don't let them know
+Conceal, don't feel, don't let them know, well now they know!
 Let it go, let it go, can't hold it back anymore
 Let it go, let it go, turn away and slam the door!
 I don't care, what they're going to say, let the storm rage on
-The cold never bothered me anyway!
+The cold never bothered me anyway.
 It's funny how some distance, makes everything seem small, and the fears that once controlled me, can't get to me at all!
 It's time to see what I can do, to test the limits and break through
 No right, no wrong, no rules for me, I'm free!
@@ -48,7 +48,7 @@ Stronger than one! Stronger than ten! Stronger than a hundred men!
 Cut through the heart, cold and clear! Strike for love and strike for fear!
 There's beauty and there's danger here, split the ice apart! Beware the frozen heart...
 The window is open so's that door, I didn't know they did that anymore, who knew we owned eight thousand salad plates?
-For years I've roamed these empty halls, why have a ballroom with no balls? Finally, they're opening up the gates
+For years I've roamed these empty halls, why have a ballroom with no balls? Finally they're opening up the gates!
 There'll be actual, real, live people, it'll be totally strange, but wow am I so ready for this change!
 'Cause for the first time in forever, there'll be music, there'll be light
 For the first time in forever, I'll be dancing through the night
@@ -66,7 +66,7 @@ For the first time in forever, I'm getting what I'm dreaming of
 A chance to change my lonely world, a chance to find true love
 I know it all ends tomorrow, so it has to be today!
 'Cause for the first time in forever, for the first time in forever, nothing's in my way!
-Bees'll buzz, kids'll blow dandelion fuzz, and I'll be doing whatever snow does in summer.
+Bees'll buzz, kids'll blow dandelion fuzz, and I'll be doing whatever snow does in summer
 A drink in my hand, my snow up against the burning sand, probably getting gorgeously tanned in summer.
 I'll finally see a summer breeze, blow away a winter storm, and find out what happens to solid water when it gets warm!
 And I can't wait to see, what my buddies all think of me, just imagine how much cooler I'll be in summer.
@@ -154,7 +154,7 @@ Something is familiar, like a dream I can reach but not quite hold.
 I can sense you there, like a friend I've always known
 I'm arriving, and it feels like I am home
 I have always been a fortress, cold secrets deep inside
-You have secrets, too, but you don't have to hide
+You have secrets too, but you don't have to hide
 Show yourself, I'm dying to meet you
 Show yourself, It's your turn
 Are you the one I've been looking for, all of my life?
@@ -214,7 +214,7 @@ I won't look too far ahead, it's too much for me to take.
 But break it down to this next breath, this next step, this next choice is one that I can make!
 So I'll walk through this night, stumbling blindly toward the light, and do the next right thing!
 And with the dawn, what comes then? When it's clear that everything will never be the same again!
-Then I'll make the choice, to hear that voice, and do, the next, right, thing.
+Then I'll make the choice, to hear that voice, and do, the next right thing.
 `;
 
 var lib = `

@@ -210,8 +210,23 @@ function ClassListPlugin() {
         var text = ID;
         if (data.text) text = data.text;
         if (!data.status) return "";
-        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
-          <div class="mdc-button__ripple"></div><div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">fingerprint</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
+        else return `
+          <div class="pjw-class-comment-button alter">
+            <div class="pjw-class-comment-button__container">
+              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
+              <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
+            </div>
+          </div>`;
+        /*
+        else return `
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
+            <div class="mdc-button__ripple"></div>
+            <div class="pjw-class-comment-button__container">
+              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
+              <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
+            </div>
+          </button>`;
+        */
       }
 
       switch(attr) {
@@ -339,7 +354,7 @@ function ClassListPlugin() {
         button_target: this.select_button,
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
-        e.data.action(e);
+        e.data.action(e).then(() => {}).catch(() => {});
       });
 
       // Initialize DOM trace variables
@@ -426,7 +441,8 @@ function ClassListPlugin() {
       if (this.soft_refresh && this.auto_inc < this.class_data.length)
         data_compare_res = compareData(data, this.class_data[this.auto_inc].data);
 
-      if (!("classID" in data)) data.classID = "#" + this.auto_inc;
+      if (!("classID" in data) || data.classID == "")
+        data.classID = "#" + this.auto_inc;
 
       if (data_compare_res) {
         // Conduct soft refresh
@@ -764,7 +780,7 @@ function ClassListPlugin() {
           this.console.info("没有找到课程 : (");
         else
           this.console.debug(`已加载${this.class_data.length}门课程`);
-        this.body.css("transition", "opacity .7s cubic-bezier(0.5, 0.5, 0, 1)");
+        this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
         this.console.error("无法加载课程列表：" + e);

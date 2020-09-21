@@ -12,7 +12,7 @@ var pjw_filter = {
               <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
             </div>
           </div>
-          <label for="pjw-avail-switch-input">过滤不可选课程</label>
+          <label for="pjw-avail-switch-input">过滤不可操作课程</label>
         </div>
       </div>
     `,
@@ -31,7 +31,7 @@ var pjw_filter = {
     },
     check: (space, data) => {
       if (!space.status) return 0;
-      if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select") {
+      if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select" && data.select_button.status != "Deselect") {
         return false;
       }
       return 0;
@@ -244,6 +244,7 @@ var pjw_filter = {
           }
         for (var i = 1; i <= 7; i++)
           e.data.space.setValue(i, lesson, val);
+        e.data.list.update();
       });
 
       space.dom.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {

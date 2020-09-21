@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2
+// @version      0.2.1
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -333,6 +333,11 @@ body * {
   margin: 6px 0;
 }
 
+#pjw-welcome hr {
+  border-style: dotted;
+  opacity: .6;
+}
+
 #pjw-welcome heading {
   margin: 10px 0;
   font-weight: bold;
@@ -354,7 +359,7 @@ body * {
 }
 
 #pjw-welcome a {
-  margin-right: 15px;
+  margin: 0 5px;
   font-size: 12px;
   text-decoration: none;
   color: rgba(255, 255, 255, .75) !important;
@@ -481,12 +486,17 @@ injectStyleFromString(`/* PJW ClassList */
   min-width: 350px;
 }
 
+#pjw-select-gradeList {
+  min-width: 130px;
+  max-width: 130px;
+}
+
 #pjw-select-specialitySelect {
   min-width: 300px;
 }
 
 #pjw-select-termList {
-  min-width: 300px;
+  min-width: 250px;
 }
 
 .pjw-classlist-controls {
@@ -951,9 +961,21 @@ injectStyleFromString(`/* PJW ClassList */
   font-size: 10px;
 }
 
+.pjw-class-comment-button.alter {
+  color: rgb(215, 10, 132);
+  background: transparent;
+  user-select: none;
+  transition: color .1s ease-out;
+}
+
+.pjw-class-comment-button.alter:hover {
+  color: rgb(215, 10, 132, .5);
+}
+
 .pjw-class-comment-button__container {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .pjw-class-comment-button__status {
@@ -1368,11 +1390,11 @@ The snow glows white on the mountain tonight, not a footprint to be seen.
 A kingdom of isolation, and it looks like I'm the queen.
 The wind is howling like this swirling storm inside.
 Don't let them in, don't let them see, be the good girl you always have to be
-Conceal, don't feel, don't let them know
+Conceal, don't feel, don't let them know, well now they know!
 Let it go, let it go, can't hold it back anymore
 Let it go, let it go, turn away and slam the door!
 I don't care, what they're going to say, let the storm rage on
-The cold never bothered me anyway!
+The cold never bothered me anyway.
 It's funny how some distance, makes everything seem small, and the fears that once controlled me, can't get to me at all!
 It's time to see what I can do, to test the limits and break through
 No right, no wrong, no rules for me, I'm free!
@@ -1413,7 +1435,7 @@ Stronger than one! Stronger than ten! Stronger than a hundred men!
 Cut through the heart, cold and clear! Strike for love and strike for fear!
 There's beauty and there's danger here, split the ice apart! Beware the frozen heart...
 The window is open so's that door, I didn't know they did that anymore, who knew we owned eight thousand salad plates?
-For years I've roamed these empty halls, why have a ballroom with no balls? Finally, they're opening up the gates
+For years I've roamed these empty halls, why have a ballroom with no balls? Finally they're opening up the gates!
 There'll be actual, real, live people, it'll be totally strange, but wow am I so ready for this change!
 'Cause for the first time in forever, there'll be music, there'll be light
 For the first time in forever, I'll be dancing through the night
@@ -1431,7 +1453,7 @@ For the first time in forever, I'm getting what I'm dreaming of
 A chance to change my lonely world, a chance to find true love
 I know it all ends tomorrow, so it has to be today!
 'Cause for the first time in forever, for the first time in forever, nothing's in my way!
-Bees'll buzz, kids'll blow dandelion fuzz, and I'll be doing whatever snow does in summer.
+Bees'll buzz, kids'll blow dandelion fuzz, and I'll be doing whatever snow does in summer
 A drink in my hand, my snow up against the burning sand, probably getting gorgeously tanned in summer.
 I'll finally see a summer breeze, blow away a winter storm, and find out what happens to solid water when it gets warm!
 And I can't wait to see, what my buddies all think of me, just imagine how much cooler I'll be in summer.
@@ -1519,7 +1541,7 @@ Something is familiar, like a dream I can reach but not quite hold.
 I can sense you there, like a friend I've always known
 I'm arriving, and it feels like I am home
 I have always been a fortress, cold secrets deep inside
-You have secrets, too, but you don't have to hide
+You have secrets too, but you don't have to hide
 Show yourself, I'm dying to meet you
 Show yourself, It's your turn
 Are you the one I've been looking for, all of my life?
@@ -1579,7 +1601,7 @@ I won't look too far ahead, it's too much for me to take.
 But break it down to this next breath, this next step, this next choice is one that I can make!
 So I'll walk through this night, stumbling blindly toward the light, and do the next right thing!
 And with the dawn, what comes then? When it's clear that everything will never be the same again!
-Then I'll make the choice, to hear that voice, and do, the next, right, thing.
+Then I'll make the choice, to hear that voice, and do, the next right thing.
 `;
 
 var lib = `
@@ -1684,7 +1706,7 @@ var pjw_filter = {
               <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
             </div>
           </div>
-          <label for="pjw-avail-switch-input">过滤不可选课程</label>
+          <label for="pjw-avail-switch-input">过滤不可操作课程</label>
         </div>
       </div>
     `,
@@ -1703,7 +1725,7 @@ var pjw_filter = {
     },
     check: (space, data) => {
       if (!space.status) return 0;
-      if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select") {
+      if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select" && data.select_button.status != "Deselect") {
         return false;
       }
       return 0;
@@ -1916,6 +1938,7 @@ var pjw_filter = {
           }
         for (var i = 1; i <= 7; i++)
           e.data.space.setValue(i, lesson, val);
+        e.data.list.update();
       });
 
       space.dom.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
@@ -2342,8 +2365,23 @@ function ClassListPlugin() {
         var text = ID;
         if (data.text) text = data.text;
         if (!data.status) return "";
-        else return `<button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
-          <div class="mdc-button__ripple"></div><div class="pjw-class-comment-button__container"><div class="material-icons-round pjw-class-comment-icon">fingerprint</div><div class="mdc-button__label pjw-class-comment-button__status">${text}</div></div></button>`;
+        else return `
+          <div class="pjw-class-comment-button alter">
+            <div class="pjw-class-comment-button__container">
+              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
+              <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
+            </div>
+          </div>`;
+        /*
+        else return `
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
+            <div class="mdc-button__ripple"></div>
+            <div class="pjw-class-comment-button__container">
+              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
+              <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
+            </div>
+          </button>`;
+        */
       }
 
       switch(attr) {
@@ -2471,7 +2509,7 @@ function ClassListPlugin() {
         button_target: this.select_button,
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
-        e.data.action(e);
+        e.data.action(e).then(() => {}).catch(() => {});
       });
 
       // Initialize DOM trace variables
@@ -2558,7 +2596,8 @@ function ClassListPlugin() {
       if (this.soft_refresh && this.auto_inc < this.class_data.length)
         data_compare_res = compareData(data, this.class_data[this.auto_inc].data);
 
-      if (!("classID" in data)) data.classID = "#" + this.auto_inc;
+      if (!("classID" in data) || data.classID == "")
+        data.classID = "#" + this.auto_inc;
 
       if (data_compare_res) {
         // Conduct soft refresh
@@ -2896,7 +2935,7 @@ function ClassListPlugin() {
           this.console.info("没有找到课程 : (");
         else
           this.console.debug(`已加载${this.class_data.length}门课程`);
-        this.body.css("transition", "opacity .7s cubic-bezier(0.5, 0.5, 0, 1)");
+        this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
         this.console.error("无法加载课程列表：" + e);
@@ -3967,12 +4006,13 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2";
+  window.pjw_version = "0.2.1";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2";
+    window.pjw_version = "0.2.1";
   window.$$ = jQuery.noConflict();
 
   var head_metadata = `
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
     <link rel="shortcut icon" href="https://www.nju.edu.cn/_upload/tpl/01/36/310/template310/images/16.ico" type="image/x-icon">
   `;
@@ -3987,7 +4027,7 @@ window.potatojw_intl = function() {
     `);
     if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
     $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
-      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 5000);} if (window.click_count >= 10) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 3) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
       e.stopPropagation();
     });
     $$("#TopLink").children("img").remove();
@@ -4007,7 +4047,7 @@ window.potatojw_intl = function() {
   if ($$("div#TopLink").length > 0)
     $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
       <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatoplus')">GitHub</span>
-      <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/2019/09/potatojw-upgraded')">v${pjw_version}</span>
+      <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
       <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log("PotatoPlus v" + pjw_version + " by Limosity");
@@ -4020,8 +4060,8 @@ window.potatojw_intl = function() {
     $$("head").append($$(google_analytics_js));
   }
 
-  var filter_mode_list = {"gym": 1, "read": 2, "major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true};
+  var filter_mode_list = {"read": 2, "major_course": 6};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true};
 
   const custom_toolbar_html = {
     freshmen_exam: `
@@ -4227,13 +4267,17 @@ window.potatojw_intl = function() {
       update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a>`;
     } else if (pjw_platform == "Firefox Plugin") {
       update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi">&gt; 获取更新 - Firefox插件</a>`;
+    } else if (pjw_platform == "General Plugin") {
+      update_html = `您所安装的版本可能不支持自动更新，请访问<a href="https://github.com/cubiccm/potatoplus/releases/latest/" target="_blank">GitHub Releases</a>页面检查及获取更新。`;
     }
     const welcome_html = `
       <div id="pjw-welcome">
+        <p>PotatoPlus v0.2.1 将全新课程列表带到了体育选课页面。</p>
+        <hr>
         <heading>焕然一新！</heading>
-        <p> 这次更新对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
+        <p>PotatoPlus v0.2 对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
         <br>
-        <note>邀请您加入邮件列表，可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
+        <note>邀请您加入邮件列表，您可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
         <div style="height: 30px; opacity: .8;">
           <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
         </div>
@@ -4521,48 +4565,113 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "gym") {
-    // Submit gym class selection request
-    // 提交体育选课
-    window.selectedClass = function(class_ID) {
-      $$.ajax({
-        url: "/jiaowu/student/elective/selectCourse.do",
-        data: "method=addGymSelect&classId=" + class_ID,
-        type: "POST",
-        success: function(res) {
-          $$("#courseOperation").css("display", "none");
-          $$("#courseOperation").html(res);
-          if ($$("#errMsg").length) {
-            console.log("Error: " + $$("#errMsg").attr("title"));
-            $$("#courseOperation").html("");
-          } else {
-            stopAuto();
+    window.list = new PJWClassList($$("body"));
+    window.initClassList = () => {};
+    $$("#courseList").hide();
+    $$("#comment").appendTo("body");
+
+    list.select = function(classID, class_data) {
+      return new Promise((resolve, reject) => {
+        var deselect = class_data.select_button.status == "Deselect";
+        var target = this;
+        $$.ajax({
+          url: "/jiaowu/student/elective/selectCourse.do",
+          data: {
+            method: (deselect ? "delGymSelect" : "addGymSelect"),
+            classId: classID
+          },
+          type: "POST"
+        }).done(function(res) {
+          if ($$(res).is("#successMsg")) {
+            target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.refresh(false, true).then(() => {resolve(res);});
+          } else if ($$(res).is("#errMsg")) {
+            target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.refresh(false, true).then(() => {reject(res);});
           }
-          $$("#courseOperation").html("");
+        }).fail((res) => {
+          target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
+          reject(res);
+        });
+      });
+    }
+
+    list.parse = function(data) {
+      return new Promise((resolve, reject) => {
+        try {
+          var rows = $$(data).find("tbody").find("tr");
+          rows.each((index, val) => {
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+
+            // Prepare lesson time
+            var res = this.parseClassTime(td(1).html());
+
+            // Prepare select button
+            var classID = this.getClassID(td(5));
+            var select_status = classID == false ? "Full" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+
+            // Construct class data
+            data = {
+              classID: classID,
+              title: td(0).html(),
+              teachers: this.parseTeacherNames(td(2).html()),
+              info: [],
+              num_info: [{
+                num: res.lesson_time[0].start + '-' + res.lesson_time[0].end,
+                label: "节"
+              }],
+              lesson_time: res.lesson_time,
+              time_detail: td(1).html(),
+              select_button: {
+                status: select_status,
+                text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.button_target.prop("disabled", true);
+                    e.data.target.list.select(classID, e.data.target.data).then(() => {
+                      resolve();
+                    }).catch((res) => {
+                      reject(res);
+                    });
+                  });
+                }
+              },
+              comment_button: {
+                status: true,
+                // text: (Math.random() * 10).toFixed(1)
+              }
+            };
+
+            this.add(data);
+          });
+
+          // Render DOM
+          this.update();
+          resolve();
+        } catch (e) {
+          reject(e);
         }
       });
-    };
+    }
 
-    // Load gym class list
-    // 加载体育课列表
-    window.initClassList = function(success_func = function() {}){
-      $$.ajax({
-        url: "/jiaowu/student/elective/courseList.do",
-        data: "method=gymCourseList",
-        type: "POST",
-        success: function(res) {
-          $$("#courseList").html(res);
-          updateFilterList();
-          applyFilter();
-          success_func();
-        }
+    list.load = function() {
+      return new Promise((resolve, reject) => {
+        $$.ajax({
+          type: "POST",
+          url: "/jiaowu/student/elective/courseList.do",
+          data: {
+            method: "gymCourseList"
+          }
+        }).done((data) => {
+          this.parse(data);
+          resolve();
+        }).fail((data) => {
+          reject("Failed to request data: " + data);
+        });
       });
-    };
+    }
 
-    // Check whether the class is full
-    // 检查课程是否满员
-    window.isClassFull = function(element) {
-      return parseInt($$(element).children("td:eq(3)").html()) >= parseInt($$(element).children("td:eq(4)").html());
-    };
+    list.refresh();
   } else if (pjw_mode == "read") {
     // Submit reading class selection request
     // 提交阅读选课
@@ -4620,7 +4729,7 @@ window.potatojw_intl = function() {
       readSelect(event, class_ID, true);
     };
 
-    $$("#comment").html("[potatojwplus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可先暂时关闭potatojwplus<br><br>" + $$("#comment").html());
+    $$("#comment").html("[PotatoPlus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可先暂时关闭PotatoPlus<br><br>" + $$("#comment").html());
   } else if (pjw_mode == "read_view") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
