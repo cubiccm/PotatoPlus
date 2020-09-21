@@ -13,39 +13,29 @@ NJU土豆改善工程
 
 ## 安装 Installation
 
+[较详细的安装教程](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
+
 ### 通过插件安装
 
 #### Chrome
 
-访问[Chrome网上应用店页面](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)，再点击“添加至Chrome”即可。
-
-_如果您无法访问Chrome网上应用店，可以尝试下面的手动安装流程（无法自动更新）：_
-
-首先下载项目源代码并解压，点击Chrome右上方的“插件”按钮并选择“管理插件”，或直接访问`chrome://extensions/`；
-
-打开右上角的“开发者模式”开关，并选择左上方按钮“加载未打包的扩展”，选择刚刚下载的源代码文件夹即可。
+[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
 
 #### Edge
 
-访问Microsoft Store中的页面（将于稍后上线），再安装即可。
-
-亦可在Chrome网上应用店下载或手动安装。
+Microsoft Store（将于稍后上线）或[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
 
 #### Firefox
 
-在Firefox中访问下面链接，并点击“添加”即可（暂时不能自动更新）。
-
-[获取 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)
+[获取 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)（暂时不能自动更新）
 
 ### 通过Userscript安装
 
-Userscript安装较为方便、更新速度快，但在很多体验上不如插件，建议优先以插件方式安装。
-
-请先在浏览器中安装[Tampermonkey](https://tampermonkey.net)等可以执行Userscript的插件，之后访问下面的链接获取脚本。
+请确保浏览器中已经安装[Tampermonkey](https://tampermonkey.net)等支持Userscript的插件。
 
 [获取 Userscript](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js)
 
-要及时获得最新的功能和错误修复，您可以调快插件的自动更新频率，或加入[邮件列表](https://cubiccm.ddns.net/potato-mailing-list/)接收最新动态。
+要及时获得最新的功能和错误修复，您可以调快插件的自动更新频率，及加入[邮件列表](https://cubiccm.ddns.net/potato-mailing-list/)接收最新动态。
 
 ## 功能 Features
 
@@ -131,4 +121,4 @@ list.loadModule("potatoes");
     
 ## 更多信息 More Info
 
-[项目更新日志](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
+[项目页面及更新日志](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
