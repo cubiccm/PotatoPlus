@@ -156,7 +156,7 @@ I'm arriving, and it feels like I am home
 I have always been a fortress, cold secrets deep inside
 You have secrets too, but you don't have to hide
 Show yourself, I'm dying to meet you
-Show yourself, It's your turn
+Show yourself, it's your turn
 Are you the one I've been looking for, all of my life?
 Show yourself, I'm ready to learn
 I've never felt so certain, all my life I've been torn
@@ -180,8 +180,8 @@ I know in a couple years, these will seem like childish fears
 And so I know this isn't bad, it's good.
 Growing up means adapting, puzzling at your world and your place
 When I'm more mature, I'll feel totally secure, being watched by something with a creepy, creepy face
-See, that will all make sense when I am older, so there's no need to be terrified or tense
-I'll just dream about a time, when I'm in my aged prime!
+See, that will all make sense when I am older, so there's no need to be terrified or tense.
+I'll just dream about a time, when I'm in my aged prime
 'Cause when you're older, absolutely everything makes sense!
 This is fine.
 Again, you're gone, off on a different path than mine

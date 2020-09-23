@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.1
+// @version      0.2.1.1
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -360,7 +360,7 @@ body * {
 
 #pjw-welcome a {
   margin: 0 5px;
-  font-size: 12px;
+  font-size: inherit;
   text-decoration: none;
   color: rgba(255, 255, 255, .75) !important;
   transition: color .1s ease-out;
@@ -1543,7 +1543,7 @@ I'm arriving, and it feels like I am home
 I have always been a fortress, cold secrets deep inside
 You have secrets too, but you don't have to hide
 Show yourself, I'm dying to meet you
-Show yourself, It's your turn
+Show yourself, it's your turn
 Are you the one I've been looking for, all of my life?
 Show yourself, I'm ready to learn
 I've never felt so certain, all my life I've been torn
@@ -1567,8 +1567,8 @@ I know in a couple years, these will seem like childish fears
 And so I know this isn't bad, it's good.
 Growing up means adapting, puzzling at your world and your place
 When I'm more mature, I'll feel totally secure, being watched by something with a creepy, creepy face
-See, that will all make sense when I am older, so there's no need to be terrified or tense
-I'll just dream about a time, when I'm in my aged prime!
+See, that will all make sense when I am older, so there's no need to be terrified or tense.
+I'll just dream about a time, when I'm in my aged prime
 'Cause when you're older, absolutely everything makes sense!
 This is fine.
 Again, you're gone, off on a different path than mine
@@ -4006,9 +4006,10 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.1";
+  window.pjw_version = "0.2.1.1";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.1";
+    window.pjw_version = "0.2.1.1";
+
   window.$$ = jQuery.noConflict();
 
   var head_metadata = `
@@ -4060,8 +4061,8 @@ window.potatojw_intl = function() {
     $$("head").append($$(google_analytics_js));
   }
 
-  var filter_mode_list = {"read": 2, "major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true};
+  var filter_mode_list = {"major_course": 6};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true};
 
   const custom_toolbar_html = {
     freshmen_exam: `
@@ -4099,9 +4100,9 @@ window.potatojw_intl = function() {
           <input type="range" id="auto_refresh_frequency" style="width: 50px; height: 15px;" value="0" onchange="frequencyUpdate();">
           <span style="color: #dedede; font-size: 11px;">封号退学</span>
         </section>
-        <section>
+        <section style="opacity: .6;">
           <input type="checkbox" id="auto_select" disabled="disabled">
-          <label for="auto_select" style="font-weight: bold;">自动选课</label>
+          <label for="auto_select" style="font-weight: bold;">自动选择 *弃用</label>
         </section>
       </div>
     `,
@@ -4149,11 +4150,11 @@ window.potatojw_intl = function() {
         <br>
         <span class="pjw-mini-button" onclick="hideFilterSettings();">完成设置</span>
         <br><br>
-        <span>自动选课打开后，potatojw将按照此处设置的过滤器选课。</span>
+        <span>请留意，此处的课程过滤器是 PotatoPlus v0.1 的功能，近期未经过测试和更新，请不要依赖此功能。</span>
         <br>
         <span>上课时间过滤器暂不能储存，刷新页面后会消失。</span>
         <br>
-        <span>打开开发者界面（F12 / Command + Shift + I）的控制台（Console）可查看输出信息</span>
+        <span>打开开发者界面（F12 / Option + Command + I）的控制台（Console）可查看输出信息</span>
         <br>
         <div class="about-proj"></div>
       </div>
@@ -4243,14 +4244,9 @@ window.potatojw_intl = function() {
   if (pjw_mode in pjw_classlist_mode_list)
     ClassListPlugin();
 
-  // Storage upgrade
-  function checkStorageVersion() {
-    if (store.get("version") == null || store.get("version") != pjw_version)
-      return false;
-    return true;
-  }
-  
-  if (!checkStorageVersion()) {
+
+  // Storage Upgrade  
+  if (store.get("version") == null || store.get("version") != pjw_version) {
     store.set("is_toolbar_collapsed", false);
     store.remove("privilege");
     store.set("version", pjw_version);
@@ -4262,29 +4258,38 @@ window.potatojw_intl = function() {
     if (typeof(window.alert_data) != "undefined") {
       pconsole.alert(window.alert_data);
     }
+
     var update_html = "";
     if (pjw_platform == "Userscript") {
-      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a>`;
-    } else if (pjw_platform == "Firefox Plugin") {
+      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Store</a>上线，您可以尝试迁移到插件版本以在部分功能上获得更好的体验。安装插件后请关闭当前脚本的执行。`;
+    } else if (pjw_platform == "Firefox Add-on") {
       update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi">&gt; 获取更新 - Firefox插件</a>`;
     } else if (pjw_platform == "General Plugin") {
       update_html = `您所安装的版本可能不支持自动更新，请访问<a href="https://github.com/cubiccm/potatoplus/releases/latest/" target="_blank">GitHub Releases</a>页面检查及获取更新。`;
     }
+
+    const mailing_list_html = `
+      <note>邀请您加入邮件列表，您可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
+      <div style="height: 30px; opacity: .8;">
+        <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
+      </div>
+    `;
+
     const welcome_html = `
       <div id="pjw-welcome">
-        <p>PotatoPlus v0.2.1 将全新课程列表带到了体育选课页面。</p>
+        <p>PotatoPlus v0.2.1.1 更新了悦读经典课程补选页面的课程列表，您可以<a href="/jiaowu/student/elective/readRenewCourseList.do">进入此页面</a>启用。</p>
         <hr>
-        <heading>焕然一新！</heading>
         <p>PotatoPlus v0.2 对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
         <br>
-        <note>邀请您加入邮件列表，您可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
-        <div style="height: 30px; opacity: .8;">
-          <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
-        </div>
+        ${mailing_list_html}
         <br>
-        <note>${pjw_platform}</note>
+        <p>${pjw_platform}</p>
         <div class="pjw-welcome-get-update">${update_html}</div>
-        <note>PotatoPlus ${pjw_version}</note>
+        <note>PotatoPlus ${pjw_version}
+          <a href="https://github.com/cubiccm/potatoplus/issues" target="_blank">在GitHub Issues提交反馈</a>
+          <a href="mailto:illimosity@gmail.com" target="_blank">通过邮件提交反馈</a>
+          <a href="https://t.me/limosity" target="_blank">Telegram: @limosity</a>
+        </note>
       </div>
     `;
     $$(".Line").before(welcome_html);
@@ -4666,70 +4671,146 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject("无法获取数据：" + data);
         });
       });
     }
 
     list.refresh();
   } else if (pjw_mode == "read") {
-    // Submit reading class selection request
-    // 提交阅读选课
-    window.readSelect = function(event, class_ID, is_delete = false) {
-      $$.ajax({
-        url: "/jiaowu/student/elective/selectCourse.do",
-        data: 'method=readCourse' + (is_delete ? 'Delete' : 'Select') + '&classid=' + class_ID,
-        type: "POST",
-        success: function(res) {
-          $$("#courseDetail").html(res);
-          $$('#courseOperation').html(res);
-          if ($$("#errMsg").length == 0)
-            console.log("Message: " + $$("#errMsg").attr("title"));
-          else if ($$("#successMsg").length == 0)
-            console.log("Error: " + $$("#successMsg").attr("title"));
-          readTypeChange();
+    $$("#comment").css("line-height", "initial");
+    if (!store.has("enable_read_mode")) {
+      $$("#comment").prepend(`<span style="font-size: 17px; font-weight: bold;">[PotatoPlus Notice]  <br> PotatoPlus 悦读经典补选课程功能暂未经过测试，故默认已禁用。</span><br><br>
+        <span class="pjw-mini-button" onclick="store.set('enable_read_mode', true); location.reload();">启用并刷新</span><br><br>`);
+      return;
+    }
+    $$("#comment").prepend(`<span style="font-size: 17px; font-weight: bold;">[PotatoPlus Notice]  <br> 悦读经典补选课程功能暂未经过测试。</span><br><br>
+      <span class="pjw-mini-button" onclick="store.remove('enable_read_mode'); location.reload();">在此页面禁用 PotatoPlus 并刷新</span><br><br>`);
+    window.list = new PJWClassList($$("body"));
+    window.initClassList = () => {};
+    $$("#courseList").hide();
+    $$("#comment").appendTo("body");
+
+    list.select = function(classID, class_data) {
+      return new Promise((resolve, reject) => {
+        var deselect = class_data.select_button.status == "Deselect";
+        var target = this;
+        $$.ajax({
+          url: "/jiaowu/student/elective/selectCourse.do",
+          data: {
+            method: (deselect ? "readCourseDelete" : "readRenewCourseSelect"),
+            classid: classID
+          },
+          type: "POST"
+        }).done(function(res) {
+          if ($$(res).is("#successMsg")) {
+            target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.refresh(false, true).then(() => {resolve(res);});
+          } else if ($$(res).is("#errMsg")) {
+            target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.refresh(false, true).then(() => {reject(res);});
+          }
+        }).fail((res) => {
+          target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
+          reject(res);
+        });
+      });
+    }
+
+    list.parse = function(data) {
+      return new Promise((resolve, reject) => {
+        try {
+          var rows = $$(data).find("tbody").find("tr");
+          rows.each((index, val) => {
+            var td = (i) => ($$(val).children(`td:eq(${i})`));
+
+            // Prepare select button
+            var classID = this.getClassNameFromFuncStr(td(6).attr("onclick"));
+            var select_status = (td(6).children("a").html() == "选择" ? "Select" : "Deselect");
+
+            // Construct class data
+            data = {
+              classID: classID,
+              title: td(1).html(),
+              teachers: this.parseTeacherNames(td(2).html()),
+              info: [{
+                key: "类别",
+                val: td(3).html()
+              }, {
+                key: "课程编号",
+                val: td(0).html(),
+                hidden: true
+              }],
+              num_info: [{
+                num: '' + parseInt(td(5).html()) + '/' + parseInt(td(4).html()),
+                label: "已选/限额"
+              }],
+              select_button: {
+                status: select_status,
+                text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.button_target.prop("disabled", true);
+                    e.data.target.list.select(classID, e.data.target.data).then(() => {
+                      resolve();
+                    }).catch((res) => {
+                      reject(res);
+                    });
+                  });
+                }
+              },
+              comment_button: {
+                status: true,
+                // text: (Math.random() * 10).toFixed(1)
+              }
+            };
+
+            this.add(data);
+          });
+
+          // Render DOM
+          this.update();
+          resolve();
+        } catch (e) {
+          reject(e);
         }
       });
-    };
+    }
 
-    // Load reading class list
-    // 加载阅读课列表
-    window.initClassList = function(success_func = function() {}){
-      var type;
-      if ($$('#readRenewType').length == 0) type = 7;
-      else type = $$('#readRenewType')[0].options[$$('#readRenewType')[0].selectedIndex].value;
-      $$.ajax({
-        url: "/jiaowu/student/elective/courseList.do",
-        data: 'method=readRenewCourseList&type=' + type,
-        type: "POST",
-        success: function(res) {
-          $$("#courseList").html(res);
-          applyFilter();
-          success_func();
-        }
+    list.load = function() {
+      return new Promise((resolve, reject) => {
+        $$.ajax({
+          type: "POST",
+          url: "/jiaowu/student/elective/courseList.do",
+          data: {
+            method: "readRenewCourseList",
+            type: this.selectors.type.val()
+          }
+        }).done((data) => {
+          this.parse(data);
+          resolve();
+        }).fail((data) => {
+          reject("无法获取数据：" + data);
+        });
       });
-    };
+    }
 
-    // Detect reading type filter change
-    // 检测阅读类型过滤器更新
-    window.readTypeChange = function() {
-      initClassList(function() {
-        hideCourseDetail();
-        doAutoClassSelect();
-      });
-    };
-
-    window.isClassFull = function(element) {
-      return parseInt($$(element).children("td:eq(5)").html()) >= parseInt($$(element).children("td:eq(4)").html());
-    };
-
-    // Drop a reading class
-    // 退选阅读课
-    window.readDelete = function(event, class_ID) {
-      readSelect(event, class_ID, true);
-    };
-
-    $$("#comment").html("[PotatoPlus Notice]<br>悦读经典功能可能暂时无法使用<br>如影响到手动选课，可先暂时关闭PotatoPlus<br><br>" + $$("#comment").html());
+    $$.ajax({
+      type: "POST",
+      url: "/jiaowu/student/elective/courseList.do",
+      data: {
+        method: "readRenewCourseList",
+        type: 7
+      }
+    }).done((data) => {
+      list.selectors = {
+        type: new PJWSelect($$(data).filter("#readRenewType"), "书目类别", list.heading.children(".pjw-classlist-selectors"), 0, 6)
+      };
+      list.selectors.type.onchange( (e) => {
+        list.refresh(true);
+      } );
+      list.refresh();
+    });
   } else if (pjw_mode == "read_view") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
@@ -4835,7 +4916,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject("无法获取数据：" + data);
         });
       });
     }
@@ -4968,7 +5049,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject("无法获取数据：" + data);
         });
       });
     }
@@ -5103,7 +5184,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject("无法获取数据：" + data);
         });
       });
     }
@@ -5179,7 +5260,7 @@ window.potatojw_intl = function() {
       }).done(function(data) {
         parse(data);
       }).fail(function(data) {
-        console.log("Failed to request data: " + data);
+        console.log("无法获取数据：" + data);
       });
     };
 
@@ -5317,7 +5398,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject("无法获取数据：" + data);
         });
       });
     }
@@ -5452,7 +5533,7 @@ window.potatojw_intl = function() {
           this.parse(data);
           resolve();
         }).fail((data) => {
-          reject("Failed to request data: " + data);
+          reject("无法获取数据：" + data);
         });
       });
     }
@@ -5681,34 +5762,17 @@ window.potatojw_intl = function() {
 
   if (pjw_mode in filter_mode_list) {
     window.select_class_button_index = {
-      "gym": 5,
-      "read": 6,
-      "common": 9,
-      "dis": 9,
-      "open": 9
     };
 
     window.class_name_index = {
-      "gym": 0,
-      "read": 1,
-      "common": 2,
-      "dis": 2,
-      "open": 2,
       "major_course": -1
     };
 
     window.teacher_name_index = {
-      "dis": 5,
-      "open": 6,
-      "common": 5,
       "major_course": -1
     };
 
     window.class_time_index = {
-      "gym": 1,
-      "common": 4,
-      "dis": 4,
-      "open": 5
     };
 
     if (store.get("filter_settings_" + pjw_mode) == null || store.get("filter_settings_" + pjw_mode) == "")
@@ -5728,7 +5792,7 @@ window.potatojw_intl = function() {
     });
     window.showFilter = function(filter_name) {
       $$("#filter_" + filter_name).css("display", "block");
-    }
+    };
 
     window.showFilterSettings = function() {
       $$("#potatojw_mask").css("display", "block");
@@ -5752,9 +5816,7 @@ window.potatojw_intl = function() {
       $$("#filter_switch").prop("checked", true);
       $$("#filter_switch").trigger("change");
     };
-  }
 
-  if (pjw_mode in filter_mode_list) {
     window.applyFilter = function() {
       getAllClassDOM().each(function() {
         $$(this).css("display", (filterClass(this) ? "table-row" : "none"));
@@ -5787,11 +5849,11 @@ window.potatojw_intl = function() {
       $$("#auto_refresh").trigger("change");
       $$("#auto_select").prop("checked", false);
       $$("#auto_select").trigger("change");
-    }
+    };
 
     window.getAllClassDOM = function() {
       return (pjw_mode == "open" ? $$("div#tbCourseList > tbody > tr:gt(0)") : $$("table#tbCourseList:eq(0) > tbody > tr"));
-    }
+    };
 
     window.getNumberInNormalDistribution = function(mean, std_dev, lower_limit, upper_limit) {
       var res = Math.floor(mean + randomNormalDistribution() * std_dev);
@@ -5811,7 +5873,7 @@ window.potatojw_intl = function() {
       } while (w == 0.0 || w >= 1.0)
       c = Math.sqrt((-2 * Math.log(w)) / w);
       return u * c;
-    }
+    };
 
     window.auto_refresh_frequency = 1.0,
     window.auto_refresh_loss_rate = 0.1;
@@ -5835,7 +5897,7 @@ window.potatojw_intl = function() {
     window.stopAutoRefresh = function() {
       window.clearInterval(window.auto_refresh_interval_id);
       window.auto_refresh_interval_id = -1;
-    }
+    };
 
     window.frequencyUpdate = function() {
       window.auto_refresh_frequency = 1.0 / (1.0 + parseInt($$("#auto_refresh_frequency").val()) / 25);
@@ -5843,7 +5905,7 @@ window.potatojw_intl = function() {
         stopAutoRefresh();
         startAutoRefresh();
       }
-    }
+    };
 
     // Select class automatically based on filter
     window.doAutoClassSelect = function() {

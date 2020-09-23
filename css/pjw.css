@@ -274,7 +274,7 @@ body * {
 
 #pjw-welcome a {
   margin: 0 5px;
-  font-size: 12px;
+  font-size: inherit;
   text-decoration: none;
   color: rgba(255, 255, 255, .75) !important;
   transition: color .1s ease-out;
