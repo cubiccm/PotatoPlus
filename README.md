@@ -27,7 +27,7 @@ NJU土豆改善工程
 
 #### Firefox
 
-[获取 Firefox Add-on](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi)（暂时不能自动更新）
+[Firefox Browser Add-ons](https://addons.mozilla.org/en-US/firefox/addon/potatoplus/)
 
 ### 通过Userscript安装
 
