@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.2";
+    window.pjw_version = "0.2.3";
 
   window.$$ = jQuery.noConflict();
 
@@ -274,9 +274,8 @@ window.potatojw_intl = function() {
 
     const welcome_html = `
       <div id="pjw-welcome">
-        <p>PotatoPlus v0.2.2 更新了悦读经典课程补选页面的课程列表，并带来数项体验优化和错误修复。</p>
-        <hr>
-        <p>PotatoPlus v0.2 对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
+        <heading>Hello, NJUer</heading>
+        <p>PotatoPlus v0.2.3</p>
         <br>
         ${mailing_list_html}
         <br>
@@ -586,10 +585,12 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {resolve(res);});
+            target.refresh(false);
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {reject(res);});
+            target.refresh(false);
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -629,7 +630,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -675,12 +675,6 @@ window.potatojw_intl = function() {
 
     list.refresh();
   } else if (pjw_mode == "read") {
-    $$("#comment").css("line-height", "initial");
-    if (store.has("disable_read_mode")) {
-      $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.remove('disable_read_mode'); location.reload();">在此页面启用 PotatoPlus 并刷新</span><br><br>`);
-      return;
-    }
-    $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.set('disable_read_mode', true); location.reload();">在此页面禁用 PotatoPlus 并刷新</span><br><br>`);
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -702,10 +696,12 @@ window.potatojw_intl = function() {
               target.console.success(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             else
               target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {resolve(res);});
+            target.refresh(false);
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {reject(res);});
+            target.refresh(false);
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`选择失败：${res}`);
@@ -749,7 +745,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -830,10 +825,12 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {resolve(res);});
+            target.refresh(false);
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {reject(res);});
+            target.refresh(false);
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -875,7 +872,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -1200,75 +1196,7 @@ window.potatojw_intl = function() {
     $$("table#tbCourseList").remove();
     $$("body > div[align=center]").children("p").remove();
   } else if (pjw_mode == "dis_view") {
-    window.parse = function(data) {
-      $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
-      campusChange();
-      var table = $$("#ghost-div").find("#tbCourseList");
-      table.find("tbody").each((index, val) => {
-        if ($$(val).css("display") == "none") return;
-        $$(val).find("tr").each((index, val) => {
-          var res = this.parseClassTime($$(val).children("td:eq(4)").html());
-          data = {
-            title: $$(val).children("td:eq(2)").html(),
-            teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
-            info: [{
-              key: "课程编号",
-              val: $$(val).children('td:eq(0)').html()
-            }, {
-              key: "类别",
-              val: $$(val).children('td:eq(6)').html(),
-              hidden: true
-            }],
-            num_info: [{
-              num: parseInt($$(val).children("td:eq(3)").html()),
-              label: "学分"
-            }],
-            lesson_time: res.lesson_time,
-            time_detail: $$(val).children('td:eq(4)').html(),
-            class_weeknum: res.class_weeknum,
-            select_button: {
-              status: "Select",
-              text: `${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`,
-              action: (() => {})
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
-            }
-          };
-          list.add(data);
-        });
-      });
-      $$("#ghost-div").remove();
-    }
-
-    window.initList = function(campus = $$("#campusList").val()) {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWDisClassList($$("#courseList"));
-      }
-
-      $$.ajax({
-        type: "POST",
-        url: "/jiaowu/student/elective/courseList.do",
-        data: {
-          method: "discussGeneralCourse",
-          campus: campus
-        }
-      }).done(function(data) {
-        parse(data);
-      }).fail(function(data) {
-        console.log("无法获取数据：" + data);
-      });
-    };
-
-    class PJWDisClassList extends PJWClassList {
-      refresh() {
-        initList();
-      }
-    }
-    initList();
+    // To be implemented...
   } else if (pjw_mode == "open") {
     window.list = new PJWClassList($$("body"));
 

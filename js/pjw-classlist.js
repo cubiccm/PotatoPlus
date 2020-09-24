@@ -174,22 +174,32 @@ function ClassListPlugin() {
 
       function getSelectButton(data, get_inner = false) {
         if (!data.status) return "";
-        var label_text = "选择";
-        var icon_text = "add_task";
+        var label_text = "";
+        var icon_text = "";
         var disabled = "";
         var extra_classes = "";
 
-        if (data.status == "Deselect") {
-          label_text = "退选";
-          icon_text = "layers_clear";
-          extra_classes = "deselect";
-        } else if (data.status != "Select" && data.status !== true) {
-          disabled = "disabled";
-          icon_text = "block";
-          if (data.status == "Full")
+        // status: "Select", "Deselect", "Full", "Selected", false
+        switch (data.status) {
+          case "Select":
+            label_text = "选择";
+            icon_text = "add_task";
+            break;
+          case "Deselect":
+            label_text = "退选";
+            icon_text = "layers_clear";
+            extra_classes = "deselect";
+            break;
+          case "Full":
             label_text = "满员";
-          else if (data.status == "Selected")
+            disabled = "disabled";
+            icon_text = "block";
+            break;
+          case "Selected":
             label_text = "已选";
+            disabled = "disabled";
+            icon_text = "check_box";
+            break;
         }
 
         var info_text = "";
@@ -348,13 +358,15 @@ function ClassListPlugin() {
 
       var data = this.data;
 
-      // Set select button onclick event
+      // Set select button click event
       this.select_button.click({
         target: this,
-        button_target: this.select_button,
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
-        e.data.action(e).then(() => {}).catch(() => {});
+        e.data.target.select_button.prop("disabled", true);
+        e.data.action(e).then(() => {}).catch(() => {}).finally(() => {
+          e.data.target.select_button.prop("disabled", false);
+        });
       });
 
       // Initialize DOM trace variables
@@ -830,7 +842,7 @@ function ClassListPlugin() {
         if (typeof(this.refresh_button_interval_id) != "undefined")
           clearInterval(this.refresh_button_interval_id);
         if (typeof(this.show_refresh_level_timeout_id) != "undefined")
-          clearInterval(this.show_refresh_level_timeout_id);
+          clearTimeout(this.show_refresh_level_timeout_id);
         this.toggleAutoRefresh(false);
         this.auto_refresh_frequency = 1.0;
         $$("#autorefresh-label").html("1.0x");

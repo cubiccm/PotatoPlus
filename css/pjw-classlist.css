@@ -551,7 +551,7 @@
 
   z-index: 100;
   border-radius: 20px;
-  transition: all .4s ease-out;
+  transition: all .35s ease-out, filter .15s ease-in;
 
   display: flex;
   flex-direction: column;

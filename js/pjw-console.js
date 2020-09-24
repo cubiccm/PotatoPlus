@@ -56,7 +56,7 @@ window.PJWConsole = class {
       warning: [true, "#b74710"],
       done: [true, "limegreen"],
       info: [false],
-      alarm: [true],
+      alarm: [true, "#9eb314"],
       code: [false]
     };
     
@@ -121,6 +121,7 @@ window.PJWConsole = class {
     }, function(e) {
       var target = e.data.target;
       target.mouse_stay = true;
+      target.setColor();
       clearTimeout(target.stay_timeout);
     });
 
@@ -131,7 +132,7 @@ window.PJWConsole = class {
       target.mouse_stay = false;
       target.stay_timeout = setTimeout((target) => {
         target.hide();
-      }, 600, target);
+      }, 200, target);
     });
   }
 }
