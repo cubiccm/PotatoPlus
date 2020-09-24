@@ -772,17 +772,21 @@ function ClassListPlugin() {
         this.body.css("transition", "");
         this.body.css("opacity", "0");
       }
+      $$("#pjw-classlist-count").html("Loading...");
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
         if (disable_log) return;
         if (this.class_data.length == 0)
-          this.console.info("没有找到课程 : (");
+          $$("#pjw-classlist-count").html(`No class found : (`);
+        else if (this.class_data.length == 1)
+          $$("#pjw-classlist-count").html(`${this.class_data.length} class loaded`);
         else
-          this.console.debug(`已加载${this.class_data.length}门课程`);
+          $$("#pjw-classlist-count").html(`${this.class_data.length} classes loaded`);
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
+        $$("#pjw-classlist-count").html("Load failed : (");
         this.console.error("无法加载课程列表：" + e);
       });
     }
@@ -962,7 +966,9 @@ function ClassListPlugin() {
     }
 
     getClassNameFromFuncStr(obj) {
-      if (typeof(obj) == "string") {
+      if (typeof(obj) == "undefined") {
+        return false;
+      } else if (typeof(obj) == "string") {
         var str = obj;
       } else {
         if (obj.children("a").length == 0) return false;
@@ -1039,6 +1045,9 @@ function ClassListPlugin() {
           </div>
         </div>
         <div class="pjw-classlist-body"></div>
+        <div class="pjw-classlist-bottom">
+          <p id="pjw-classlist-count">Loading...</p>
+        </div>
         <div class="pjw-classlist-bottom">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
         </div>

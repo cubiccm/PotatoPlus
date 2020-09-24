@@ -47,10 +47,6 @@ window.PJWConsole = class {
         <div class="pjw-console-text">${text}</div>
       </div>
     `;
-    if (type == "code") {
-      this.history.append(html);
-      return;
-    }
 
     this.dom.children(".pjw-console-item").appendTo(this.history);
     this.dom.append(html);
@@ -65,6 +61,7 @@ window.PJWConsole = class {
     };
     
     this.setColor(action[type][1]);
+    if (type == "code") return;
     this.show(action[type][0]);
   }
 

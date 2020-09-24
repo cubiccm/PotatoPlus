@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.1.1";
+    window.pjw_version = "0.2.2";
 
   window.$$ = jQuery.noConflict();
 
@@ -260,9 +260,7 @@ window.potatojw_intl = function() {
 
     var update_html = "";
     if (pjw_platform == "Userscript") {
-      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Store</a>上线，您可以尝试迁移到插件版本以在部分功能上获得更好的体验。安装插件后请关闭当前脚本的执行。`;
-    } else if (pjw_platform == "Firefox Add-on") {
-      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.xpi">&gt; 获取更新 - Firefox插件</a>`;
+      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>，<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Edge Add-ons</a>和<a href="https://addons.mozilla.org/addon/potatoplus/" target="_blank">Firefox Browser Add-ons</a>上线，建议您迁移到插件版本以在部分功能上获得更好的体验。安装插件后请关闭当前脚本的执行。`;
     } else if (pjw_platform == "General Plugin") {
       update_html = `您所安装的版本可能不支持自动更新，请访问<a href="https://github.com/cubiccm/potatoplus/releases/latest/" target="_blank">GitHub Releases</a>页面检查及获取更新。`;
     }
@@ -276,7 +274,7 @@ window.potatojw_intl = function() {
 
     const welcome_html = `
       <div id="pjw-welcome">
-        <p>PotatoPlus v0.2.1.1 更新了悦读经典课程补选页面的课程列表，您可以<a href="/jiaowu/student/elective/readRenewCourseList.do">进入此页面</a>启用。</p>
+        <p>PotatoPlus v0.2.2 更新了悦读经典课程补选页面的课程列表，并带来数项体验优化和错误修复。</p>
         <hr>
         <p>PotatoPlus v0.2 对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
         <br>
@@ -631,7 +629,7 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.button_target.prop("disabled", true);
+                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -678,13 +676,11 @@ window.potatojw_intl = function() {
     list.refresh();
   } else if (pjw_mode == "read") {
     $$("#comment").css("line-height", "initial");
-    if (!store.has("enable_read_mode")) {
-      $$("#comment").prepend(`<span style="font-size: 17px; font-weight: bold;">[PotatoPlus Notice]  <br> PotatoPlus 悦读经典补选课程功能暂未经过测试，故默认已禁用。</span><br><br>
-        <span class="pjw-mini-button" onclick="store.set('enable_read_mode', true); location.reload();">启用并刷新</span><br><br>`);
+    if (store.has("disable_read_mode")) {
+      $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.remove('disable_read_mode'); location.reload();">在此页面启用 PotatoPlus 并刷新</span><br><br>`);
       return;
     }
-    $$("#comment").prepend(`<span style="font-size: 17px; font-weight: bold;">[PotatoPlus Notice]  <br> 悦读经典补选课程功能暂未经过测试。</span><br><br>
-      <span class="pjw-mini-button" onclick="store.remove('enable_read_mode'); location.reload();">在此页面禁用 PotatoPlus 并刷新</span><br><br>`);
+    $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.set('disable_read_mode', true); location.reload();">在此页面禁用 PotatoPlus 并刷新</span><br><br>`);
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -692,25 +688,27 @@ window.potatojw_intl = function() {
 
     list.select = function(classID, class_data) {
       return new Promise((resolve, reject) => {
-        var deselect = class_data.select_button.status == "Deselect";
         var target = this;
         $$.ajax({
-          url: "/jiaowu/student/elective/selectCourse.do",
+          url: "/jiaowu/student/elective/courseList.do",
           data: {
-            method: (deselect ? "readCourseDelete" : "readRenewCourseSelect"),
+            method: "readRenewCourseSelect",
             classid: classID
           },
           type: "POST"
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
-            target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            if ($$(res).attr("title").includes("成功"))
+              target.console.success(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            else
+              target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             target.refresh(false, true).then(() => {resolve(res);});
           } else if ($$(res).is("#errMsg")) {
-            target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
+            target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             target.refresh(false, true).then(() => {reject(res);});
           }
         }).fail((res) => {
-          target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
+          target.console.error(`选择失败：${res}`);
           reject(res);
         });
       });
@@ -725,7 +723,9 @@ window.potatojw_intl = function() {
 
             // Prepare select button
             var classID = this.getClassNameFromFuncStr(td(6).attr("onclick"));
-            var select_status = (td(6).children("a").html() == "选择" ? "Select" : "Deselect");
+            var select_status = "Full";
+            if (td(6).children("a").html() == "选择") select_status = "Select";
+            else if (td(6).children("a").html() == "已选") select_status = "Selected";
 
             // Construct class data
             data = {
@@ -749,7 +749,7 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.button_target.prop("disabled", true);
+                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -875,7 +875,7 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.button_target.prop("disabled", true);
+                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {

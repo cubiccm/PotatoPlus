@@ -127,7 +127,7 @@
 /* Body */
 
 .pjw-classlist-body {
-  margin: 0 5%;
+  margin: 0 5% 20px 5%;
   width: 90%;
   top: 20px;
   position: relative;
@@ -630,7 +630,7 @@
 }
 
 .pjw-classlist-bottom {
-  margin-top: 40px;
+  margin-top: 3px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -640,5 +640,7 @@
   text-align: center;
   font-size: 11px;
   color: rgba(0, 0, 0, .5);
-  margin-left: 6px;
+}
+.pjw-classlist-bottom > span {
+  margin-right: 6px;
 }

@@ -1,38 +1,65 @@
 var pjw_filter = {
-  /* avail module v1.0 */
+  /* avail module v1.1 */
   avail: {
     html: `
       <div id="pjw-avail-filter">
         <heading><span class="material-icons-round">add_task</span>空余课程</heading>
-        <div class="content pjw-switch-box">
-          <div class="mdc-switch" id="pjw-avail-switch">
-            <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+        <div class="content">
+          <div class="pjw-switch-box">
+            <div class="mdc-switch" id="pjw-avail-switch">
+              <div class="mdc-switch__track"></div>
+              <div class="mdc-switch__thumb-underlay">
+                <div class="mdc-switch__thumb"></div>
+                <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              </div>
             </div>
+            <label for="pjw-avail-switch-input">过滤不可选课程</label>
           </div>
-          <label for="pjw-avail-switch-input">过滤不可操作课程</label>
+          <div class="pjw-switch-box" id="pjw-deselect-switch-box">
+            <div class="mdc-switch" id="pjw-deselect-switch">
+              <div class="mdc-switch__track"></div>
+              <div class="mdc-switch__thumb-underlay">
+                <div class="mdc-switch__thumb"></div>
+                <input type="checkbox" id="pjw-deselect-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              </div>
+            </div>
+            <label for="pjw-deselect-switch-input">保留可退选课程</label>
+          </div>
         </div>
       </div>
     `,
     intl: (space, list) => {
       space.dom = $$("#pjw-avail-filter");
       space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-avail-switch")[0]);
+      space.deselect_switch = new mdc.switchControl.MDCSwitch($$("#pjw-deselect-switch")[0]);
+
       space.switch.checked = true;
       space.status = true;
-      space.dom.find(".mdc-switch__native-control").on("change", null, {
+
+      space.dom.find("#pjw-avail-switch-input").on("change", null, {
         target: space,
         list: list
       }, (e) => {
         e.data.target.status = e.data.target.switch.checked;
+        e.data.target.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
+        e.data.list.update();
+      });
+
+      space.dom.find("#pjw-deselect-switch-input").on("change", null, {
+        target: space,
+        list: list
+      }, (e) => {
+        e.data.target.keep_deselect = e.data.target.deselect_switch.checked;
         e.data.list.update();
       });
     },
     check: (space, data) => {
       if (!space.status) return 0;
-      if ("select_button" in data && data.select_button.status !== false && data.select_button.status != "Select" && data.select_button.status != "Deselect") {
-        return false;
+      if ("select_button" in data && data.select_button.status !== false) {
+        if (data.select_button.status == "Deselect" && space.keep_deselect)
+          return 0;
+        else if (data.select_button.status != "Select")
+          return false;
       }
       return 0;
     }
