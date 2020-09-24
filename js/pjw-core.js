@@ -586,10 +586,10 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {resolve(res);});
+            target.refresh(false).then(() => {resolve(res);});
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {reject(res);});
+            target.refresh(false).then(() => {reject(res);});
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -702,10 +702,10 @@ window.potatojw_intl = function() {
               target.console.success(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             else
               target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {resolve(res);});
+            target.refresh(false).then(() => {resolve(res);});
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {reject(res);});
+            target.refresh(false).then(() => {reject(res);});
           }
         }).fail((res) => {
           target.console.error(`选择失败：${res}`);
@@ -830,10 +830,10 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {resolve(res);});
+            target.refresh(false).then(() => {resolve(res);});
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {reject(res);});
+            target.refresh(false).then(() => {reject(res);});
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);

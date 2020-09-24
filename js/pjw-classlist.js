@@ -766,7 +766,7 @@ function ClassListPlugin() {
       }
     }
 
-    refresh(hard_load = false, disable_log = false) {
+    refresh(hard_load = false) {
       if (hard_load) {
         this.clear();
         this.body.css("transition", "");
@@ -776,7 +776,6 @@ function ClassListPlugin() {
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
-        if (disable_log) return;
         if (this.class_data.length == 0)
           $$("#pjw-classlist-count").html(`No class found : (`);
         else if (this.class_data.length == 1)
@@ -828,6 +827,8 @@ function ClassListPlugin() {
     autoRefreshButtonEvent(status) {
       if ($$("#autorefresh-switch").hasClass("off")) return;
       if (status) {
+        if (typeof(this.refresh_button_interval_id) != "undefined")
+          clearInterval(this.refresh_button_interval_id);
         if (typeof(this.show_refresh_level_timeout_id) != "undefined")
           clearInterval(this.show_refresh_level_timeout_id);
         this.toggleAutoRefresh(false);
@@ -897,7 +898,7 @@ function ClassListPlugin() {
             if ($$("#autorefresh-switch").hasClass("off")) return;
 
             $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(255, 109, 75))");
-            target.refresh(false, true).then(() => {
+            target.refresh(false).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(16, 141, 255))");
               target.console.debug("自动刷新计数：" + auto_refresh_count++, "auto-refresh-count");
@@ -921,7 +922,7 @@ function ClassListPlugin() {
           $$("#autorefresh-icon").html("autorenew");
           $$("#autorefresh-label").html("刷新");
           if (typeof(this.refresh_button_interval_id) != "undefined")
-            window.clearInterval(this.refresh_button_interval_id);
+            clearInterval(this.refresh_button_interval_id);
           if (typeof(this.show_refresh_level_timeout_id) != "undefined")
             clearInterval(this.show_refresh_level_timeout_id);
         } else {
