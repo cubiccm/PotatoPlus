@@ -1,3 +1,4 @@
+/* PJW Toolbar (Legacy) */
 #pjw-toolbar {
   font-size: 13px;
   position: fixed;
@@ -12,9 +13,11 @@
   opacity: 0.8;
   transition: left .3s ease-out, opacity .3s ease-out;
 }
+
 #pjw-toolbar-content {
   margin-left: 53px;
 }
+
 .about-proj {
   margin-top: 3px;
   font-size: 12px;
@@ -22,25 +25,6 @@
   clear: both;
 }
 
-.pjw-mini-button {
-  font-size: 14px; font-weight: bold;
-  border: 0; border-radius: 7px;
-  background-color: white; color: #63065f;
-  user-select: none; cursor: pointer;
-  padding: 1px 7px;
-  margin: 2px 5px;
-  transition: all .1s ease-in;
-}
-.pjw-mini-button:hover {
-  color: rgba(255, 155, 25, 1);
-  border-radius: 10px;
-  padding: 1px 10px;
-  margin: 2px;
-}
-.pjw-mini-button:active {
-  color: #c1c1c1;
-  background-color: rgba(255, 255, 255, .8);
-}
 #pjw-toolbar-collapse-bg {
   position: absolute;
   left: -1px;
@@ -54,9 +38,11 @@
   transition: background-color .2s ease-out;
   cursor: pointer;
 }
+
 #pjw-toolbar-collapse-bg:hover {
   background-color: rgba(255, 255, 255, .6);
 }
+
 #pjw-toolbar-collapse {
   background-color: white;
   cursor: pointer;
@@ -70,6 +56,29 @@
   border-radius: 50%;
   padding: 0;
   transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
+}
+
+/* PJW Mini Button */
+.pjw-mini-button {
+  font-size: 14px; font-weight: bold;
+  border: 0; border-radius: 7px;
+  background-color: white; color: #63065f;
+  user-select: none; cursor: pointer;
+  padding: 1px 7px;
+  margin: 2px 5px;
+  transition: all .1s ease-in;
+}
+
+.pjw-mini-button:hover {
+  color: #f37232;
+  border-radius: 10px;
+  padding: 1px 10px;
+  margin: 2px;
+}
+
+.pjw-mini-button:active {
+  color: #c1c1c1;
+  background-color: rgba(255, 255, 255, .8);
 }
 
 @font-face {
@@ -227,6 +236,7 @@ body * {
   text-align: center;
   margin: 2px 3px;
   color: var(--white) !important;
+  cursor: wait;
 }
 
 .Line {
@@ -282,6 +292,14 @@ body * {
 
 #pjw-welcome a:hover {
   color: rgba(255, 255, 255, 1) !important;
+}
+
+#pjw-logout-button {
+  color: darkred;
+}
+
+#pjw-logout-button:hover {
+  color: red;
 }
 
 

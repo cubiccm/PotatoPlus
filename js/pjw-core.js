@@ -3,7 +3,7 @@ window.potatojw_intl = function() {
 
   window.pjw_platform = "@platform@";
   if (window.pjw_platform[0] == "@")
-    window.pjw_platform = "General Plugin";
+    window.pjw_platform = "Chrome Extension";
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
@@ -27,7 +27,7 @@ window.potatojw_intl = function() {
     `);
     if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
     $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
-      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 3) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+      else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
       e.stopPropagation();
     });
     $$("#TopLink").children("img").remove();
@@ -46,9 +46,8 @@ window.potatojw_intl = function() {
   }
   if ($$("div#TopLink").length > 0)
     $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
-      <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatoplus')">GitHub</span>
       <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
-      <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
+      <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log("PotatoPlus v" + pjw_version + " by Limosity");
 
@@ -266,9 +265,9 @@ window.potatojw_intl = function() {
     }
 
     const mailing_list_html = `
-      <note>邀请您加入邮件列表，您可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
-      <div style="height: 30px; opacity: .8;">
+      <div style="display: flex; opacity: .8;">
         <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
+        <button class="pjw-mini-button" onclick="window.open('mailto:illimosity@gmail.com');">发送反馈邮件</button>
       </div>
     `;
 
@@ -277,14 +276,12 @@ window.potatojw_intl = function() {
         <heading>Hello, NJUer</heading>
         <p>PotatoPlus v0.2.3</p>
         <br>
-        ${mailing_list_html}
-        <br>
-        <p>${pjw_platform}</p>
         <div class="pjw-welcome-get-update">${update_html}</div>
-        <note>PotatoPlus ${pjw_version}
-          <a href="https://github.com/cubiccm/potatoplus/issues" target="_blank">在GitHub Issues提交反馈</a>
-          <a href="mailto:illimosity@gmail.com" target="_blank">通过邮件提交反馈</a>
-          <a href="https://t.me/limosity" target="_blank">Telegram: @limosity</a>
+        ${mailing_list_html}
+        <note>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version} (${pjw_platform})</a>
+          <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
+          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.debug('Email: illimosity@gmail.com  QQ: 476512742', 'love_hint');pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
         </note>
       </div>
     `;
