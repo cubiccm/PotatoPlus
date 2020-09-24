@@ -3,7 +3,7 @@ window.potatojw_intl = function() {
 
   window.pjw_platform = "@platform@";
   if (window.pjw_platform[0] == "@")
-    window.pjw_platform = "Chrome Extension";
+    window.pjw_platform = "General Plugin";
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
@@ -281,7 +281,7 @@ window.potatojw_intl = function() {
     const welcome_html = `
       <div id="pjw-welcome">
         <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.3</p>
+        <p>PotatoPlus v0.2.3 带来了进一步的视觉及交互更新：更为紧致的两栏式布局，更有效响应的浮动通知栏，以及更优雅的功能链接... 每一个角落都蔓延着心意。</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}

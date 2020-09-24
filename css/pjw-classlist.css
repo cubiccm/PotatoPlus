@@ -150,7 +150,11 @@
   order: 0;
   background: linear-gradient(200deg, rgba(99,6,95,.2) 0%, rgba(175,55,232,.2) 73%, rgba(255,71,152,.2) 100%);
   transition: background .2s ease-out;
-  flex-basis: 35%;
+  flex: 1 0 90%;
+}
+
+.two-column .pjw-class-container {
+  flex: 1 0 42%;
 }
 
 .pjw-class-container--compressed {
