@@ -281,14 +281,14 @@ window.potatojw_intl = function() {
     const welcome_html = `
       <div id="pjw-welcome">
         <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.3 带来了进一步的视觉及交互更新：更为紧致的两栏式布局，更有效响应的浮动通知栏，以及更优雅的功能链接... 每一个角落都蔓延着心意。</p>
+        <p>PotatoPlus v0.2.3 带来了进一步的视觉及交互更新：更为紧致的两栏式布局，更有效响应的浮动通知栏，以及更优雅的功能链接... 每一个角落都饱含着心意。</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
         <note>
           <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version} (${pjw_platform})</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
-          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.debug('Email: illimosity@gmail.com  QQ: 476512742', 'love_hint');pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
+          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
         </note>
       </div>
     `;

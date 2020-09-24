@@ -154,6 +154,7 @@ body * {
   border-radius: 18px 18px 0 0;
   background: none !important;
   display: block;
+  transition: background .12s ease-out;
 }
 
 #Nav > ul > li:hover {
@@ -162,7 +163,7 @@ body * {
 }
 
 #Nav > ul > li:active {
-  background: rgba(255, 255, 255, .6) !important;
+  background: rgba(255, 255, 255, .9) !important;
 }
 
 #Nav > ul > li > a {
