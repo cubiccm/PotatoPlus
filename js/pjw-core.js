@@ -19,6 +19,13 @@ window.potatojw_intl = function() {
   $$("head").prepend(head_metadata);
 
   // UI Improvement
+  if ($$("#Function").length) {
+    $$("#Function").addClass("light");
+    $$("#Function").find("li").on("click", (e) => {
+      window.location.href = $$(e.delegateTarget).children("a").attr("href");
+    });
+  }
+
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
       <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
@@ -286,6 +293,26 @@ window.potatojw_intl = function() {
       </div>
     `;
     $$(".Line").before(welcome_html);
+    $$(".Line").remove();
+    $$("table").find("tr").each((index, obj) => {
+      if ($$(obj).html().trim() == "")
+        $$(obj).remove();
+    });
+    $$("table").find("td[align=right] > b").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .75)",
+      "font-weight": "bold"
+    });
+    $$("table").find("td[align=left] > b").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .65)",
+      "font-weight": "normal"
+    });
+    $$("table").find("td[align=left] > b > a").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .65)",
+      "font-weight": "normal"
+    });
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {

@@ -188,6 +188,7 @@ body * {
   position: relative;
   left: 5px; top: 5px;
   opacity: 0.9;
+  display: inline-block;
 }
 
 #Header > #Logo > a {
@@ -246,7 +247,7 @@ body * {
 #pjw-welcome {
   width: 90%;
   max-width: 600px;
-  margin: 20px 5%;
+  margin: 20px min(5%, 25px);
   background: linear-gradient(-70deg, #ff6390, #9995ef);
   border-radius: 30px;
   color: rgba(255, 255, 255, .82) !important;
@@ -302,6 +303,85 @@ body * {
   color: red;
 }
 
+#Function.light {
+  background: rgba(0, 0, 0, .15);
+}
+
+#Function.light > ul > li {
+  background: rgba(255, 255, 255, .5);
+}
+
+#Function.light > ul > li > a {
+  color: rgba(0, 0, 0, .6) !important;
+}
+
+#Function.light > ul > li > a > img {
+  opacity: 1;
+}
+
+#Function {
+  border-radius: 18px;
+  background: rgba(0, 0, 0, .6);
+  margin: 25px !important;
+  padding: 10px;
+  transform: background 1.2s ease-in;
+}
+
+#Function > ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+#Function > ul > li {
+  border-radius: 8px;
+  padding: 20px 6px;
+  margin: 5px 3px;
+  transition: all .4s cubic-bezier(0, 1, 1, 1);
+  background: var(--black);
+  user-select: none;
+}
+
+#Function > ul > li:hover {
+  padding: 22px 0;
+  margin: 3px 9px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, .7);
+}
+
+#Function > ul > li:active {
+  transform: scale(1.05);
+  background: rgba(0, 0, 0, .9);
+}
+
+#Function > ul > li:hover > a {
+  color: var(--white) !important;
+  font-weight: bold;
+  text-decoration: none;
+  transform: scale(1.2);
+}
+
+#Function > ul > li:hover > a:after {
+  content: ">";
+  margin-left: 3px;
+  font-size: 12px;
+}
+
+#Function > ul > li > a {
+  color: var(--white) !important;
+  font-size: 120%;
+  transition: all .2s ease-out;
+}
+
+#Function > ul > li > a > img {
+  opacity: 0;
+  transition: all .17s ease-in;
+  width: 50%;
+}
+
+#Function > ul > li:hover > a > img {
+  transform: scale(1.1);
+}
 
 #potatojw_mask {
   display: none;

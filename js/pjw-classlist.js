@@ -521,13 +521,13 @@ function ClassListPlugin() {
         if (pos == 0) {
           return 0.5 + (keyword.length / str.length) / 2;
         } else if (pos != -1) {
-          return 0.3 + (keyword.length / str.length) / 2;
+          return 0.4 + (keyword.length / str.length) / 2;
         } else if (keyword.length == 2) {
           if (str.indexOf(keyword[1]) > str.indexOf(keyword[0]) 
             && str.indexOf(keyword[0]) != -1) {
             if (str.indexOf(keyword[0]) == 0) return 0.5;
-            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.1;
-            else return 0.3;
+            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.05;
+            else return 0.4;
           }
         }
         return 0;
@@ -650,6 +650,7 @@ function ClassListPlugin() {
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
+      this.handleResize();
       this.prepared_to_add = false;
       window.mdc.autoInit();
     }
@@ -963,9 +964,10 @@ function ClassListPlugin() {
     }
 
     handleResize() {
-      var width = this.dom.width();
-      if (width < 1050) this.dom.addClass("narrow-desktop");
-      else this.dom.removeClass("narrow-desktop");
+      var width = this.body.children(":eq(0)").width();
+      if (!width) width = this.body.width();
+      if (width < 600) this.body.addClass("narrow-desktop");
+      else this.body.removeClass("narrow-desktop");
     }
 
     getClassID(obj) {
@@ -1057,7 +1059,7 @@ function ClassListPlugin() {
             </div>
           </div>
         </div>
-        <div class="pjw-classlist-body"></div>
+        <div class="pjw-classlist-body narrow-desktop"></div>
         <div class="pjw-classlist-bottom">
           <p id="pjw-classlist-count">Loading...</p>
         </div>
