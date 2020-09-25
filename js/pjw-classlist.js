@@ -366,6 +366,7 @@ function ClassListPlugin() {
         e.data.target.select_button.prop("disabled", true);
         e.data.action(e).then(() => {}).catch(() => {}).finally(() => {
           e.data.target.select_button.prop("disabled", false);
+          e.data.target.list.refresh(false);
         });
       });
 

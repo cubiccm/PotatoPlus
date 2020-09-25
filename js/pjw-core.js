@@ -609,11 +609,9 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false);
             resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false);
             reject(res);
           }
         }).fail((res) => {
@@ -635,7 +633,7 @@ window.potatojw_intl = function() {
 
             // Prepare select button
             var classID = this.getClassID(td(5));
-            var select_status = classID == false ? "Full" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+            var select_status = classID == false ? "Selected" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
 
             // Construct class data
             data = {
@@ -720,11 +718,9 @@ window.potatojw_intl = function() {
               target.console.success(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             else
               target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false);
             resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false);
             reject(res);
           }
         }).fail((res) => {
@@ -849,11 +845,9 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false);
             resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false);
             reject(res);
           }
         }).fail((res) => {
