@@ -4631,7 +4631,7 @@ window.potatojw_intl = function() {
     $$("#academySelect > option:eq(0)").html("全部院系");
     $$("#academySelect > option:eq(0)").val("00");
     $$("#academySelect > option:eq(29)").after(`<option value="30">人工智能学院</option>`);
-    academySelectgroup.splice(30, 0, [$$(`<option value="302">人工智能</option>`)[0]]);
+    academySelectgroup.splice(30, 0, [$$(`<option value="301">计算机科学与技术（人工智能方向）</option>`)[0], $$(`<option value="302">人工智能</option>`)[0]]);
 
     list.selectors = {
       term: new PJWSelect("termList", "学期", list.heading.children(".pjw-classlist-selectors")),

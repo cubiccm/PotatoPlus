@@ -21,5 +21,10 @@
     "js/*",
     "css/*",
     "fonts/*"
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "update_url": "https://github.com/cubiccm/potatoplus/releases/latest/download/updates.json"
+    }
+  }
 }
