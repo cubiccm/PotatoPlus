@@ -624,6 +624,11 @@ window.potatojw_intl = function() {
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
         try {
+          if ($$("#comment").html().includes("现在是体育课补选阶段")) {
+            this.stage = "supp";
+          } else {
+            this.stage = "pre";
+          }
           var rows = $$(data).find("tbody").find("tr");
           rows.each((index, val) => {
             var td = (i) => ($$(val).children(`td:eq(${i})`));
@@ -633,7 +638,19 @@ window.potatojw_intl = function() {
 
             // Prepare select button
             var classID = this.getClassID(td(5));
-            var select_status = classID == false ? "Selected" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+            var select_status = "";
+            if (classID == false) {
+              select_status = "Selected";
+            } else {
+              if (this.stage == "supp") {
+                if (parseInt(td(3).html()) == parseInt(td(4).html()))
+                  select_status = "Full";
+                else
+                  select_status = "Select";
+              } else {
+                select_status = (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+              }
+            }
 
             // Construct class data
             data = {

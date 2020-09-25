@@ -3274,9 +3274,9 @@ function ClassListPlugin() {
       var width = this.body.children(":eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
-      if (body_width < 1100) this.body.removeClass("two-column");
+      if (body_width < 1250) this.body.removeClass("two-column");
       else this.body.addClass("two-column");
-      if (width < 600) this.body.addClass("narrow-desktop");
+      if (width < 750) this.body.addClass("narrow-desktop");
       else this.body.removeClass("narrow-desktop");
     }
 
@@ -4804,6 +4804,11 @@ window.potatojw_intl = function() {
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
         try {
+          if ($$("#comment").html().includes("现在是体育课补选阶段")) {
+            this.stage = "supp";
+          } else {
+            this.stage = "pre";
+          }
           var rows = $$(data).find("tbody").find("tr");
           rows.each((index, val) => {
             var td = (i) => ($$(val).children(`td:eq(${i})`));
@@ -4813,7 +4818,19 @@ window.potatojw_intl = function() {
 
             // Prepare select button
             var classID = this.getClassID(td(5));
-            var select_status = classID == false ? "Selected" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+            var select_status = "";
+            if (classID == false) {
+              select_status = "Selected";
+            } else {
+              if (this.stage == "supp") {
+                if (parseInt(td(3).html()) == parseInt(td(4).html()))
+                  select_status = "Full";
+                else
+                  select_status = "Select";
+              } else {
+                select_status = (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+              }
+            }
 
             // Construct class data
             data = {

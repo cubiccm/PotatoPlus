@@ -968,9 +968,9 @@ function ClassListPlugin() {
       var width = this.body.children(":eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
-      if (body_width < 1100) this.body.removeClass("two-column");
+      if (body_width < 1250) this.body.removeClass("two-column");
       else this.body.addClass("two-column");
-      if (width < 600) this.body.addClass("narrow-desktop");
+      if (width < 750) this.body.addClass("narrow-desktop");
       else this.body.removeClass("narrow-desktop");
     }
 
