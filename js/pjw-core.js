@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.2";
+    window.pjw_version = "0.2.3";
 
   window.$$ = jQuery.noConflict();
 
@@ -19,6 +19,13 @@ window.potatojw_intl = function() {
   $$("head").prepend(head_metadata);
 
   // UI Improvement
+  if ($$("#Function").length) {
+    $$("#Function").addClass("light");
+    $$("#Function").find("li").on("click", (e) => {
+      window.location.href = $$(e.delegateTarget).children("a").attr("href");
+    });
+  }
+
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
       <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
@@ -27,7 +34,7 @@ window.potatojw_intl = function() {
     `);
     if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
     $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
-      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 3) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+      else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
       e.stopPropagation();
     });
     $$("#TopLink").children("img").remove();
@@ -46,9 +53,8 @@ window.potatojw_intl = function() {
   }
   if ($$("div#TopLink").length > 0)
     $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
-      <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatoplus')">GitHub</span>
       <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
-      <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
+      <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log("PotatoPlus v" + pjw_version + " by Limosity");
 
@@ -266,30 +272,47 @@ window.potatojw_intl = function() {
     }
 
     const mailing_list_html = `
-      <note>邀请您加入邮件列表，您可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
-      <div style="height: 30px; opacity: .8;">
+      <div style="display: flex; opacity: .8;">
         <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
+        <button class="pjw-mini-button" onclick="window.open('mailto:illimosity@gmail.com');">发送反馈邮件</button>
       </div>
     `;
 
     const welcome_html = `
       <div id="pjw-welcome">
-        <p>PotatoPlus v0.2.2 更新了悦读经典课程补选页面的课程列表，并带来数项体验优化和错误修复。</p>
-        <hr>
-        <p>PotatoPlus v0.2 对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
+        <heading>Hello, NJUer</heading>
+        <p>PotatoPlus v0.2.3 带来了进一步的视觉及交互更新：更为紧致的两栏式布局，更有效响应的浮动通知栏，以及更优雅的功能链接... 每一个角落都饱含着心意。</p>
         <br>
-        ${mailing_list_html}
-        <br>
-        <p>${pjw_platform}</p>
         <div class="pjw-welcome-get-update">${update_html}</div>
-        <note>PotatoPlus ${pjw_version}
-          <a href="https://github.com/cubiccm/potatoplus/issues" target="_blank">在GitHub Issues提交反馈</a>
-          <a href="mailto:illimosity@gmail.com" target="_blank">通过邮件提交反馈</a>
-          <a href="https://t.me/limosity" target="_blank">Telegram: @limosity</a>
+        ${mailing_list_html}
+        <note>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version} (${pjw_platform})</a>
+          <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
+          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
         </note>
       </div>
     `;
     $$(".Line").before(welcome_html);
+    $$(".Line").remove();
+    $$("table").find("tr").each((index, obj) => {
+      if ($$(obj).html().trim() == "")
+        $$(obj).remove();
+    });
+    $$("table").find("td[align=right] > b").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .75)",
+      "font-weight": "bold"
+    });
+    $$("table").find("td[align=left] > b").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .65)",
+      "font-weight": "normal"
+    });
+    $$("table").find("td[align=left] > b > a").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .65)",
+      "font-weight": "normal"
+    });
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
@@ -586,10 +609,10 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {resolve(res);});
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {reject(res);});
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -601,6 +624,11 @@ window.potatojw_intl = function() {
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
         try {
+          if ($$("#comment").html().includes("现在是体育课补选阶段")) {
+            this.stage = "supp";
+          } else {
+            this.stage = "pre";
+          }
           var rows = $$(data).find("tbody").find("tr");
           rows.each((index, val) => {
             var td = (i) => ($$(val).children(`td:eq(${i})`));
@@ -610,7 +638,19 @@ window.potatojw_intl = function() {
 
             // Prepare select button
             var classID = this.getClassID(td(5));
-            var select_status = classID == false ? "Full" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+            var select_status = "";
+            if (classID == false) {
+              select_status = "Selected";
+            } else {
+              if (this.stage == "supp") {
+                if (parseInt(td(3).html()) == parseInt(td(4).html()))
+                  select_status = "Full";
+                else
+                  select_status = "Select";
+              } else {
+                select_status = (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+              }
+            }
 
             // Construct class data
             data = {
@@ -629,7 +669,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -675,12 +714,6 @@ window.potatojw_intl = function() {
 
     list.refresh();
   } else if (pjw_mode == "read") {
-    $$("#comment").css("line-height", "initial");
-    if (store.has("disable_read_mode")) {
-      $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.remove('disable_read_mode'); location.reload();">在此页面启用 PotatoPlus 并刷新</span><br><br>`);
-      return;
-    }
-    $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.set('disable_read_mode', true); location.reload();">在此页面禁用 PotatoPlus 并刷新</span><br><br>`);
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -702,10 +735,10 @@ window.potatojw_intl = function() {
               target.console.success(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             else
               target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {resolve(res);});
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {reject(res);});
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`选择失败：${res}`);
@@ -749,7 +782,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -830,10 +862,10 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {resolve(res);});
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false).then(() => {reject(res);});
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -875,7 +907,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -1200,75 +1231,7 @@ window.potatojw_intl = function() {
     $$("table#tbCourseList").remove();
     $$("body > div[align=center]").children("p").remove();
   } else if (pjw_mode == "dis_view") {
-    window.parse = function(data) {
-      $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
-      campusChange();
-      var table = $$("#ghost-div").find("#tbCourseList");
-      table.find("tbody").each((index, val) => {
-        if ($$(val).css("display") == "none") return;
-        $$(val).find("tr").each((index, val) => {
-          var res = this.parseClassTime($$(val).children("td:eq(4)").html());
-          data = {
-            title: $$(val).children("td:eq(2)").html(),
-            teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
-            info: [{
-              key: "课程编号",
-              val: $$(val).children('td:eq(0)').html()
-            }, {
-              key: "类别",
-              val: $$(val).children('td:eq(6)').html(),
-              hidden: true
-            }],
-            num_info: [{
-              num: parseInt($$(val).children("td:eq(3)").html()),
-              label: "学分"
-            }],
-            lesson_time: res.lesson_time,
-            time_detail: $$(val).children('td:eq(4)').html(),
-            class_weeknum: res.class_weeknum,
-            select_button: {
-              status: "Select",
-              text: `${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`,
-              action: (() => {})
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
-            }
-          };
-          list.add(data);
-        });
-      });
-      $$("#ghost-div").remove();
-    }
-
-    window.initList = function(campus = $$("#campusList").val()) {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWDisClassList($$("#courseList"));
-      }
-
-      $$.ajax({
-        type: "POST",
-        url: "/jiaowu/student/elective/courseList.do",
-        data: {
-          method: "discussGeneralCourse",
-          campus: campus
-        }
-      }).done(function(data) {
-        parse(data);
-      }).fail(function(data) {
-        console.log("无法获取数据：" + data);
-      });
-    };
-
-    class PJWDisClassList extends PJWClassList {
-      refresh() {
-        initList();
-      }
-    }
-    initList();
+    // To be implemented...
   } else if (pjw_mode == "open") {
     window.list = new PJWClassList($$("body"));
 

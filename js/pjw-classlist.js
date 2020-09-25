@@ -174,22 +174,32 @@ function ClassListPlugin() {
 
       function getSelectButton(data, get_inner = false) {
         if (!data.status) return "";
-        var label_text = "选择";
-        var icon_text = "add_task";
+        var label_text = "";
+        var icon_text = "";
         var disabled = "";
         var extra_classes = "";
 
-        if (data.status == "Deselect") {
-          label_text = "退选";
-          icon_text = "layers_clear";
-          extra_classes = "deselect";
-        } else if (data.status != "Select" && data.status !== true) {
-          disabled = "disabled";
-          icon_text = "block";
-          if (data.status == "Full")
+        // status: "Select", "Deselect", "Full", "Selected", false
+        switch (data.status) {
+          case "Select":
+            label_text = "选择";
+            icon_text = "add_task";
+            break;
+          case "Deselect":
+            label_text = "退选";
+            icon_text = "layers_clear";
+            extra_classes = "deselect";
+            break;
+          case "Full":
             label_text = "满员";
-          else if (data.status == "Selected")
+            disabled = "disabled";
+            icon_text = "block";
+            break;
+          case "Selected":
             label_text = "已选";
+            disabled = "disabled";
+            icon_text = "check_box";
+            break;
         }
 
         var info_text = "";
@@ -348,13 +358,16 @@ function ClassListPlugin() {
 
       var data = this.data;
 
-      // Set select button onclick event
+      // Set select button click event
       this.select_button.click({
         target: this,
-        button_target: this.select_button,
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
-        e.data.action(e).then(() => {}).catch(() => {});
+        e.data.target.select_button.prop("disabled", true);
+        e.data.action(e).then(() => {}).catch(() => {}).finally(() => {
+          e.data.target.select_button.prop("disabled", false);
+          e.data.target.list.refresh(false);
+        });
       });
 
       // Initialize DOM trace variables
@@ -509,13 +522,13 @@ function ClassListPlugin() {
         if (pos == 0) {
           return 0.5 + (keyword.length / str.length) / 2;
         } else if (pos != -1) {
-          return 0.3 + (keyword.length / str.length) / 2;
+          return 0.4 + (keyword.length / str.length) / 2;
         } else if (keyword.length == 2) {
           if (str.indexOf(keyword[1]) > str.indexOf(keyword[0]) 
             && str.indexOf(keyword[0]) != -1) {
             if (str.indexOf(keyword[0]) == 0) return 0.5;
-            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.1;
-            else return 0.3;
+            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.05;
+            else return 0.4;
           }
         }
         return 0;
@@ -638,6 +651,7 @@ function ClassListPlugin() {
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
+      this.handleResize();
       this.prepared_to_add = false;
       window.mdc.autoInit();
     }
@@ -830,7 +844,7 @@ function ClassListPlugin() {
         if (typeof(this.refresh_button_interval_id) != "undefined")
           clearInterval(this.refresh_button_interval_id);
         if (typeof(this.show_refresh_level_timeout_id) != "undefined")
-          clearInterval(this.show_refresh_level_timeout_id);
+          clearTimeout(this.show_refresh_level_timeout_id);
         this.toggleAutoRefresh(false);
         this.auto_refresh_frequency = 1.0;
         $$("#autorefresh-label").html("1.0x");
@@ -951,9 +965,13 @@ function ClassListPlugin() {
     }
 
     handleResize() {
-      var width = this.dom.width();
-      if (width < 1050) this.dom.addClass("narrow-desktop");
-      else this.dom.removeClass("narrow-desktop");
+      var width = this.body.children(":visible:eq(0)").width();
+      var body_width = this.body.width();
+      if (!width) width = body_width;
+      if (body_width < 1250) this.body.removeClass("two-column");
+      else this.body.addClass("two-column");
+      if (width < 750) this.body.addClass("narrow-desktop");
+      else this.body.removeClass("narrow-desktop");
     }
 
     getClassID(obj) {
@@ -1045,7 +1063,7 @@ function ClassListPlugin() {
             </div>
           </div>
         </div>
-        <div class="pjw-classlist-body"></div>
+        <div class="pjw-classlist-body narrow-desktop"></div>
         <div class="pjw-classlist-bottom">
           <p id="pjw-classlist-count">Loading...</p>
         </div>

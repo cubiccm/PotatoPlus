@@ -1,12 +1,13 @@
 window.PJWConsole = class {
-  show(stay = false) {
+  show(stay) {
     this.dom.css({
       "bottom": "10px",
       "opacity": "1"
     });
     if (typeof(this.stay_timeout) != "undefined")
       clearTimeout(this.stay_timeout);
-    if (stay) this.mouse_stay = true;
+    if (stay === true) this.mouse_stay = true;
+    else if (stay === false) this.mouse_stay = false;
     if (!this.mouse_stay)
       this.stay_timeout = setTimeout((target) => {
         target.hide();
@@ -55,8 +56,9 @@ window.PJWConsole = class {
       error: [true, "#b4220a"],
       warning: [true, "#b74710"],
       done: [true, "limegreen"],
+      favorite: [false, "rgb(255, 99, 144)"],
       info: [false],
-      alarm: [true],
+      alarm: [true, "#9eb314"],
       code: [false]
     };
     
@@ -87,6 +89,10 @@ window.PJWConsole = class {
 
   alert(text, channel = null) {
     this.log(text, channel, "alarm");
+  }
+
+  love(text, channel = null) {
+    this.log(text, channel, "favorite")
   }
 
   constructor() {
@@ -121,6 +127,7 @@ window.PJWConsole = class {
     }, function(e) {
       var target = e.data.target;
       target.mouse_stay = true;
+      target.setColor();
       clearTimeout(target.stay_timeout);
     });
 
@@ -131,7 +138,7 @@ window.PJWConsole = class {
       target.mouse_stay = false;
       target.stay_timeout = setTimeout((target) => {
         target.hide();
-      }, 600, target);
+      }, 200, target);
     });
   }
 }

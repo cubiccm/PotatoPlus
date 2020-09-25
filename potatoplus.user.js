@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.2
+// @version      0.2.3
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -50,7 +50,7 @@ function injectStyleFromString(str) {
     common: /commonCourseRenewList|commonRenew.do/i, // 通修课补选
 
     read_view: /elective\/readCourseList.do/i, // 经典导读读书班初选
-    dis_view: /elective\/freshman_discuss.do/i, // 导学、研讨、通识课初选
+    // dis_view: /elective\/freshman_discuss.do/i, // 导学、研讨、通识课初选
     open_view: /elective\/open.do/i, // 跨专业初选
 
     freshmen_exam: /student\/exam\/index.do/i, // 新生测试
@@ -84,7 +84,8 @@ injectStyleFromString(`/**
 /*# sourceMappingURL=material-components-web.min.css.map*/`);
 
 /* css/pjw.css */
-injectStyleFromString(`#pjw-toolbar {
+injectStyleFromString(`/* PJW Toolbar (Legacy) */
+#pjw-toolbar {
   font-size: 13px;
   position: fixed;
   left: 5%;
@@ -98,9 +99,11 @@ injectStyleFromString(`#pjw-toolbar {
   opacity: 0.8;
   transition: left .3s ease-out, opacity .3s ease-out;
 }
+
 #pjw-toolbar-content {
   margin-left: 53px;
 }
+
 .about-proj {
   margin-top: 3px;
   font-size: 12px;
@@ -108,25 +111,6 @@ injectStyleFromString(`#pjw-toolbar {
   clear: both;
 }
 
-.pjw-mini-button {
-  font-size: 14px; font-weight: bold;
-  border: 0; border-radius: 7px;
-  background-color: white; color: #63065f;
-  user-select: none; cursor: pointer;
-  padding: 1px 7px;
-  margin: 2px 5px;
-  transition: all .1s ease-in;
-}
-.pjw-mini-button:hover {
-  color: rgba(255, 155, 25, 1);
-  border-radius: 10px;
-  padding: 1px 10px;
-  margin: 2px;
-}
-.pjw-mini-button:active {
-  color: #c1c1c1;
-  background-color: rgba(255, 255, 255, .8);
-}
 #pjw-toolbar-collapse-bg {
   position: absolute;
   left: -1px;
@@ -140,9 +124,11 @@ injectStyleFromString(`#pjw-toolbar {
   transition: background-color .2s ease-out;
   cursor: pointer;
 }
+
 #pjw-toolbar-collapse-bg:hover {
   background-color: rgba(255, 255, 255, .6);
 }
+
 #pjw-toolbar-collapse {
   background-color: white;
   cursor: pointer;
@@ -156,6 +142,29 @@ injectStyleFromString(`#pjw-toolbar {
   border-radius: 50%;
   padding: 0;
   transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
+}
+
+/* PJW Mini Button */
+.pjw-mini-button {
+  font-size: 14px; font-weight: bold;
+  border: 0; border-radius: 7px;
+  background-color: white; color: #63065f;
+  user-select: none; cursor: pointer;
+  padding: 1px 7px;
+  margin: 2px 5px;
+  transition: all .1s ease-in;
+}
+
+.pjw-mini-button:hover {
+  color: #f37232;
+  border-radius: 10px;
+  padding: 1px 10px;
+  margin: 2px;
+}
+
+.pjw-mini-button:active {
+  color: #c1c1c1;
+  background-color: rgba(255, 255, 255, .8);
 }
 
 @font-face {
@@ -231,6 +240,7 @@ body * {
   border-radius: 18px 18px 0 0;
   background: none !important;
   display: block;
+  transition: background .12s ease-out;
 }
 
 #Nav > ul > li:hover {
@@ -239,7 +249,7 @@ body * {
 }
 
 #Nav > ul > li:active {
-  background: rgba(255, 255, 255, .6) !important;
+  background: rgba(255, 255, 255, .9) !important;
 }
 
 #Nav > ul > li > a {
@@ -265,6 +275,7 @@ body * {
   position: relative;
   left: 5px; top: 5px;
   opacity: 0.9;
+  display: inline-block;
 }
 
 #Header > #Logo > a {
@@ -313,6 +324,7 @@ body * {
   text-align: center;
   margin: 2px 3px;
   color: var(--white) !important;
+  cursor: wait;
 }
 
 .Line {
@@ -322,7 +334,7 @@ body * {
 #pjw-welcome {
   width: 90%;
   max-width: 600px;
-  margin: 20px 5%;
+  margin: 20px min(5%, 25px);
   background: linear-gradient(-70deg, #ff6390, #9995ef);
   border-radius: 30px;
   color: rgba(255, 255, 255, .82) !important;
@@ -370,6 +382,93 @@ body * {
   color: rgba(255, 255, 255, 1) !important;
 }
 
+#pjw-logout-button {
+  color: darkred;
+}
+
+#pjw-logout-button:hover {
+  color: red;
+}
+
+#Function.light {
+  background: rgba(0, 0, 0, .15);
+}
+
+#Function.light > ul > li {
+  background: rgba(255, 255, 255, .5);
+}
+
+#Function.light > ul > li > a {
+  color: rgba(0, 0, 0, .6) !important;
+}
+
+#Function.light > ul > li > a > img {
+  opacity: 1;
+}
+
+#Function {
+  border-radius: 18px;
+  background: rgba(0, 0, 0, .6);
+  margin: 25px !important;
+  padding: 10px;
+  transform: background 1.2s ease-in;
+}
+
+#Function > ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+#Function > ul > li {
+  border-radius: 8px;
+  padding: 20px 6px;
+  margin: 5px 3px;
+  transition: all .4s cubic-bezier(0, 1, 1, 1);
+  background: var(--black);
+  user-select: none;
+}
+
+#Function > ul > li:hover {
+  padding: 22px 0;
+  margin: 3px 9px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, .7);
+}
+
+#Function > ul > li:active {
+  transform: scale(1.05);
+  background: rgba(0, 0, 0, .9);
+}
+
+#Function > ul > li:hover > a {
+  color: var(--white) !important;
+  font-weight: bold;
+  text-decoration: none;
+  transform: scale(1.2);
+}
+
+#Function > ul > li:hover > a:after {
+  content: ">";
+  margin-left: 3px;
+  font-size: 12px;
+}
+
+#Function > ul > li > a {
+  color: var(--white) !important;
+  font-size: 120%;
+  transition: all .2s ease-out;
+}
+
+#Function > ul > li > a > img {
+  opacity: 0;
+  transition: all .17s ease-in;
+  width: 50%;
+}
+
+#Function > ul > li:hover > a > img {
+  transform: scale(1.1);
+}
 
 #potatojw_mask {
   display: none;
@@ -569,19 +668,20 @@ injectStyleFromString(`/* PJW ClassList */
 /* Body */
 
 .pjw-classlist-body {
-  margin: 0 5% 20px 5%;
-  width: 90%;
+  margin: 0 3% 20px 3%;
+  width: 94%;
   top: 20px;
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   opacity: 0;
 }
 
 .pjw-class-container {
   padding: 10px 30px;
   border-radius: 20px;
-  margin: 2px 0;
+  margin: 2px 4px;
   width: 100%;
   position: relative;
   justify-content: space-between;
@@ -591,6 +691,11 @@ injectStyleFromString(`/* PJW ClassList */
   order: 0;
   background: linear-gradient(200deg, rgba(99,6,95,.2) 0%, rgba(175,55,232,.2) 73%, rgba(255,71,152,.2) 100%);
   transition: background .2s ease-out;
+  flex: 1 0 90%;
+}
+
+.two-column .pjw-class-container {
+  flex: 1 0 42%;
 }
 
 .pjw-class-container--compressed {
@@ -623,6 +728,11 @@ injectStyleFromString(`/* PJW ClassList */
   flex-direction: column;
   justify-content: space-between;
   width: max(20%, 250px);
+}
+
+.pjw-classlist-body--condensed .pjw-class-info {
+  align-items: center;
+  flex-direction: row;
 }
 
 .pjw-class-container--compressed .pjw-class-info {
@@ -806,6 +916,10 @@ injectStyleFromString(`/* PJW ClassList */
   justify-content: space-evenly;
 }
 
+.pjw-classlist-body--condensed .pjw-class-sideinfo {
+  flex-direction: row;
+}
+
 .pjw-class-time-detail {
   color: rgba(0, 0, 0, .6);
 }
@@ -824,7 +938,7 @@ injectStyleFromString(`/* PJW ClassList */
 }
 
 .pjw-class-container--compressed .pjw-class-weeknum-bar {
-  width: 180px;
+  width: 150px;
   cursor: pointer;
 }
 
@@ -993,7 +1107,7 @@ injectStyleFromString(`/* PJW ClassList */
 
   z-index: 100;
   border-radius: 20px;
-  transition: all .4s ease-out;
+  transition: all .35s ease-out, filter .15s ease-in;
 
   display: flex;
   flex-direction: column;
@@ -1033,6 +1147,10 @@ injectStyleFromString(`/* PJW ClassList */
   color: #9eb314;
 }
 
+.pjw-console-icon.favorite {
+  color: rgb(255, 99, 144);
+}
+
 #pjw-console-history {
   width: 100%;
   max-height: 500px;
@@ -1068,7 +1186,7 @@ injectStyleFromString(`/* PJW ClassList */
 }
 .narrow-desktop .pjw-class-operation {
   flex-direction: column;
-  padding: 20px 0;
+  padding: 5px 0;
 }
 
 .pjw-classlist-bottom {
@@ -1246,14 +1364,15 @@ injectStyleFromString(`.pjw-filter-panel {
 
 /* js/pjw-console.js */
 window.PJWConsole = class {
-  show(stay = false) {
+  show(stay) {
     this.dom.css({
       "bottom": "10px",
       "opacity": "1"
     });
     if (typeof(this.stay_timeout) != "undefined")
       clearTimeout(this.stay_timeout);
-    if (stay) this.mouse_stay = true;
+    if (stay === true) this.mouse_stay = true;
+    else if (stay === false) this.mouse_stay = false;
     if (!this.mouse_stay)
       this.stay_timeout = setTimeout((target) => {
         target.hide();
@@ -1302,8 +1421,9 @@ window.PJWConsole = class {
       error: [true, "#b4220a"],
       warning: [true, "#b74710"],
       done: [true, "limegreen"],
+      favorite: [false, "rgb(255, 99, 144)"],
       info: [false],
-      alarm: [true],
+      alarm: [true, "#9eb314"],
       code: [false]
     };
     
@@ -1334,6 +1454,10 @@ window.PJWConsole = class {
 
   alert(text, channel = null) {
     this.log(text, channel, "alarm");
+  }
+
+  love(text, channel = null) {
+    this.log(text, channel, "favorite")
   }
 
   constructor() {
@@ -1368,6 +1492,7 @@ window.PJWConsole = class {
     }, function(e) {
       var target = e.data.target;
       target.mouse_stay = true;
+      target.setColor();
       clearTimeout(target.stay_timeout);
     });
 
@@ -1378,7 +1503,7 @@ window.PJWConsole = class {
       target.mouse_stay = false;
       target.stay_timeout = setTimeout((target) => {
         target.hide();
-      }, 600, target);
+      }, 200, target);
     });
   }
 }
@@ -2355,22 +2480,32 @@ function ClassListPlugin() {
 
       function getSelectButton(data, get_inner = false) {
         if (!data.status) return "";
-        var label_text = "选择";
-        var icon_text = "add_task";
+        var label_text = "";
+        var icon_text = "";
         var disabled = "";
         var extra_classes = "";
 
-        if (data.status == "Deselect") {
-          label_text = "退选";
-          icon_text = "layers_clear";
-          extra_classes = "deselect";
-        } else if (data.status != "Select" && data.status !== true) {
-          disabled = "disabled";
-          icon_text = "block";
-          if (data.status == "Full")
+        // status: "Select", "Deselect", "Full", "Selected", false
+        switch (data.status) {
+          case "Select":
+            label_text = "选择";
+            icon_text = "add_task";
+            break;
+          case "Deselect":
+            label_text = "退选";
+            icon_text = "layers_clear";
+            extra_classes = "deselect";
+            break;
+          case "Full":
             label_text = "满员";
-          else if (data.status == "Selected")
+            disabled = "disabled";
+            icon_text = "block";
+            break;
+          case "Selected":
             label_text = "已选";
+            disabled = "disabled";
+            icon_text = "check_box";
+            break;
         }
 
         var info_text = "";
@@ -2529,13 +2664,16 @@ function ClassListPlugin() {
 
       var data = this.data;
 
-      // Set select button onclick event
+      // Set select button click event
       this.select_button.click({
         target: this,
-        button_target: this.select_button,
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
-        e.data.action(e).then(() => {}).catch(() => {});
+        e.data.target.select_button.prop("disabled", true);
+        e.data.action(e).then(() => {}).catch(() => {}).finally(() => {
+          e.data.target.select_button.prop("disabled", false);
+          e.data.target.list.refresh(false);
+        });
       });
 
       // Initialize DOM trace variables
@@ -2690,13 +2828,13 @@ function ClassListPlugin() {
         if (pos == 0) {
           return 0.5 + (keyword.length / str.length) / 2;
         } else if (pos != -1) {
-          return 0.3 + (keyword.length / str.length) / 2;
+          return 0.4 + (keyword.length / str.length) / 2;
         } else if (keyword.length == 2) {
           if (str.indexOf(keyword[1]) > str.indexOf(keyword[0]) 
             && str.indexOf(keyword[0]) != -1) {
             if (str.indexOf(keyword[0]) == 0) return 0.5;
-            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.1;
-            else return 0.3;
+            else if (/^[a-zA-Z]+$/.test(keyword)) return 0.05;
+            else return 0.4;
           }
         }
         return 0;
@@ -2819,6 +2957,7 @@ function ClassListPlugin() {
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
+      this.handleResize();
       this.prepared_to_add = false;
       window.mdc.autoInit();
     }
@@ -2947,7 +3086,7 @@ function ClassListPlugin() {
       }
     }
 
-    refresh(hard_load = false, disable_log = false) {
+    refresh(hard_load = false) {
       if (hard_load) {
         this.clear();
         this.body.css("transition", "");
@@ -2957,7 +3096,6 @@ function ClassListPlugin() {
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
-        if (disable_log) return;
         if (this.class_data.length == 0)
           $$("#pjw-classlist-count").html(`No class found : (`);
         else if (this.class_data.length == 1)
@@ -3009,8 +3147,10 @@ function ClassListPlugin() {
     autoRefreshButtonEvent(status) {
       if ($$("#autorefresh-switch").hasClass("off")) return;
       if (status) {
+        if (typeof(this.refresh_button_interval_id) != "undefined")
+          clearInterval(this.refresh_button_interval_id);
         if (typeof(this.show_refresh_level_timeout_id) != "undefined")
-          clearInterval(this.show_refresh_level_timeout_id);
+          clearTimeout(this.show_refresh_level_timeout_id);
         this.toggleAutoRefresh(false);
         this.auto_refresh_frequency = 1.0;
         $$("#autorefresh-label").html("1.0x");
@@ -3078,7 +3218,7 @@ function ClassListPlugin() {
             if ($$("#autorefresh-switch").hasClass("off")) return;
 
             $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(255, 109, 75))");
-            target.refresh(false, true).then(() => {
+            target.refresh(false).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(16, 141, 255))");
               target.console.debug("自动刷新计数：" + auto_refresh_count++, "auto-refresh-count");
@@ -3102,7 +3242,7 @@ function ClassListPlugin() {
           $$("#autorefresh-icon").html("autorenew");
           $$("#autorefresh-label").html("刷新");
           if (typeof(this.refresh_button_interval_id) != "undefined")
-            window.clearInterval(this.refresh_button_interval_id);
+            clearInterval(this.refresh_button_interval_id);
           if (typeof(this.show_refresh_level_timeout_id) != "undefined")
             clearInterval(this.show_refresh_level_timeout_id);
         } else {
@@ -3131,9 +3271,13 @@ function ClassListPlugin() {
     }
 
     handleResize() {
-      var width = this.dom.width();
-      if (width < 1050) this.dom.addClass("narrow-desktop");
-      else this.dom.removeClass("narrow-desktop");
+      var width = this.body.children(":visible:eq(0)").width();
+      var body_width = this.body.width();
+      if (!width) width = body_width;
+      if (body_width < 1250) this.body.removeClass("two-column");
+      else this.body.addClass("two-column");
+      if (width < 750) this.body.addClass("narrow-desktop");
+      else this.body.removeClass("narrow-desktop");
     }
 
     getClassID(obj) {
@@ -3225,7 +3369,7 @@ function ClassListPlugin() {
             </div>
           </div>
         </div>
-        <div class="pjw-classlist-body"></div>
+        <div class="pjw-classlist-body narrow-desktop"></div>
         <div class="pjw-classlist-bottom">
           <p id="pjw-classlist-count">Loading...</p>
         </div>
@@ -4041,9 +4185,9 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.2";
+  window.pjw_version = "0.2.3";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.2";
+    window.pjw_version = "0.2.3";
 
   window.$$ = jQuery.noConflict();
 
@@ -4055,6 +4199,13 @@ window.potatojw_intl = function() {
   $$("head").prepend(head_metadata);
 
   // UI Improvement
+  if ($$("#Function").length) {
+    $$("#Function").addClass("light");
+    $$("#Function").find("li").on("click", (e) => {
+      window.location.href = $$(e.delegateTarget).children("a").attr("href");
+    });
+  }
+
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
       <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
@@ -4063,7 +4214,7 @@ window.potatojw_intl = function() {
     `);
     if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
     $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
-      else {window.click_count = 1;setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 3) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+      else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
       e.stopPropagation();
     });
     $$("#TopLink").children("img").remove();
@@ -4082,9 +4233,8 @@ window.potatojw_intl = function() {
   }
   if ($$("div#TopLink").length > 0)
     $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
-      <span class="pjw-mini-button" onclick="window.open('https://github.com/cubiccm/potatoplus')">GitHub</span>
       <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
-      <span class="pjw-mini-button" style="color: darkred;" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
+      <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log("PotatoPlus v" + pjw_version + " by Limosity");
 
@@ -4302,30 +4452,47 @@ window.potatojw_intl = function() {
     }
 
     const mailing_list_html = `
-      <note>邀请您加入邮件列表，您可根据偏好选择接收各类关于 PotatoPlus 的信息。</note>
-      <div style="height: 30px; opacity: .8;">
+      <div style="display: flex; opacity: .8;">
         <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
+        <button class="pjw-mini-button" onclick="window.open('mailto:illimosity@gmail.com');">发送反馈邮件</button>
       </div>
     `;
 
     const welcome_html = `
       <div id="pjw-welcome">
-        <p>PotatoPlus v0.2.2 更新了悦读经典课程补选页面的课程列表，并带来数项体验优化和错误修复。</p>
-        <hr>
-        <p>PotatoPlus v0.2 对大量功能进行重构，带来了全新视觉的课程列表，辅以新增的快速搜索及重新设计的过滤器和自动刷新组件；更有附着在页面底部可自由浮现的消息面板，让信息反馈更加简单有效。此外，教务网的各处也都浓妆艳抹，与新面貌的课程列表融为一体。 </p>
+        <heading>Hello, NJUer</heading>
+        <p>PotatoPlus v0.2.3 带来了进一步的视觉及交互更新：更为紧致的两栏式布局，更有效响应的浮动通知栏，以及更优雅的功能链接... 每一个角落都饱含着心意。</p>
         <br>
-        ${mailing_list_html}
-        <br>
-        <p>${pjw_platform}</p>
         <div class="pjw-welcome-get-update">${update_html}</div>
-        <note>PotatoPlus ${pjw_version}
-          <a href="https://github.com/cubiccm/potatoplus/issues" target="_blank">在GitHub Issues提交反馈</a>
-          <a href="mailto:illimosity@gmail.com" target="_blank">通过邮件提交反馈</a>
-          <a href="https://t.me/limosity" target="_blank">Telegram: @limosity</a>
+        ${mailing_list_html}
+        <note>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version} (${pjw_platform})</a>
+          <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
+          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
         </note>
       </div>
     `;
     $$(".Line").before(welcome_html);
+    $$(".Line").remove();
+    $$("table").find("tr").each((index, obj) => {
+      if ($$(obj).html().trim() == "")
+        $$(obj).remove();
+    });
+    $$("table").find("td[align=right] > b").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .75)",
+      "font-weight": "bold"
+    });
+    $$("table").find("td[align=left] > b").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .65)",
+      "font-weight": "normal"
+    });
+    $$("table").find("td[align=left] > b > a").css({
+      "font-size": "14px",
+      "color": "rgba(0, 0, 0, .65)",
+      "font-weight": "normal"
+    });
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
@@ -4622,10 +4789,10 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {resolve(res);});
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {reject(res);});
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -4637,6 +4804,11 @@ window.potatojw_intl = function() {
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
         try {
+          if ($$("#comment").html().includes("现在是体育课补选阶段")) {
+            this.stage = "supp";
+          } else {
+            this.stage = "pre";
+          }
           var rows = $$(data).find("tbody").find("tr");
           rows.each((index, val) => {
             var td = (i) => ($$(val).children(`td:eq(${i})`));
@@ -4646,7 +4818,19 @@ window.potatojw_intl = function() {
 
             // Prepare select button
             var classID = this.getClassID(td(5));
-            var select_status = classID == false ? "Full" : (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+            var select_status = "";
+            if (classID == false) {
+              select_status = "Selected";
+            } else {
+              if (this.stage == "supp") {
+                if (parseInt(td(3).html()) == parseInt(td(4).html()))
+                  select_status = "Full";
+                else
+                  select_status = "Select";
+              } else {
+                select_status = (td(5).children("a").html() == "选择" ? "Select" : "Deselect");
+              }
+            }
 
             // Construct class data
             data = {
@@ -4665,7 +4849,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -4711,12 +4894,6 @@ window.potatojw_intl = function() {
 
     list.refresh();
   } else if (pjw_mode == "read") {
-    $$("#comment").css("line-height", "initial");
-    if (store.has("disable_read_mode")) {
-      $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.remove('disable_read_mode'); location.reload();">在此页面启用 PotatoPlus 并刷新</span><br><br>`);
-      return;
-    }
-    $$("#comment").prepend(`<span class="pjw-mini-button" onclick="store.set('disable_read_mode', true); location.reload();">在此页面禁用 PotatoPlus 并刷新</span><br><br>`);
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -4738,10 +4915,10 @@ window.potatojw_intl = function() {
               target.console.success(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             else
               target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {resolve(res);});
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {reject(res);});
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`选择失败：${res}`);
@@ -4785,7 +4962,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -4866,10 +5042,10 @@ window.potatojw_intl = function() {
         }).done(function(res) {
           if ($$(res).is("#successMsg")) {
             target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {resolve(res);});
+            resolve(res);
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
-            target.refresh(false, true).then(() => {reject(res);});
+            reject(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
@@ -4911,7 +5087,6 @@ window.potatojw_intl = function() {
                 text: `${parseInt(td(5).html())}/${parseInt(td(4).html())}`,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
-                    e.data.target.select_button.prop("disabled", true);
                     e.data.target.list.select(classID, e.data.target.data).then(() => {
                       resolve();
                     }).catch((res) => {
@@ -5236,75 +5411,7 @@ window.potatojw_intl = function() {
     $$("table#tbCourseList").remove();
     $$("body > div[align=center]").children("p").remove();
   } else if (pjw_mode == "dis_view") {
-    window.parse = function(data) {
-      $$("body").append("<div id='ghost-div' style='display:none;'>" + data + "</div>");
-      campusChange();
-      var table = $$("#ghost-div").find("#tbCourseList");
-      table.find("tbody").each((index, val) => {
-        if ($$(val).css("display") == "none") return;
-        $$(val).find("tr").each((index, val) => {
-          var res = this.parseClassTime($$(val).children("td:eq(4)").html());
-          data = {
-            title: $$(val).children("td:eq(2)").html(),
-            teachers: this.parseTeacherNames($$(val).children("td:eq(5)").html()),
-            info: [{
-              key: "课程编号",
-              val: $$(val).children('td:eq(0)').html()
-            }, {
-              key: "类别",
-              val: $$(val).children('td:eq(6)').html(),
-              hidden: true
-            }],
-            num_info: [{
-              num: parseInt($$(val).children("td:eq(3)").html()),
-              label: "学分"
-            }],
-            lesson_time: res.lesson_time,
-            time_detail: $$(val).children('td:eq(4)').html(),
-            class_weeknum: res.class_weeknum,
-            select_button: {
-              status: "Select",
-              text: `${$$(val).children("td:eq(8)").html()}/${$$(val).children("td:eq(7)").html()}`,
-              action: (() => {})
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
-            }
-          };
-          list.add(data);
-        });
-      });
-      $$("#ghost-div").remove();
-    }
-
-    window.initList = function(campus = $$("#campusList").val()) {
-      if (typeof(list) != "undefined") {
-        list.clear();
-      } else {
-        window.list = new PJWDisClassList($$("#courseList"));
-      }
-
-      $$.ajax({
-        type: "POST",
-        url: "/jiaowu/student/elective/courseList.do",
-        data: {
-          method: "discussGeneralCourse",
-          campus: campus
-        }
-      }).done(function(data) {
-        parse(data);
-      }).fail(function(data) {
-        console.log("无法获取数据：" + data);
-      });
-    };
-
-    class PJWDisClassList extends PJWClassList {
-      refresh() {
-        initList();
-      }
-    }
-    initList();
+    // To be implemented...
   } else if (pjw_mode == "open") {
     window.list = new PJWClassList($$("body"));
 
