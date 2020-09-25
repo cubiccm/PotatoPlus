@@ -965,7 +965,7 @@ function ClassListPlugin() {
     }
 
     handleResize() {
-      var width = this.body.children(":eq(0)").width();
+      var width = this.body.children(":visible:eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
       if (body_width < 1250) this.body.removeClass("two-column");
