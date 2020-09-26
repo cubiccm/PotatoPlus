@@ -223,20 +223,20 @@ function ClassListPlugin() {
         else return `
           <div class="pjw-class-comment-button alter">
             <div class="pjw-class-comment-button__container">
-              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
+              <div class="material-icons-round pjw-class-comment-icon">info</div>
               <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
             </div>
           </div>`;
-        /*
-        else return `
-          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
-            <div class="mdc-button__ripple"></div>
-            <div class="pjw-class-comment-button__container">
-              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
-              <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
-            </div>
-          </button>`;
-        */
+        
+        // else return `
+        //   <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
+        //     <div class="mdc-button__ripple"></div>
+        //     <div class="pjw-class-comment-button__container">
+        //       <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
+        //       <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
+        //     </div>
+        //   </button>`;
+        
       }
 
       switch(attr) {
@@ -346,7 +346,49 @@ function ClassListPlugin() {
     intl() {
       if (this.initialized) return;
       this.initialized = true;
-      this.set(this.data);
+
+      var data = this.data;
+      (() => {
+        if (this.data.classID && this.data.classID[0] != "#") {
+          for (var item of class_lib) {
+            if (item.teachingClassID == this.data.classID) {
+              data.full_data = item; break;
+            }
+          }
+        } else if (this.data.course_number) {
+          for (var item of class_lib) {
+            if (item.courseNumber == this.data.course_number && item.teacherName == this.data.teachers.join(",")) {
+              data.full_data = item;
+              data.classID = item.teachingClassID;
+              break;
+            }
+          }
+        }
+
+        if (data.full_data) {
+          if (!data.num_info.map((item) => (item.label)).includes("学时") && data.full_data.hours != null && data.full_data.hours != "0")
+            data.num_info = data.num_info.concat({
+              label: "学时",
+              num: parseInt(data.full_data.hours)
+            });
+          if (!data.info.map((item) => (item.key)).includes("课程编号") && data.full_data.courseNumber)
+            data.info = data.info.concat({
+              key: "课程编号",
+              val: data.full_data.courseNumber
+            });
+          if (!data.info.map((item) => (item.key)).includes("开课院系") && data.full_data.departmentName)
+            data.info = data.info.concat({
+              key: "开课院系",
+              val: data.full_data.departmentName,
+              hidden: true
+            });
+          if ((!data.time_detail || data.time_detail == "") && data.full_data.teachingPlace)
+            data.time_detail = data.full_data.teachingPlace;
+        }
+
+      })();
+      
+      this.set(data);
 
       this.info = this.dom.children(".pjw-class-info");
       this.sub = this.dom.children(".pjw-class-sub");
@@ -355,8 +397,6 @@ function ClassListPlugin() {
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
-
-      var data = this.data;
 
       // Set select button click event
       this.select_button.click({
@@ -368,6 +408,21 @@ function ClassListPlugin() {
           e.data.target.select_button.prop("disabled", false);
           e.data.target.list.refresh(false);
         });
+      });
+
+      // Set comment button click event
+      this.comment_button.click({
+        target: this,
+      }, (e) => {
+        var data = e.data.target.data.full_data;
+        if (!data) return;
+        console.log(data);
+        e.data.target.list.console.info(`> xk.nju.edu.cn 参考信息<br>
+          校区：${data.campus}<br>
+          上课地点：${data.teachingPlace}<br>
+          课程号：${data.courseNumber}<br>
+          开课院系：${data.departmentName}<br>
+          English: ${data.engCourseName} (by ${data.engTeacherName})`);
       });
 
       // Initialize DOM trace variables
@@ -386,7 +441,7 @@ function ClassListPlugin() {
       this.dom.on("click", null, {
         target: this
       }, (e) => {
-        if ($$(e.target).parent().hasClass("mdc-button")) return;
+        if ($$(e.target).parent().hasClass("mdc-button") || $$(e.target).parent().hasClass("pjw-class-comment-button__container")) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
         else
@@ -968,10 +1023,11 @@ function ClassListPlugin() {
       var width = this.body.children(":visible:eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
-      if (body_width < 1250) this.body.removeClass("two-column");
+      if (body_width < 1450) this.body.removeClass("two-column");
       else this.body.addClass("two-column");
-      if (width < 750) this.body.addClass("narrow-desktop");
+      if (width < 700) this.body.addClass("narrow-desktop");
       else this.body.removeClass("narrow-desktop");
+      setTimeout((t) => {t.handleResize();}, 60, this);
     }
 
     getClassID(obj) {

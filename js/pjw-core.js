@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.3.1";
+    window.pjw_version = "0.2.3.2";
 
   window.$$ = jQuery.noConflict();
 
@@ -378,6 +378,7 @@ window.potatojw_intl = function() {
             data = {
               title: td(1).html(),
               teachers: this.parseTeacherNames(td(7).html()),
+              course_number: this.parseClassNumber(td(0)),
               info: [{
                 key: "课程编号",
                 val: this.parseClassNumber(td(0))
@@ -663,7 +664,7 @@ window.potatojw_intl = function() {
                 label: "节"
               }],
               lesson_time: res.lesson_time,
-              time_detail: td(1).html(),
+              time_detail: "",
               select_button: {
                 status: select_status,
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
@@ -765,6 +766,7 @@ window.potatojw_intl = function() {
               classID: classID,
               title: td(1).html(),
               teachers: this.parseTeacherNames(td(2).html()),
+              course_number: td(0).html(),
               info: [{
                 key: "类别",
                 val: td(3).html()

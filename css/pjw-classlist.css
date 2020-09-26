@@ -425,6 +425,7 @@
 }
 
 .pjw-class-bignum {
+  white-space: nowrap;
   padding: 0 10px;
   display: flex;
   flex-direction: column;
