@@ -80,12 +80,12 @@ function ClassListPlugin() {
         return accu;
       }
 
-      function getClassInfo(content) {
+      function getClassInfo(content, classID) {
         var appear_accu = "", hidden_accu = "";
         for (var item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=0');">${item.val}</span>`;
+              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');">${item.val}</span>`;
             }
             if (item.val == "") continue;
             if (!item.hidden)
@@ -223,7 +223,7 @@ function ClassListPlugin() {
         else return `
           <div class="pjw-class-comment-button alter">
             <div class="pjw-class-comment-button__container">
-              <div class="material-icons-round pjw-class-comment-icon">info</div>
+              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
               <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
             </div>
           </div>`;
@@ -252,7 +252,7 @@ function ClassListPlugin() {
 
         case "info":
           if ("info" in data)
-            return getClassInfo(data.info);
+            return getClassInfo(data.info, data.classID || "0");
           else return "";
 
         case "numinfo":
@@ -348,45 +348,6 @@ function ClassListPlugin() {
       this.initialized = true;
 
       var data = this.data;
-      (() => {
-        if (this.data.classID && this.data.classID[0] != "#") {
-          for (var item of class_lib) {
-            if (item.teachingClassID == this.data.classID) {
-              data.full_data = item; break;
-            }
-          }
-        } else if (this.data.course_number) {
-          for (var item of class_lib) {
-            if (item.courseNumber == this.data.course_number && item.teacherName == this.data.teachers.join(",")) {
-              data.full_data = item;
-              data.classID = item.teachingClassID;
-              break;
-            }
-          }
-        }
-
-        if (data.full_data) {
-          if (!data.num_info.map((item) => (item.label)).includes("学时") && data.full_data.hours != null && data.full_data.hours != "0")
-            data.num_info = data.num_info.concat({
-              label: "学时",
-              num: parseInt(data.full_data.hours)
-            });
-          if (!data.info.map((item) => (item.key)).includes("课程编号") && data.full_data.courseNumber)
-            data.info = data.info.concat({
-              key: "课程编号",
-              val: data.full_data.courseNumber
-            });
-          if (!data.info.map((item) => (item.key)).includes("开课院系") && data.full_data.departmentName)
-            data.info = data.info.concat({
-              key: "开课院系",
-              val: data.full_data.departmentName,
-              hidden: true
-            });
-          if ((!data.time_detail || data.time_detail == "") && data.full_data.teachingPlace)
-            data.time_detail = data.full_data.teachingPlace;
-        }
-
-      })();
       
       this.set(data);
 
@@ -410,21 +371,6 @@ function ClassListPlugin() {
         });
       });
 
-      // Set comment button click event
-      this.comment_button.click({
-        target: this,
-      }, (e) => {
-        var data = e.data.target.data.full_data;
-        if (!data) return;
-        console.log(data);
-        e.data.target.list.console.info(`> xk.nju.edu.cn 参考信息<br>
-          校区：${data.campus}<br>
-          上课地点：${data.teachingPlace}<br>
-          课程号：${data.courseNumber}<br>
-          开课院系：${data.departmentName}<br>
-          English: ${data.engCourseName} (by ${data.engTeacherName})`);
-      });
-
       // Initialize DOM trace variables
       this.display = false;
       this.priority = 0;
@@ -441,6 +387,7 @@ function ClassListPlugin() {
       this.dom.on("click", null, {
         target: this
       }, (e) => {
+        if (window.getSelection().toString() != "") return;
         if ($$(e.target).parent().hasClass("mdc-button") || $$(e.target).parent().hasClass("pjw-class-comment-button__container")) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
@@ -1329,5 +1276,88 @@ function ClassListPlugin() {
       this.list = this.dom.children(".mdc-menu-surface").children(".pjw-select-list");
       this.obj.selectedIndex = select_index;
     }
-  }
+  };
+
+  /*
+    MiniClass Data Format: 
+    data = {
+      title: <String>,
+      note: <String>,
+      num_info: [{
+        num: <Integer>,
+        label: <String>
+      }],
+      button: [{
+        icon: <String>,
+        text: <String>,
+        action: <Function>
+      }]
+    }
+  */
+
+  window.PJWMiniClass = class {
+    getNumInfo(data) {
+      var html = "";
+      for (var item of data) {
+        html += `<div class="pjw-miniclass-num">
+        <span class="label">${item.label}</span>
+        <span class="num">${item.hidden ? `<span class="material-icons-round click-to-show" data-value="${item.num}">visibility_off</span>`: item.num}</span>
+        </div>`;
+      }
+      return html;
+    }
+
+    constructor(data) {
+      var class_html = `
+        <div class="pjw-miniclass">
+          <div class="pjw-miniclass-index">${data.index}</div>
+          <div class="pjw-miniclass-info">
+            <div class="pjw-miniclass-title">${data.title || ""}</div>
+            <div class="pjw-miniclass-note">${data.note || ""}</div>
+          </div>
+          <div class="pjw-miniclass-sideinfo">
+            <div class="pjw-miniclass-num">
+              ${this.getNumInfo(data.num_info)}
+            </div>
+          </div>
+          <div class="pjw-miniclass-operation">
+            <div class="mdc-button pjw-miniclass-button pjw-miniclass-add-to-calc" data-mdc-auto-init="MDCRipple" data-index="${data.index}" data-status="add">
+              <div class="mdc-button__ripple"></div>
+              <div class="pjw-miniclass-button__inner">
+                <div class="material-icons-round pjw-miniclass-button__icon">calculate</div>
+                <div class="mdc-button__label pjw-miniclass-button__label">添加</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      this.data = data;
+      this.dom = $$(class_html);
+    }
+  };
+
+  window.PJWMiniList = class {
+    add(data) {
+      data.index = this.class_data.length + 1;
+      var new_class = new PJWMiniClass(data);
+      this.body.append(new_class.dom);
+      this.class_data.push(new_class);
+    }
+
+    constructor() {
+      var list_html = `
+      <div class="pjw-minilist">
+        <div class="pjw-minilist-heading"></div>
+        <div class="pjw-minilist-body"></div>
+        <div class="pjw-classlist-bottom">
+          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
+        </div>
+      </div>`;
+
+      this.dom = $$(list_html);
+      this.body = this.dom.children(".pjw-minilist-body");
+
+      this.class_data = [];
+    }
+  };
 }

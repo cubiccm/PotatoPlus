@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.3.2";
+    window.pjw_version = "0.2.4";
 
   window.$$ = jQuery.noConflict();
 
@@ -67,7 +67,7 @@ window.potatojw_intl = function() {
   }
 
   var filter_mode_list = {"major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true};
 
   const custom_toolbar_html = {
     freshmen_exam: `
@@ -85,11 +85,6 @@ window.potatojw_intl = function() {
       <label for="solve_captcha">验证码识别</label>
       <input type="checkbox" id="share_stats" class="login_settings" checked="checked">
       <label for="share_stats">发送匿名统计数据</label>
-    `,
-    grade_info: `
-      <input type="checkbox" id="hide_grade" class="grade_info_settings" checked="checked">
-      <label for="hide_grade">默认隐藏成绩</label>
-      <span id="show_all_grade" class="pjw-mini-button">显示全部成绩</span>
     `,
     filter: `
       <div id="filter-control-bar">
@@ -273,15 +268,15 @@ window.potatojw_intl = function() {
 
     const mailing_list_html = `
       <div style="display: flex; opacity: .8;">
-        <button class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</button>
-        <button class="pjw-mini-button" onclick="window.open('mailto:illimosity@gmail.com');">发送反馈邮件</button>
+        <div class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</div>
+        <div class="pjw-mini-button" onclick="window.open('mailto:illimosity@gmail.com');">发送反馈邮件</div>
       </div>
     `;
 
     const welcome_html = `
       <div id="pjw-welcome">
         <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.3 带来了进一步的视觉及交互更新：更为紧致的两栏式布局，更有效响应的浮动通知栏，以及更优雅的功能链接... 每一个角落都饱含着心意。</p>
+        <p>PotatoPlus v0.2.4 带来了简单易用的<a href="/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList">GPA计算器</a>和数项小改进。</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
@@ -664,7 +659,7 @@ window.potatojw_intl = function() {
                 label: "节"
               }],
               lesson_time: res.lesson_time,
-              time_detail: "",
+              time_detail: td(1).html(),
               select_button: {
                 status: select_status,
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
@@ -1665,63 +1660,149 @@ window.potatojw_intl = function() {
       fillCAPTCHA();
     });
   } else if (pjw_mode == "grade_info") {
-    function hideGrade() {
-      var targ = $$("table.TABLE_BODY:eq(0) > tbody > tr:gt(0)").find("td:eq(6)");
-      targ.each(function() {
-        var t = $$(this);
-        if (t.children("ul").length == 0) {
-          var orig = t.html();
-          t.html("");
-          t.append("<ul></ul>");
-          t.children("ul").html(orig);
-        }
-        t = t.children("ul");
-        t.attr("data-grade", t.html());
-        t.attr("data-grade-color", t.css("color"));
-        t.attr("class", "grade-label");
-        t.html("***");
-        t.css("color", "black");
-        t.css("cursor", "pointer");
-        t.css("user-select", "none");
-        t.on("click", function() {
-          t.html(t.attr("data-grade"));
-          t.css("color", t.attr("data-grade-color"));
-          t.css("cursor", "auto");
-          t.css("font-weight", "bold");
-          t.css("user-select", "auto");
+    window.pconsole = new PJWConsole();
+
+    window.list = new PJWMiniList();
+    list.dom.prependTo($$("td[valign=top][align=left]"));
+    list.dom.after(`<div class="pjw-mini-button" onclick='$$("table.TABLE_BODY").css("display", "table");'>显示成绩表格</div>`)
+
+    initGradeList = () => {
+      $$(".click-to-show").on("click", (e) => {
+        e.stopPropagation();
+        var target = $$(e.delegateTarget);
+        target.parent().html(target.attr("data-value"));
+      });
+
+      function showGrade() {
+        $$(".click-to-show").click();
+      }
+
+      $$(".pjw-minilist-heading").html(`
+        <div>
+          <input type="checkbox" id="hide-grade" class="grade_info_settings" checked="checked">
+          <label for="hide-grade">默认隐藏成绩</label>
+          <span id="show-all-grade" class="pjw-mini-button">显示全部成绩</span>
+        </div>
+        <div>
+          <span id="average-score">PotatoPlus GPA计算器</span>
+          <span id="calc-all-grade" class="pjw-mini-button">计算全部</span>
+          <span id="remove-all-grade" class="pjw-mini-button">移除全部</span>
+        </div>
+      `);
+
+      if (store.get("grade_info_settings") == null) {
+        store.set("grade_info_settings", true);
+      }
+      if (!store.get("grade_info_settings")) {
+        showGrade();
+        $$("#hide-grade").prop("checked", false);
+        $$("#show-all-grade").css("display", "none");
+      }
+      $$("#hide-grade").on("change", function() {
+        store.set("grade_info_settings", $$("#hide-grade").prop("checked"));
+      });
+      $$("#show-all-grade").on("click", function() {
+        showGrade();
+      });
+      $$("#calc-all-grade").on("click", function() {
+        $$(".pjw-miniclass-add-to-calc").each((index, val) => {
+          if ($$(val).attr("data-status") == "add")
+            switchCalcStatus($$(val));
+        });
+        calcGPA();
+      });
+      $$("#remove-all-grade").on("click", function() {
+        $$(".pjw-miniclass-add-to-calc").each((index, val) => {
+          if ($$(val).attr("data-status") == "remove")
+            switchCalcStatus($$(val));
+        });
+        calcGPA();
+      });
+
+      window.grade_list = [];
+      $$(".pjw-miniclass").on("click", (e) => {
+        if (window.getSelection().toString() != "") return;
+        var target = $$(e.delegateTarget).find(".pjw-miniclass-add-to-calc");
+        switchCalcStatus(target);
+        calcGPA();
+      });
+
+      window.mdc.autoInit();
+    };
+
+    function switchCalcStatus(target) {
+      if (target.attr("data-status") == "remove") {
+        grade_list = grade_list.filter((item) => (item != target.attr("data-index")));
+        target.css("background-color", "rgb(164, 199, 21)");
+        target.find(".pjw-miniclass-button__label").html("添加");
+        target.attr("data-status", "add");
+      } else {
+        grade_list.push(parseInt(target.attr("data-index")));
+        target.css("background-color", "darkred");
+        target.find(".pjw-miniclass-button__label").html("移除");
+        target.attr("data-status", "remove");
+      }
+    }
+    
+    function calcGPA() {
+      var total = 0, total_credit = 0;
+      for (var item of grade_list) {
+        var credit = parseInt(list.class_data[item - 1].data.num_info[0].num);
+        if (!credit) credit = 0;
+        total_credit += credit;
+        total += parseFloat(list.class_data[item - 1].data.num_info[1].num) / 20 * credit;
+      }
+      if (total_credit == 0) {
+        $$("#average-score").html("PotatoPlus GPA计算器");
+      } else {
+        $$("#average-score").html(`${grade_list.length} 门课程的平均学分绩：<span style="font-weight: bold; font-size: 18px;">${(total / total_credit).toFixed(4)}</span>`);
+        pconsole.info(`${grade_list.length} 门课程的平均学分绩：${total / total_credit}`, "calc_grade");
+      }
+    }
+
+    function parseGrade(obj) {
+      obj.find("table.TABLE_BODY:eq(0) > tbody > tr:gt(0)").each((index, val) => {
+        var td = (i) => ($$(val).children(`td:eq(${i})`));
+        
+        list.add({
+          title: td(2).html(),
+          note: `${td(3).html()} / <span class="pjw-miniclass-course-number" onclick="window.open('${td(1).children("a").attr("href")}');">${td(1).find("u").html()}</span> / ${td(4).html()}${td(7).html().trim() ? ` / 交换成绩对应课程：${td(7).html()}` : ""}`,
+          num_info: [{
+            num: td(5).html(),
+            label: "学分"
+          }, {
+            num: (td(6).children("ul").html() || td(6).html()),
+            label: "总评",
+            hidden: true
+          }]
         });
       });
-      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").css("cursor", "pointer");
-      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").on("click", function() {
-        $$(".grade-label").trigger("click");
-        $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").css("cursor", "auto");
+    }
+
+    function loadGrade(id) {
+      if (id >= $$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr`).length || !$$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr:eq(${id}) > td > a`).length) {
+        initGradeList();
+        return;
+      }
+      $$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr:eq(${id}) > td > a`).each((index, val) => {
+        $$.ajax({
+          url: $$(val).attr("href"),
+          method: "GET"
+        }).done((res) => {
+          parseGrade($$(res));
+          loadGrade(id + 1);
+        });
       });
+    };
 
-      $$("table:eq(0) > tbody > tr:eq(1) > td:eq(3) > div:eq(0)").append(`<p style="margin: 0;">成绩已被隐藏</p><p style="margin: 0; color: gray;">单击以显示，或单击表格头部“总评”显示全部。</p>`);
-    }
-    function showGrade() {
-      $$("table.TABLE_BODY:eq(0) > tbody > tr:eq(0) > th:eq(6)").trigger("click");
-    }
-    if (store.get("grade_info_settings") == null) {
-      store.set("grade_info_settings", true);
-    }
-    if (store.get("grade_info_settings") == true) {
-      hideGrade();
+    if (!window.location.href.includes("termCode")) {
+      loadGrade(2); 
     } else {
-      $$("#hide_grade").prop("checked", false);
-      $$("#show_all_grade").css("display", "none");
+      parseGrade($$("body"));
+      initGradeList();
+      $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList';">全部学期</div>`)
     }
-    $$("#hide_grade").on("change", function() {
-      store.set("grade_info_settings", $$("#hide_grade").prop("checked"));
-    });
-    $$("#show_all_grade").on("click", function() {
-      showGrade();
-    });
-    $$("table.TABLE_BODY").css("display", "table");
-
-    if (window.location.href.search("termCode") == -1) {
-      window.location.href = $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr:eq(2) > td > a").attr("href");
-    }
+    
   } else return;
 
   if (pjw_mode in filter_mode_list) {

@@ -60,6 +60,7 @@
 
 /* PJW Mini Button */
 .pjw-mini-button {
+  display: inline-block;
   font-size: 14px; font-weight: bold;
   border: 0; border-radius: 7px;
   background-color: white; color: #63065f;
@@ -450,4 +451,15 @@ body * {
   border-radius: 50%;
   padding: 0;
   transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
+}
+
+.click-to-show {
+  font-size: 18px;
+  opacity: .6;
+  transition: opacity .2s ease-out;
+  cursor: pointer;
+}
+
+.click-to-show:hover {
+  opacity: 1;
 }

@@ -1,3 +1,162 @@
+/* PJW MiniList */
+
+.pjw-minilist {
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pjw-minilist-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pjw-minilist-heading > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.pjw-minilist-body {
+  width: 100%;
+  padding: 0 16px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.pjw-miniclass {
+  padding: 3px 6px;
+  border-radius: 6px;
+  margin: 2px 4px;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  font-size: 12px;
+  background: var(--white);
+  transition: all .2s ease-out;
+  color: rgba(0, 0, 0, .9);
+  border: 1px dotted rgba(99, 6, 95, .7);
+}
+
+.pjw-miniclass:hover {
+  color: white;
+  background: rgba(99, 6, 95, .7);
+  border: 1px dotted transparent;
+}
+
+.pjw-miniclass:active {
+  color: white;
+  background: rgba(99, 6, 95, .2);
+  border: 1px dotted transparent;
+}
+
+.pjw-miniclass-index {
+  flex-grow: 0;
+  margin: 0 8px;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+  background-color: rgba(255, 255, 255, .3);
+  border-radius: 9px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: center;
+}
+
+.pjw-miniclass-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pjw-miniclass-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.pjw-miniclass-note {
+  opacity: .75;
+  font-size: 10px;
+}
+
+.pjw-miniclass-course-number {
+  cursor: pointer;
+}
+
+.pjw-miniclass-course-number:hover {
+  font-weight: bold;
+}
+
+.pjw-miniclass-sideinfo {
+  flex-grow: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.pjw-miniclass-num {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.pjw-miniclass-num > .num {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 2px;
+}
+
+.pjw-miniclass-num > .label {
+  font-size: 11px;
+  opacity: .6;
+  margin: 0 2px;
+}
+
+.pjw-miniclass-operation {
+  flex-grow: 0;
+}
+
+.pjw-miniclass-button:not(:disabled) {
+  height: 30px;
+  border-radius: 15px;
+  background-color: rgb(164, 199, 21);
+  padding: 0 10px;
+}
+
+.pjw-miniclass-button > .mdc-button__ripple {
+  border-radius: 15px;
+}
+
+.pjw-miniclass-button__inner {
+  color: rgba(255, 255, 255, .75);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+}
+
+.pjw-miniclass-button__icon {
+  font-size: 20px;
+}
+
+.pjw-miniclass-button__label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
 /* PJW ClassList */
 
 .pjw-classlist {
@@ -425,7 +584,6 @@
 }
 
 .pjw-class-bignum {
-  white-space: nowrap;
   padding: 0 10px;
   display: flex;
   flex-direction: column;
@@ -443,6 +601,7 @@
 }
 
 .pjw-class-bignum > .num {
+  white-space: nowrap;
   font-size: 32px;
   font-weight: bold;
   color: black;
