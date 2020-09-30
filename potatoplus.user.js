@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.4
+// @version      0.2.4.1
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -399,11 +399,11 @@ body * {
   background: rgba(255, 255, 255, .5);
 }
 
-#Function.light > ul > li > a {
+#Function.light > ul > li a {
   color: rgba(0, 0, 0, .6) !important;
 }
 
-#Function.light > ul > li > a > img {
+#Function.light > ul > li a > img {
   opacity: 1;
 }
 
@@ -413,6 +413,8 @@ body * {
   margin: 25px !important;
   padding: 10px;
   transform: background 1.2s ease-in;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
 }
 
 #Function > ul {
@@ -442,32 +444,32 @@ body * {
   background: rgba(0, 0, 0, .9);
 }
 
-#Function > ul > li:hover > a {
+#Function > ul > li:hover a {
   color: var(--white) !important;
   font-weight: bold;
   text-decoration: none;
   transform: scale(1.2);
 }
 
-#Function > ul > li:hover > a:after {
+#Function > ul > li:hover a:after {
   content: ">";
   margin-left: 3px;
   font-size: 12px;
 }
 
-#Function > ul > li > a {
+#Function > ul > li a {
   color: var(--white) !important;
   font-size: 120%;
   transition: all .2s ease-out;
 }
 
-#Function > ul > li > a > img {
+#Function > ul > li a > img {
   opacity: 0;
   transition: all .17s ease-in;
   width: 50%;
 }
 
-#Function > ul > li:hover > a > img {
+#Function > ul > li:hover a > img {
   transform: scale(1.1);
 }
 
@@ -594,7 +596,6 @@ injectStyleFromString(`/* PJW MiniList */
   flex-direction: row;
   font-size: 12px;
   background: var(--white);
-  transition: all .2s ease-out;
   color: rgba(0, 0, 0, .9);
   border: 1px dotted rgba(99, 6, 95, .7);
 }
@@ -2558,6 +2559,7 @@ function ClassListPlugin() {
       }
 
       function getClassInfo(content, classID) {
+        if (!classID || classID[0] == "#") classID = "0";
         var appear_accu = "", hidden_accu = "";
         for (var item of content) {
           if ("key" in item) {
@@ -3438,6 +3440,7 @@ function ClassListPlugin() {
       if (this.filter_panel.css("pointer-events") == "none") {
         this.addFilterHook("handleShow");
         this.filter_panel.addClass("shown");
+        $$(window).scrollTop(this.heading.offset().top - 10);
       } else {
         this.filter_panel.removeClass("shown");
       }
@@ -3494,7 +3497,7 @@ function ClassListPlugin() {
         <div class="pjw-classlist-heading">
           <div class="pjw-classlist-selectors">
           </div>
-          <div class="pjw-classlist-controls">
+          <div class="pjw-classlist-controls pjw-float--fixed">
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
@@ -3824,7 +3827,7 @@ function ClassListPlugin() {
     constructor() {
       var list_html = `
       <div class="pjw-minilist">
-        <div class="pjw-minilist-heading"></div>
+        <div class="pjw-minilist-heading pjw-float--fixed"></div>
         <div class="pjw-minilist-body"></div>
         <div class="pjw-classlist-bottom">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
@@ -3837,6 +3840,41 @@ function ClassListPlugin() {
       this.class_data = [];
     }
   };
+
+  (() => {
+    $$(window).on("scroll", () => {
+      $$(".pjw-float--floating").each((index, val) => {
+        if ($$(val).parent().offset().top >= $$(window).scrollTop()) {
+          $$(val).css({
+            "position": "",
+            "top": "",
+            "z-index": "",
+            "border": "",
+            "border-radius": "",
+            "padding": "",
+            "background": ""
+          });
+          $$(val).addClass("pjw-float--fixed");
+          $$(val).removeClass("pjw-float--floating");
+        }
+      });
+      $$(".pjw-float--fixed").each((index, val) => {
+        if ($$(val).offset().top < $$(window).scrollTop() - 100) {
+          $$(val).css({
+            "position": "fixed",
+            "top": "10px",
+            "z-index": "100",
+            "border": "1px solid #000",
+            "border-radius": "14px",
+            "padding": "3px 15px",
+            "background": "rgba(255, 255, 255, .6)"
+          });
+          $$(val).removeClass("pjw-float--fixed");
+          $$(val).addClass("pjw-float--floating");
+        }
+      });
+    });
+  })();
 }
   }
   if (pjw_mode == "login_page") {
@@ -4442,9 +4480,9 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.4";
+  window.pjw_version = "0.2.4.1";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.4";
+    window.pjw_version = "0.2.4.1";
 
   window.$$ = jQuery.noConflict();
 
@@ -4459,7 +4497,7 @@ window.potatojw_intl = function() {
   if ($$("#Function").length) {
     $$("#Function").addClass("light");
     $$("#Function").find("li").on("click", (e) => {
-      window.location.href = $$(e.delegateTarget).children("a").attr("href");
+      window.location.href = $$(e.delegateTarget).find("a").attr("href");
     });
   }
 
