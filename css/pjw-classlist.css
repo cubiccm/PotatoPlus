@@ -41,7 +41,6 @@
   flex-direction: row;
   font-size: 12px;
   background: var(--white);
-  transition: all .2s ease-out;
   color: rgba(0, 0, 0, .9);
   border: 1px dotted rgba(99, 6, 95, .7);
 }

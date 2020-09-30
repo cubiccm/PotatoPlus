@@ -313,11 +313,11 @@ body * {
   background: rgba(255, 255, 255, .5);
 }
 
-#Function.light > ul > li > a {
+#Function.light > ul > li a {
   color: rgba(0, 0, 0, .6) !important;
 }
 
-#Function.light > ul > li > a > img {
+#Function.light > ul > li a > img {
   opacity: 1;
 }
 
@@ -327,6 +327,8 @@ body * {
   margin: 25px !important;
   padding: 10px;
   transform: background 1.2s ease-in;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
 }
 
 #Function > ul {
@@ -356,32 +358,32 @@ body * {
   background: rgba(0, 0, 0, .9);
 }
 
-#Function > ul > li:hover > a {
+#Function > ul > li:hover a {
   color: var(--white) !important;
   font-weight: bold;
   text-decoration: none;
   transform: scale(1.2);
 }
 
-#Function > ul > li:hover > a:after {
+#Function > ul > li:hover a:after {
   content: ">";
   margin-left: 3px;
   font-size: 12px;
 }
 
-#Function > ul > li > a {
+#Function > ul > li a {
   color: var(--white) !important;
   font-size: 120%;
   transition: all .2s ease-out;
 }
 
-#Function > ul > li > a > img {
+#Function > ul > li a > img {
   opacity: 0;
   transition: all .17s ease-in;
   width: 50%;
 }
 
-#Function > ul > li:hover > a > img {
+#Function > ul > li:hover a > img {
   transform: scale(1.1);
 }
 

@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.4";
+    window.pjw_version = "0.2.4.1";
 
   window.$$ = jQuery.noConflict();
 
@@ -22,7 +22,7 @@ window.potatojw_intl = function() {
   if ($$("#Function").length) {
     $$("#Function").addClass("light");
     $$("#Function").find("li").on("click", (e) => {
-      window.location.href = $$(e.delegateTarget).children("a").attr("href");
+      window.location.href = $$(e.delegateTarget).find("a").attr("href");
     });
   }
 

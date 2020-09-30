@@ -81,6 +81,7 @@ function ClassListPlugin() {
       }
 
       function getClassInfo(content, classID) {
+        if (!classID || classID[0] == "#") classID = "0";
         var appear_accu = "", hidden_accu = "";
         for (var item of content) {
           if ("key" in item) {
@@ -961,6 +962,7 @@ function ClassListPlugin() {
       if (this.filter_panel.css("pointer-events") == "none") {
         this.addFilterHook("handleShow");
         this.filter_panel.addClass("shown");
+        $$(window).scrollTop(this.heading.offset().top - 10);
       } else {
         this.filter_panel.removeClass("shown");
       }
@@ -1017,7 +1019,7 @@ function ClassListPlugin() {
         <div class="pjw-classlist-heading">
           <div class="pjw-classlist-selectors">
           </div>
-          <div class="pjw-classlist-controls">
+          <div class="pjw-classlist-controls pjw-float--fixed">
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
@@ -1347,7 +1349,7 @@ function ClassListPlugin() {
     constructor() {
       var list_html = `
       <div class="pjw-minilist">
-        <div class="pjw-minilist-heading"></div>
+        <div class="pjw-minilist-heading pjw-float--fixed"></div>
         <div class="pjw-minilist-body"></div>
         <div class="pjw-classlist-bottom">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
@@ -1360,4 +1362,39 @@ function ClassListPlugin() {
       this.class_data = [];
     }
   };
+
+  (() => {
+    $$(window).on("scroll", () => {
+      $$(".pjw-float--floating").each((index, val) => {
+        if ($$(val).parent().offset().top >= $$(window).scrollTop()) {
+          $$(val).css({
+            "position": "",
+            "top": "",
+            "z-index": "",
+            "border": "",
+            "border-radius": "",
+            "padding": "",
+            "background": ""
+          });
+          $$(val).addClass("pjw-float--fixed");
+          $$(val).removeClass("pjw-float--floating");
+        }
+      });
+      $$(".pjw-float--fixed").each((index, val) => {
+        if ($$(val).offset().top < $$(window).scrollTop() - 100) {
+          $$(val).css({
+            "position": "fixed",
+            "top": "10px",
+            "z-index": "100",
+            "border": "1px solid #000",
+            "border-radius": "14px",
+            "padding": "3px 15px",
+            "background": "rgba(255, 255, 255, .6)"
+          });
+          $$(val).removeClass("pjw-float--fixed");
+          $$(val).addClass("pjw-float--floating");
+        }
+      });
+    });
+  })();
 }
