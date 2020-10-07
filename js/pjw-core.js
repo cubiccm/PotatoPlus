@@ -7,9 +7,12 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.4.1";
-
-  window.$$ = jQuery.noConflict();
+    window.pjw_version = "0.2.5";
+  
+  if (jQuery.fn.jquery == "3.5.1")
+    window.$$ = jQuery.noConflict();
+  else
+    window.$$ = $;
 
   var head_metadata = `
     <meta charset="UTF-8">
@@ -28,7 +31,7 @@ window.potatojw_intl = function() {
 
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
-      <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
+      <div id="pjw-user-info" onclick="window.location.href = '/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse';">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
@@ -52,8 +55,7 @@ window.potatojw_intl = function() {
     }
   }
   if ($$("div#TopLink").length > 0)
-    $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
-      <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
+    $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
       <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log("PotatoPlus v" + pjw_version + " by Limosity");
@@ -259,6 +261,8 @@ window.potatojw_intl = function() {
       pconsole.alert(window.alert_data);
     }
 
+    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
+
     var update_html = "";
     if (pjw_platform == "Userscript") {
       update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Edge Add-ons</a>上线，Firefox 用户可以到<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi" target="_blank">GitHub Releases</a>获取，建议您迁移到插件版本以在部分功能上获得更好的体验。安装插件后请关闭当前脚本的执行。`;
@@ -276,7 +280,7 @@ window.potatojw_intl = function() {
     const welcome_html = `
       <div id="pjw-welcome">
         <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.4 带来了简单易用的<a href="/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList">GPA计算器</a>和数项小改进。</p>
+        <p>PotatoPlus v0.2.5！</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
@@ -1756,7 +1760,7 @@ window.potatojw_intl = function() {
         $$("#average-score").html("PotatoPlus GPA计算器");
       } else {
         $$("#average-score").html(`${grade_list.length} 门课程的平均学分绩：<span style="font-weight: bold; font-size: 18px;">${(total / total_credit).toFixed(4)}</span>`);
-        pconsole.info(`${grade_list.length} 门课程的平均学分绩：${total / total_credit}`, "calc_grade");
+        pconsole.debug(`${grade_list.length} 门课程的平均学分绩：${total / total_credit}`, "calc_grade");
       }
     }
 
