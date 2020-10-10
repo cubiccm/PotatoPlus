@@ -13,6 +13,8 @@ prefix = '''// ==UserScript==
 // @match        *://219.219.120.46/jiaowu*
 // @run-at       document-start
 // @grant        none
+// @updateURL    https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js
+// @downloadURL  https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js
 // ==/UserScript==
 
 '''
