@@ -43,15 +43,21 @@ window.potatojw_intl = function() {
     $$("#TopLink").children("img").remove();
   }
 
-  var reset_storage_confirm = false;
+  window.reset_storage_confirm = false;
+  window.reset_storage_timeout = 0;
   window.resetStorage = function() {
     if (reset_storage_confirm) {
       store.clearAll();
       reset_storage_confirm = false;
       $$("#reset_storage").html("重置存储");
+      clearInterval(reset_storage_timeout);
     } else {
-      $$("#reset_storage").html("确定重置？");
+      $$("#reset_storage").html("确定重置 PotatoPlus 的全部存储？");
       reset_storage_confirm = true;
+      reset_storage_timeout = setTimeout(() => {
+        $$("#reset_storage").html("重置存储");
+        reset_storage_confirm = false;
+      }, 2000);
     }
   }
   if ($$("div#TopLink").length > 0)
@@ -261,7 +267,7 @@ window.potatojw_intl = function() {
       pconsole.alert(window.alert_data);
     }
 
-    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
+    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray; opacity: 0.5;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
 
     var update_html = "";
     if (pjw_platform == "Userscript") {
