@@ -465,3 +465,22 @@ body * {
 .click-to-show:hover {
   opacity: 1;
 }
+
+.pjw-mini-brand {
+  user-select: none;
+  margin-top: 3px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.pjw-mini-brand > p {
+  text-align: center;
+  color: rgba(0, 0, 0, .5);
+  margin: 3px;
+}
+.pjw-mini-brand > span {
+  margin-right: 6px;
+  color: rgba(0, 0, 0, .5);
+}

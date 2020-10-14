@@ -1,14 +1,14 @@
 window.PJWConsole = class {
   show(stay) {
     this.dom.css({
-      "bottom": "10px",
+      "bottom": "6px",
       "opacity": "1"
     });
     if (typeof(this.stay_timeout) != "undefined")
       clearTimeout(this.stay_timeout);
     if (stay === true) this.mouse_stay = true;
     else if (stay === false) this.mouse_stay = false;
-    if (!this.mouse_stay)
+    if (!this.mouse_stay && !this.history_expanded)
       this.stay_timeout = setTimeout((target) => {
         target.hide();
       }, 2500, this);
@@ -24,16 +24,32 @@ window.PJWConsole = class {
   }
 
   expand() {
+    if (this.history_expanded) {
+      this.collapse();
+      return;
+    }
     this.history.css("display", "flex");
     this.history[0].scrollTop = this.history[0].scrollHeight;
+    this.history_expanded = true;
+    this.setColor("rgba(0, 0, 0, .5)");
   }
 
   collapse() {
     this.history.css("display", "none");
+    this.history_expanded = false;
+    this.setColor();
   }
 
-  setColor(color = "rgba(0, 0, 0, .2)") {
-    this.dom.css("filter", `drop-shadow(0px 0px 6px ${color}`);
+  setColor(color) {
+    var shadow_width = "6px";
+    if (!color) {
+      color = "rgba(0, 0, 0, .2)";
+      shadow_width = "3px";
+    }
+    if (this.history_expanded) {
+      shadow_width = "6px";
+    }
+    this.dom.css("filter", `drop-shadow(0px 0px ${shadow_width} ${color}`);
   }
 
   // type: error warning info done code
@@ -51,6 +67,8 @@ window.PJWConsole = class {
 
     this.dom.children(".pjw-console-item").appendTo(this.history);
     this.dom.append(html);
+    if (this.history_expanded)
+      this.history[0].scrollTop = this.history[0].scrollHeight;
 
     var action = {
       error: [true, "#b4220a"],
@@ -99,10 +117,11 @@ window.PJWConsole = class {
     var html = `
     <div id="pjw-console" class="mdc-card">
       <div id="pjw-console-history">
+        <div class="pjw-mini-brand"><span class="material-icons-round" style="font-size: 14px; color: rgba(0, 0, 0, .5);">assignment</span><p style="font-size: 10px;">PotatoPlus Floating Panel</p></div>
       </div>
       <div class="pjw-console-item">
         <div class="pjw-console-icon material-icons-round">emoji_people</div>
-        <div class="pjw-console-text">PotatoPlus v${window.pjw_version}</div>
+        <div class="pjw-console-text">The PotatoPlus Project</div>
       </div>
     </div>`;
 
@@ -112,14 +131,23 @@ window.PJWConsole = class {
     $$(document).on("mousemove", null, {
       target: this
     }, function(e) {
-      if (e.clientY >= $$(window).height() - 60)
+      if (e.clientY >= $$(window).height() - 40)
         e.data.target.show();
+    });
+
+    $$(document).on("mousedown", null, {
+      target: this
+    }, function(e) {
+      if (e.data.target.history_expanded && !e.data.target.mouse_stay && window.getSelection().toString() == "") {
+        e.data.target.hide();
+      }
     });
 
     this.dom.on("click", null, {
       target: this
     }, function(e) {
-      e.data.target.expand();
+      if (window.getSelection().toString() == "")
+        e.data.target.expand();
     });
 
     this.dom.on("mouseenter", null, {
@@ -136,6 +164,7 @@ window.PJWConsole = class {
     }, function(e) {
       var target = e.data.target;
       target.mouse_stay = false;
+      if (target.history_expanded) return;
       target.stay_timeout = setTimeout((target) => {
         target.hide();
       }, 200, target);

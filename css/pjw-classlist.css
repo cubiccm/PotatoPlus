@@ -159,6 +159,7 @@
 /* PJW ClassList */
 
 .pjw-classlist {
+  font-size: 12px;
   text-align: left;
   margin-bottom: 50px;
   left: 0;
@@ -567,7 +568,7 @@
   color: white;
   text-align: center;
   vertical-align: middle;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 16px;
 }
 
@@ -722,23 +723,29 @@
   bottom: -70px;
   opacity: 0;
   width: 60%;
+  font-size: 11px;
 
   z-index: 100;
-  border-radius: 20px;
-  transition: all .35s ease-out, filter .15s ease-in;
+  border-radius: 16px;
+  transition: bottom .35s ease-out, filter .15s ease-in, opacity .1s ease-out, transform .1s ease-out;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
 
-  filter: drop-shadow(3px -4px 6px rgba(0, 0, 0, .2));
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, .2));
   background: rgba(255, 255, 255, .9);
+}
+
+#pjw-console:active {
+  opacity: 0.4 !important;
+  transform: scale(0.99);
 }
 
 .pjw-console-icon {
   margin: 5px 10px 5px 20px;
-  font-size: 21px;
+  font-size: 18px;
 }
 
 .pjw-console-icon.error {
@@ -771,18 +778,18 @@
 
 #pjw-console-history {
   width: 100%;
-  max-height: 500px;
+  max-height: 400px;
   overflow: auto;
   display: none;
   flex-direction: column;
-  align-items: flex-start;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  align-items: stretch;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   background: rgba(0, 0, 0, .1);
 }
 
 .pjw-console-item {
-  min-height: 34px;
+  min-height: 26px;
   padding: 3px 20px;
   display: flex;
   flex-direction: row;
@@ -805,20 +812,4 @@
 .narrow-desktop .pjw-class-operation {
   flex-direction: column;
   padding: 5px 0;
-}
-
-.pjw-classlist-bottom {
-  margin-top: 3px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.pjw-classlist-bottom > p {
-  text-align: center;
-  font-size: 11px;
-  color: rgba(0, 0, 0, .5);
-}
-.pjw-classlist-bottom > span {
-  margin-right: 6px;
 }

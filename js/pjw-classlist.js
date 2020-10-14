@@ -112,7 +112,7 @@ function ClassListPlugin() {
         for (var item of data) {
           var style = `left: ${String((item.start - 1) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1) / total_weeks * 100) + "%"}`;
           if (item.start != item.end)
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
+            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 3 ? "周" : ""}</div>`;
           else
             accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
@@ -126,14 +126,14 @@ function ClassListPlugin() {
         var weekend_flag = false;
         var has_class = [false, false, false, false, false, false, false, false];
         var class_class = [
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""]
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
         for (var item of data) {
@@ -160,10 +160,10 @@ function ClassListPlugin() {
 
           var body_html_span = "";
           
-          for (var j = 1; j <= 11; j++) {
+          for (var j = 1; j <= 12; j++) {
             if (class_class[i][j] != "")
               body_html_span += `<span class="${class_class[i][j]}">${j}</span>`;
-            else
+            else if (j != 12)
               body_html_span += `<span>${j}</span>`;
           }
 
@@ -499,6 +499,8 @@ function ClassListPlugin() {
 
     // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
+      if (!pattern || !str) return 0;
+
       function testString(keyword, str) {
         if (keyword.length != 1 && keyword[0] == "-") {
           if (testString(keyword.slice(1), str) !== 0)
@@ -571,7 +573,7 @@ function ClassListPlugin() {
         [data.title, 8], 
         [data.teachers, 6], 
         [data.info.map((item) => (item.val)), 3],
-        [data.time_detail, 1]
+        [data.time_detail.replace("Ⅱ", "II").replace("Ⅰ", "I"), 1]
       ];
       for (var item of priority_map) {
         var res = this.matchDegree(search_str, item[0]);
@@ -789,20 +791,18 @@ function ClassListPlugin() {
         this.body.css("transition", "");
         this.body.css("opacity", "0");
       }
-      $$("#pjw-classlist-count").html("Loading...");
+      $$("#pjw-classlist-count").html("正在加载...");
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
         if (this.class_data.length == 0)
-          $$("#pjw-classlist-count").html(`No class found : (`);
-        else if (this.class_data.length == 1)
-          $$("#pjw-classlist-count").html(`${this.class_data.length} class loaded`);
+          $$("#pjw-classlist-count").html(`这里没有课程 : (`);
         else
-          $$("#pjw-classlist-count").html(`${this.class_data.length} classes loaded`);
+          $$("#pjw-classlist-count").html(`已加载 ${this.class_data.length} 门课程`);
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
-        $$("#pjw-classlist-count").html("Load failed : (");
+        $$("#pjw-classlist-count").html("加载失败 : (");
         this.console.error("无法加载课程列表：" + e);
       });
     }
@@ -817,7 +817,7 @@ function ClassListPlugin() {
     loadModule(name) {
       if (this.filter_modules.include(name)) return false;
       this.filter_modules.push(name);
-      this.filter_panel.find(".pjw-classlist-bottom").before(pjw_filter[name].html);
+      this.filter_panel.find(".pjw-mini-brand").before(pjw_filter[name].html);
       this.filters[name] = pjw_filter[name];
       this.filters[name].intl(this.filters[name], this);
       return this.filters[name];
@@ -1063,16 +1063,16 @@ function ClassListPlugin() {
         <div class="pjw-filter-panel">
           <div class="pjw-filter-panel__content">
             ${filter_modules}
-            <div class="pjw-classlist-bottom" style="order: 10;">
+            <div class="pjw-mini-brand" style="order: 10;">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
             </div>
           </div>
         </div>
         <div class="pjw-classlist-body narrow-desktop"></div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <p id="pjw-classlist-count">Loading...</p>
         </div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
         </div>
       </div>`;
@@ -1351,7 +1351,7 @@ function ClassListPlugin() {
       <div class="pjw-minilist">
         <div class="pjw-minilist-heading pjw-float--fixed"></div>
         <div class="pjw-minilist-body"></div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
         </div>
       </div>`;

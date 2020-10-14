@@ -84,28 +84,28 @@ var pjw_filter = {
             </div>
             <div class="pjw-class-weekcal-calendar">
               <div class="pjw-class-weekcal-calendar-day select-time">
-                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span>
+                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span><span>12&gt;</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
             </div>
           </div>
@@ -119,14 +119,14 @@ var pjw_filter = {
     `,
     intl: (space, list) => {
       space.data = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       ];
       space.dom = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
 
@@ -140,7 +140,7 @@ var pjw_filter = {
 
       space.clear = function() {
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             space.setValue(i, j, 0);
       };
 
@@ -164,7 +164,7 @@ var pjw_filter = {
             });
             resolve();
           }).catch((res) => {
-            list.console.error("课程时间模块无法加载已有课程：" + res);
+            list.console.error("课程时间筛选器无法加载已有课程：" + res);
             reject();
           });
         });
@@ -281,12 +281,12 @@ var pjw_filter = {
         var elem = $$(e.delegateTarget);
         var day = elem.index();
         var val = 0;
-        for (var j = 1; j <= 11; j++)
+        for (var j = 1; j <= 12; j++)
           if (e.data.space.data[day][j] !== false) {
             val = false;
             break;
           }
-        for (var j = 1; j <= 11; j++)
+        for (var j = 1; j <= 12; j++)
           e.data.space.setValue(day, j, val);
         e.data.list.update();
       });
@@ -297,13 +297,13 @@ var pjw_filter = {
       }, (e) => {
         var val = 0;
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             if (e.data.space.data[i][j] !== false) {
               val = false;
               break;
             }
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             e.data.space.setValue(i, j, val);
         e.data.list.update();
       });
@@ -464,23 +464,3 @@ var pjw_filter = {
     }
   }
 }
-
-/*
-if (!space.status) return 0;
-if (data.select_button && data.select_button.action)
-  if (data.select_button.status == "Select") {
-    if (!space.continue_on_success)
-      space.switch.checked = space.status = false;
-    else {
-      if ($$("#autorefresh-switch").hasClass("on"))
-        $$("#autorefresh-switch").click();
-    }
-
-    var e = {data: {target: class_obj}};
-    data.select_button.action(e).then(() => {
-      class_obj.list.console.debug("Got a success from the potatoes module!");
-    }).catch((res) => {
-      class_obj.list.console.debug("Got an error from the potatoes module: " + res);
-    });
-  }
-return 0;*/

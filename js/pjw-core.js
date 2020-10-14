@@ -64,7 +64,7 @@ window.potatojw_intl = function() {
     $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
       <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
-  console.log("PotatoPlus v" + pjw_version + " by Limosity");
+  console.log(`PotatoPlus v${pjw_version} (${pjw_platform}) by Limos`);
 
   if (pjw_mode == "") return;
 
@@ -291,9 +291,10 @@ window.potatojw_intl = function() {
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
         <note>
-          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version} (${pjw_platform})</a>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
-          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank">一个还没写好的链接..</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
         </note>
       </div>
     `;

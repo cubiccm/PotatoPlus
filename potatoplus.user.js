@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.4.1
+// @version      0.2.5
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -552,6 +552,25 @@ body * {
 
 .click-to-show:hover {
   opacity: 1;
+}
+
+.pjw-mini-brand {
+  user-select: none;
+  margin-top: 3px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.pjw-mini-brand > p {
+  text-align: center;
+  color: rgba(0, 0, 0, .5);
+  margin: 3px;
+}
+.pjw-mini-brand > span {
+  margin-right: 6px;
+  color: rgba(0, 0, 0, .5);
 }`);
 
 /* css/pjw-classlist.css */
@@ -716,6 +735,7 @@ injectStyleFromString(`/* PJW MiniList */
 /* PJW ClassList */
 
 .pjw-classlist {
+  font-size: 12px;
   text-align: left;
   margin-bottom: 50px;
   left: 0;
@@ -1124,7 +1144,7 @@ injectStyleFromString(`/* PJW MiniList */
   color: white;
   text-align: center;
   vertical-align: middle;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 16px;
 }
 
@@ -1279,23 +1299,29 @@ injectStyleFromString(`/* PJW MiniList */
   bottom: -70px;
   opacity: 0;
   width: 60%;
+  font-size: 11px;
 
   z-index: 100;
-  border-radius: 20px;
-  transition: all .35s ease-out, filter .15s ease-in;
+  border-radius: 16px;
+  transition: bottom .35s ease-out, filter .15s ease-in, opacity .1s ease-out, transform .1s ease-out;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
 
-  filter: drop-shadow(3px -4px 6px rgba(0, 0, 0, .2));
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, .2));
   background: rgba(255, 255, 255, .9);
+}
+
+#pjw-console:active {
+  opacity: 0.4 !important;
+  transform: scale(0.99);
 }
 
 .pjw-console-icon {
   margin: 5px 10px 5px 20px;
-  font-size: 21px;
+  font-size: 18px;
 }
 
 .pjw-console-icon.error {
@@ -1328,18 +1354,18 @@ injectStyleFromString(`/* PJW MiniList */
 
 #pjw-console-history {
   width: 100%;
-  max-height: 500px;
+  max-height: 400px;
   overflow: auto;
   display: none;
   flex-direction: column;
-  align-items: flex-start;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  align-items: stretch;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   background: rgba(0, 0, 0, .1);
 }
 
 .pjw-console-item {
-  min-height: 34px;
+  min-height: 26px;
   padding: 3px 20px;
   display: flex;
   flex-direction: row;
@@ -1362,22 +1388,6 @@ injectStyleFromString(`/* PJW MiniList */
 .narrow-desktop .pjw-class-operation {
   flex-direction: column;
   padding: 5px 0;
-}
-
-.pjw-classlist-bottom {
-  margin-top: 3px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.pjw-classlist-bottom > p {
-  text-align: center;
-  font-size: 11px;
-  color: rgba(0, 0, 0, .5);
-}
-.pjw-classlist-bottom > span {
-  margin-right: 6px;
 }
 `);
 
@@ -1541,14 +1551,14 @@ injectStyleFromString(`.pjw-filter-panel {
 window.PJWConsole = class {
   show(stay) {
     this.dom.css({
-      "bottom": "10px",
+      "bottom": "6px",
       "opacity": "1"
     });
     if (typeof(this.stay_timeout) != "undefined")
       clearTimeout(this.stay_timeout);
     if (stay === true) this.mouse_stay = true;
     else if (stay === false) this.mouse_stay = false;
-    if (!this.mouse_stay)
+    if (!this.mouse_stay && !this.history_expanded)
       this.stay_timeout = setTimeout((target) => {
         target.hide();
       }, 2500, this);
@@ -1564,16 +1574,32 @@ window.PJWConsole = class {
   }
 
   expand() {
+    if (this.history_expanded) {
+      this.collapse();
+      return;
+    }
     this.history.css("display", "flex");
     this.history[0].scrollTop = this.history[0].scrollHeight;
+    this.history_expanded = true;
+    this.setColor("rgba(0, 0, 0, .5)");
   }
 
   collapse() {
     this.history.css("display", "none");
+    this.history_expanded = false;
+    this.setColor();
   }
 
-  setColor(color = "rgba(0, 0, 0, .2)") {
-    this.dom.css("filter", `drop-shadow(0px 0px 6px ${color}`);
+  setColor(color) {
+    var shadow_width = "6px";
+    if (!color) {
+      color = "rgba(0, 0, 0, .2)";
+      shadow_width = "3px";
+    }
+    if (this.history_expanded) {
+      shadow_width = "6px";
+    }
+    this.dom.css("filter", `drop-shadow(0px 0px ${shadow_width} ${color}`);
   }
 
   // type: error warning info done code
@@ -1591,6 +1617,8 @@ window.PJWConsole = class {
 
     this.dom.children(".pjw-console-item").appendTo(this.history);
     this.dom.append(html);
+    if (this.history_expanded)
+      this.history[0].scrollTop = this.history[0].scrollHeight;
 
     var action = {
       error: [true, "#b4220a"],
@@ -1639,10 +1667,11 @@ window.PJWConsole = class {
     var html = `
     <div id="pjw-console" class="mdc-card">
       <div id="pjw-console-history">
+        <div class="pjw-mini-brand"><span class="material-icons-round" style="font-size: 14px; color: rgba(0, 0, 0, .5);">assignment</span><p style="font-size: 10px;">PotatoPlus Floating Panel</p></div>
       </div>
       <div class="pjw-console-item">
         <div class="pjw-console-icon material-icons-round">emoji_people</div>
-        <div class="pjw-console-text">PotatoPlus v${window.pjw_version}</div>
+        <div class="pjw-console-text">The PotatoPlus Project</div>
       </div>
     </div>`;
 
@@ -1652,14 +1681,23 @@ window.PJWConsole = class {
     $$(document).on("mousemove", null, {
       target: this
     }, function(e) {
-      if (e.clientY >= $$(window).height() - 60)
+      if (e.clientY >= $$(window).height() - 40)
         e.data.target.show();
+    });
+
+    $$(document).on("mousedown", null, {
+      target: this
+    }, function(e) {
+      if (e.data.target.history_expanded && !e.data.target.mouse_stay && window.getSelection().toString() == "") {
+        e.data.target.hide();
+      }
     });
 
     this.dom.on("click", null, {
       target: this
     }, function(e) {
-      e.data.target.expand();
+      if (window.getSelection().toString() == "")
+        e.data.target.expand();
     });
 
     this.dom.on("mouseenter", null, {
@@ -1676,6 +1714,7 @@ window.PJWConsole = class {
     }, function(e) {
       var target = e.data.target;
       target.mouse_stay = false;
+      if (target.history_expanded) return;
       target.stay_timeout = setTimeout((target) => {
         target.hide();
       }, 200, target);
@@ -2076,28 +2115,28 @@ var pjw_filter = {
             </div>
             <div class="pjw-class-weekcal-calendar">
               <div class="pjw-class-weekcal-calendar-day select-time">
-                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span>
+                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span><span>12&gt;</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
             </div>
           </div>
@@ -2111,14 +2150,14 @@ var pjw_filter = {
     `,
     intl: (space, list) => {
       space.data = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       ];
       space.dom = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
 
@@ -2132,7 +2171,7 @@ var pjw_filter = {
 
       space.clear = function() {
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             space.setValue(i, j, 0);
       };
 
@@ -2156,7 +2195,7 @@ var pjw_filter = {
             });
             resolve();
           }).catch((res) => {
-            list.console.error("课程时间模块无法加载已有课程：" + res);
+            list.console.error("课程时间筛选器无法加载已有课程：" + res);
             reject();
           });
         });
@@ -2273,12 +2312,12 @@ var pjw_filter = {
         var elem = $$(e.delegateTarget);
         var day = elem.index();
         var val = 0;
-        for (var j = 1; j <= 11; j++)
+        for (var j = 1; j <= 12; j++)
           if (e.data.space.data[day][j] !== false) {
             val = false;
             break;
           }
-        for (var j = 1; j <= 11; j++)
+        for (var j = 1; j <= 12; j++)
           e.data.space.setValue(day, j, val);
         e.data.list.update();
       });
@@ -2289,13 +2328,13 @@ var pjw_filter = {
       }, (e) => {
         var val = 0;
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             if (e.data.space.data[i][j] !== false) {
               val = false;
               break;
             }
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             e.data.space.setValue(i, j, val);
         e.data.list.update();
       });
@@ -2457,26 +2496,6 @@ var pjw_filter = {
   }
 }
 
-/*
-if (!space.status) return 0;
-if (data.select_button && data.select_button.action)
-  if (data.select_button.status == "Select") {
-    if (!space.continue_on_success)
-      space.switch.checked = space.status = false;
-    else {
-      if ($$("#autorefresh-switch").hasClass("on"))
-        $$("#autorefresh-switch").click();
-    }
-
-    var e = {data: {target: class_obj}};
-    data.select_button.action(e).then(() => {
-      class_obj.list.console.debug("Got a success from the potatoes module!");
-    }).catch((res) => {
-      class_obj.list.console.debug("Got an error from the potatoes module: " + res);
-    });
-  }
-return 0;*/
-
 /* js/pjw-classlist.js */
 function ClassListPlugin() {
   const total_weeks = 17;
@@ -2592,7 +2611,7 @@ function ClassListPlugin() {
         for (var item of data) {
           var style = `left: ${String((item.start - 1) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1) / total_weeks * 100) + "%"}`;
           if (item.start != item.end)
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
+            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 3 ? "周" : ""}</div>`;
           else
             accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
@@ -2606,14 +2625,14 @@ function ClassListPlugin() {
         var weekend_flag = false;
         var has_class = [false, false, false, false, false, false, false, false];
         var class_class = [
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""]
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
         for (var item of data) {
@@ -2640,10 +2659,10 @@ function ClassListPlugin() {
 
           var body_html_span = "";
           
-          for (var j = 1; j <= 11; j++) {
+          for (var j = 1; j <= 12; j++) {
             if (class_class[i][j] != "")
               body_html_span += `<span class="${class_class[i][j]}">${j}</span>`;
-            else
+            else if (j != 12)
               body_html_span += `<span>${j}</span>`;
           }
 
@@ -2979,6 +2998,8 @@ function ClassListPlugin() {
 
     // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
+      if (!pattern || !str) return 0;
+
       function testString(keyword, str) {
         if (keyword.length != 1 && keyword[0] == "-") {
           if (testString(keyword.slice(1), str) !== 0)
@@ -3051,7 +3072,7 @@ function ClassListPlugin() {
         [data.title, 8], 
         [data.teachers, 6], 
         [data.info.map((item) => (item.val)), 3],
-        [data.time_detail, 1]
+        [data.time_detail.replace("Ⅱ", "II").replace("Ⅰ", "I"), 1]
       ];
       for (var item of priority_map) {
         var res = this.matchDegree(search_str, item[0]);
@@ -3269,20 +3290,18 @@ function ClassListPlugin() {
         this.body.css("transition", "");
         this.body.css("opacity", "0");
       }
-      $$("#pjw-classlist-count").html("Loading...");
+      $$("#pjw-classlist-count").html("正在加载...");
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
         if (this.class_data.length == 0)
-          $$("#pjw-classlist-count").html(`No class found : (`);
-        else if (this.class_data.length == 1)
-          $$("#pjw-classlist-count").html(`${this.class_data.length} class loaded`);
+          $$("#pjw-classlist-count").html(`这里没有课程 : (`);
         else
-          $$("#pjw-classlist-count").html(`${this.class_data.length} classes loaded`);
+          $$("#pjw-classlist-count").html(`已加载 ${this.class_data.length} 门课程`);
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
-        $$("#pjw-classlist-count").html("Load failed : (");
+        $$("#pjw-classlist-count").html("加载失败 : (");
         this.console.error("无法加载课程列表：" + e);
       });
     }
@@ -3297,7 +3316,7 @@ function ClassListPlugin() {
     loadModule(name) {
       if (this.filter_modules.include(name)) return false;
       this.filter_modules.push(name);
-      this.filter_panel.find(".pjw-classlist-bottom").before(pjw_filter[name].html);
+      this.filter_panel.find(".pjw-mini-brand").before(pjw_filter[name].html);
       this.filters[name] = pjw_filter[name];
       this.filters[name].intl(this.filters[name], this);
       return this.filters[name];
@@ -3543,16 +3562,16 @@ function ClassListPlugin() {
         <div class="pjw-filter-panel">
           <div class="pjw-filter-panel__content">
             ${filter_modules}
-            <div class="pjw-classlist-bottom" style="order: 10;">
+            <div class="pjw-mini-brand" style="order: 10;">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
             </div>
           </div>
         </div>
         <div class="pjw-classlist-body narrow-desktop"></div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <p id="pjw-classlist-count">Loading...</p>
         </div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
         </div>
       </div>`;
@@ -3831,7 +3850,7 @@ function ClassListPlugin() {
       <div class="pjw-minilist">
         <div class="pjw-minilist-heading pjw-float--fixed"></div>
         <div class="pjw-minilist-body"></div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
         </div>
       </div>`;
@@ -4482,11 +4501,14 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.4.1";
+  window.pjw_version = "0.2.5";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.4.1";
-
-  window.$$ = jQuery.noConflict();
+    window.pjw_version = "0.2.5";
+  
+  if (jQuery.fn.jquery == "3.5.1")
+    window.$$ = jQuery.noConflict();
+  else
+    window.$$ = $;
 
   var head_metadata = `
     <meta charset="UTF-8">
@@ -4505,7 +4527,7 @@ window.potatojw_intl = function() {
 
   if ($$("#UserInfo").length) {
     $$("#UserInfo").html(`
-      <div id="pjw-user-info" onclick="window.open('/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse');">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
+      <div id="pjw-user-info" onclick="window.location.href = '/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse';">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
         <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
       </div>
     `);
@@ -4517,23 +4539,28 @@ window.potatojw_intl = function() {
     $$("#TopLink").children("img").remove();
   }
 
-  var reset_storage_confirm = false;
+  window.reset_storage_confirm = false;
+  window.reset_storage_timeout = 0;
   window.resetStorage = function() {
     if (reset_storage_confirm) {
       store.clearAll();
       reset_storage_confirm = false;
       $$("#reset_storage").html("重置存储");
+      clearInterval(reset_storage_timeout);
     } else {
-      $$("#reset_storage").html("确定重置？");
+      $$("#reset_storage").html("确定重置 PotatoPlus 的全部存储？");
       reset_storage_confirm = true;
+      reset_storage_timeout = setTimeout(() => {
+        $$("#reset_storage").html("重置存储");
+        reset_storage_confirm = false;
+      }, 2000);
     }
   }
   if ($$("div#TopLink").length > 0)
-    $$("div#TopLink").html(`<span class="pjw-mini-button" style="color: gray;" onclick="resetStorage();" id="reset_storage">重置存储</span>
-      <span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
+    $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
       <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
-  console.log("PotatoPlus v" + pjw_version + " by Limosity");
+  console.log(`PotatoPlus v${pjw_version} (${pjw_platform}) by Limos`);
 
   if (pjw_mode == "") return;
 
@@ -4736,6 +4763,8 @@ window.potatojw_intl = function() {
       pconsole.alert(window.alert_data);
     }
 
+    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray; opacity: 0.5;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
+
     var update_html = "";
     if (pjw_platform == "Userscript") {
       update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Edge Add-ons</a>上线，Firefox 用户可以到<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi" target="_blank">GitHub Releases</a>获取，建议您迁移到插件版本以在部分功能上获得更好的体验。安装插件后请关闭当前脚本的执行。`;
@@ -4753,14 +4782,15 @@ window.potatojw_intl = function() {
     const welcome_html = `
       <div id="pjw-welcome">
         <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.4 带来了简单易用的<a href="/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList">GPA计算器</a>和数项小改进。</p>
+        <p>PotatoPlus v0.2.5！</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
         <note>
-          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version} (${pjw_platform})</a>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
-          <a href="https://t.me/limosity" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">Telegram: @limosity</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank">一个还没写好的链接..</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
         </note>
       </div>
     `;
@@ -6233,7 +6263,7 @@ window.potatojw_intl = function() {
         $$("#average-score").html("PotatoPlus GPA计算器");
       } else {
         $$("#average-score").html(`${grade_list.length} 门课程的平均学分绩：<span style="font-weight: bold; font-size: 18px;">${(total / total_credit).toFixed(4)}</span>`);
-        pconsole.info(`${grade_list.length} 门课程的平均学分绩：${total / total_credit}`, "calc_grade");
+        pconsole.debug(`${grade_list.length} 门课程的平均学分绩：${total / total_credit}`, "calc_grade");
       }
     }
 
