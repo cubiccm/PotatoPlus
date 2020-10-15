@@ -59,10 +59,13 @@ function injectStyleFromString(str) {
     }
   }
 
+  /* BELOW COMMENTS ARE USED TO GENERATE USERSCRIPT */
   // injectStyle("css/material-components-web.min.css");
   // injectStyle("css/pjw.css");
   // injectStyle("css/pjw-classlist.css");
   // injectStyle("css/pjw-filter.css");
+  // injectStyle("css/pjw-console.css");
+  /* DO NOT REMOVE */
 
   injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");
