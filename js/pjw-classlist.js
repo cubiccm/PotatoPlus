@@ -151,12 +151,16 @@ function ClassListPlugin() {
           class_class[item.weekday][item.end] += " sel-end";
         }
 
-        const weekday_display_name = ["", "MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+        const weekday_display_name = ["", "M", "T", "W", "T", "F", "S", "S"];
 
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
-          heading_html += `<div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">${weekday_display_name[i]}</div>`;
+          heading_html += `
+            <div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">
+              <span>${weekday_display_name[i]}</span>
+              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${class_class[i].map((x) => (x=="" ? "0" : "1")).join('').slice(1)}" width="1000" height="1000"></canvas>` : ''}
+            </div>`;
 
           var body_html_span = "";
           
@@ -316,6 +320,26 @@ function ClassListPlugin() {
         </div>
       `;
       this.dom.html(class_html);
+
+      $$("canvas.pjw-class-weekcal-arc").each((index, val) => {
+        var ctx = val.getContext("2d");
+        var arc_list = $$(val).attr("data-arc");
+        var deg_list = [
+          [0,2],[2,4],
+          [5,7],[7,9],
+          [10,12],[12,14],
+          [15,17],[17,19],
+          [20,22],[22,24],[24,26]
+        ];
+        for (var i = 0; i < 11; i++) {
+          ctx.beginPath();
+          ctx.lineWidth = 70;
+          ctx.strokeStyle = arc_list[i] == "0" ? "rgba(155, 167, 190, 1)" : "rgba(255, 255, 255, 1)";
+          ctx.arc(500, 500, 350, (deg_list[i][0] * (2/27) - 0.5) * Math.PI, (deg_list[i][1] * (2/27) - 0.5) * Math.PI);
+          ctx.stroke();
+        }
+
+      });
     }
 
     updateSelectButton(data) {
@@ -972,8 +996,8 @@ function ClassListPlugin() {
       var width = this.body.children(":visible:eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
-      if (body_width < 1450) this.body.removeClass("two-column");
-      else this.body.addClass("two-column");
+      // if (body_width < 1450) this.body.removeClass("two-column");
+      // else this.body.addClass("two-column");
       if (width < 700) this.body.addClass("narrow-desktop");
       else this.body.removeClass("narrow-desktop");
       setTimeout((t) => {t.handleResize();}, 60, this);

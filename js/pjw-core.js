@@ -483,9 +483,11 @@ window.potatojw_intl = function() {
       var stu_grade = stu_info.grade, stu_dept = stu_info.department, stu_major = stu_info.major;
       var sel = list.selectors;
       sel.grade.setByText(stu_grade);
-      sel.institution.setByText(stu_dept);
+      sel.institution.setByText("全部课程");
+      list.selectors.major.dom.hide();
+      // sel.institution.setByText(stu_dept);
       reloadMajor();
-      sel.major.setByText(stu_major);
+      // sel.major.setByText(stu_major);
       list.refresh();
       fillCompleted();
     }

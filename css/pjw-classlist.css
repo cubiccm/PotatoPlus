@@ -410,7 +410,6 @@
   flex-shrink: 0;
   border-radius: 14px;
   background-color: rgba(0, 0, 0, .05);
-  padding: 6px;
   justify-content: space-around;
   user-select: none;
 }
@@ -420,6 +419,7 @@
 }
 
 .pjw-class-weekcal-heading {
+  margin: 2px;
   border: 2px solid rgba(0, 0, 0, .3);
   border-radius: 18px;
   height: 34px;
@@ -431,11 +431,11 @@
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading {
-  margin: 10px 0;
   cursor: pointer;
 }
 
 .pjw-class-weekcal-heading-day {
+  position: relative;
   text-align: center;
   vertical-align: middle;
   font-size: 12px;
@@ -451,6 +451,14 @@
   color: white;
   background-color: var(--pjw-dark-background);
   margin: 0 2px;
+}
+
+.pjw-class-weekcal-arc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
 }
 
 .pjw-class-weekcal-calendar {
@@ -540,6 +548,7 @@
 
 .pjw-class-time-detail {
   color: rgba(0, 0, 0, .6);
+  margin: 3px;
 }
 
 .pjw-class-container--compressed .pjw-class-time-detail {
@@ -716,6 +725,7 @@
   letter-spacing: 0;
 }
 
+/* Fit Screen Size */
 .narrow-desktop .pjw-class-sub {
   flex-direction: column;
   justify-content: space-around;
