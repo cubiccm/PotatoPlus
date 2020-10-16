@@ -453,7 +453,27 @@
   margin: 0 2px;
 }
 
-.pjw-class-weekcal-arc {
+.pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc {
+  display: none;
+}
+
+.pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc-white {
+  display: block;
+}
+
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected {
+  background-color: #63065f;/*var(--pjw-dark-background);*/
+}
+
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc {
+  display: block;
+}
+
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc-white {
+  display: none;
+}
+
+.pjw-class-weekcal-heading-day.selected > canvas {
   position: absolute;
   top: 0;
   left: 0;

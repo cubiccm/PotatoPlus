@@ -110,9 +110,9 @@ function ClassListPlugin() {
       function getWeekNum(data) {
         var accu = "";
         for (var item of data) {
-          var style = `left: ${String((item.start - 1) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1) / total_weeks * 100) + "%"}`;
+          var style = `left: ${String((item.start - 1.4) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1.8) / total_weeks * 100) + "%"}`;
           if (item.start != item.end)
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 3 ? "周" : ""}</div>`;
+            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
           else
             accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
@@ -124,7 +124,7 @@ function ClassListPlugin() {
         var body_html = ``;
 
         var weekend_flag = false;
-        var has_class = [false, false, false, false, false, false, false, false];
+        var has_class = [0, 0, 0, 0, 0, 0, 0, 0];
         var class_class = [
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
@@ -140,7 +140,7 @@ function ClassListPlugin() {
           if (item.weekday > 5 && weekend_flag == false)
             weekend_flag = true;
 
-          has_class[item.weekday] = true;
+          has_class[item.weekday]++;
 
           var cssclass = "selected";
           if (item.type == "odd") cssclass += " sel-odd-class";
@@ -151,15 +151,15 @@ function ClassListPlugin() {
           class_class[item.weekday][item.end] += " sel-end";
         }
 
-        const weekday_display_name = ["", "M", "T", "W", "T", "F", "S", "S"];
+        const weekday_display_name = ["", "MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
           heading_html += `
             <div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">
-              <span>${weekday_display_name[i]}</span>
-              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${class_class[i].map((x) => (x=="" ? "0" : "1")).join('').slice(1)}" width="1000" height="1000"></canvas>` : ''}
+              <span>${has_class[i] ? weekday_display_name[i][0] : weekday_display_name[i]}</span>
+              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${class_class[i].map((x) => (x=="" ? "0" : "1")).join('').slice(1)}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${class_class[i].map((x) => (x=="" ? "0" : "1")).join('').slice(1)}" width="100" height="100"></canvas>` : ''}
             </div>`;
 
           var body_html_span = "";
@@ -320,26 +320,6 @@ function ClassListPlugin() {
         </div>
       `;
       this.dom.html(class_html);
-
-      $$("canvas.pjw-class-weekcal-arc").each((index, val) => {
-        var ctx = val.getContext("2d");
-        var arc_list = $$(val).attr("data-arc");
-        var deg_list = [
-          [0,2],[2,4],
-          [5,7],[7,9],
-          [10,12],[12,14],
-          [15,17],[17,19],
-          [20,22],[22,24],[24,26]
-        ];
-        for (var i = 0; i < 11; i++) {
-          ctx.beginPath();
-          ctx.lineWidth = 70;
-          ctx.strokeStyle = arc_list[i] == "0" ? "rgba(155, 167, 190, 1)" : "rgba(255, 255, 255, 1)";
-          ctx.arc(500, 500, 350, (deg_list[i][0] * (2/27) - 0.5) * Math.PI, (deg_list[i][1] * (2/27) - 0.5) * Math.PI);
-          ctx.stroke();
-        }
-
-      });
     }
 
     updateSelectButton(data) {
@@ -383,6 +363,37 @@ function ClassListPlugin() {
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
+
+      // Draw weekday lesson time ring
+      var deg_list = [
+        [0,2],[2,4],
+        [5,7],[7,9],
+        [10,12],[12,14],
+        [15,17],[17,19],
+        [20,22],[22,24],[24,26]
+      ];
+      var color_list = [
+        "yellow", "yellow",
+        "white", "white",
+        "white", "white",
+        "#ff5400", "#ff5400",
+        "#2a83d2", "#2a83d2", "#2a83d2"
+      ];
+      this.weekcal.find("canvas").each((index, val) => {
+        var ctx = val.getContext("2d");
+        var arc_list = $$(val).attr("data-arc");
+
+        for (var i = 0; i < 11; i++) {
+          ctx.beginPath();
+          ctx.lineWidth = 7;
+          if ($$(val).hasClass("pjw-class-weekcal-arc"))
+            ctx.strokeStyle = arc_list[i] == "0" ? "#9c2297" : color_list[i];
+          else
+            ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "white";
+          ctx.arc(50, 50, 35, (deg_list[i][0] * (2/27) - 1.25) * Math.PI, (deg_list[i][1] * (2/27) - 1.25) * Math.PI);
+          ctx.stroke();
+        }
+      });
 
       // Set select button click event
       this.select_button.click({
@@ -523,7 +534,7 @@ function ClassListPlugin() {
 
     // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
-      if (!pattern || !str) return 0;
+      if (typeof(pattern) == "undefined" || pattern == "") return 0;
 
       function testString(keyword, str) {
         if (keyword.length != 1 && keyword[0] == "-") {
@@ -677,6 +688,8 @@ function ClassListPlugin() {
         if (i < this.max_classes_loaded && this.class_data[i].data.priority >= 0) {
           this.class_data[i].obj.intl();
           this.class_data[i].obj.show();
+        } else {
+          this.class_data[i].obj.hide();
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
@@ -745,7 +758,7 @@ function ClassListPlugin() {
               if (num_arr.length == 1)
                 weeks[parseInt(num_arr[0])] = 1;
               else if (num_arr.length == 2)
-                for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
+                for (var i = parseInt(num_arr[0]); i <= Math.min(total_weeks, parseInt(num_arr[1])); i++)
                   weeks[i] = 1;
             }
           } else if (jtem.search(/从第(\d+)周开始/) != -1) {
@@ -798,7 +811,7 @@ function ClassListPlugin() {
     checkScroll() {
       if ("scroll_lock" in this && this.scroll_lock == true) return;
       this.scroll_lock = true;
-      if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1600 >= $$(document).height()) {
+      if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1800 >= $$(document).height()) {
         for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
           this.class_data[i].obj.show();
         this.max_classes_loaded += this.class_load_size;
