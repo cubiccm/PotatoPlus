@@ -462,7 +462,8 @@
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected {
-  background-color: #63065f;/*var(--pjw-dark-background);*/
+  font-size: 10.5px;
+  background-color: rgba(0, 0, 0, .8);
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc {

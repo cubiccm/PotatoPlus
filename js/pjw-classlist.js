@@ -156,10 +156,14 @@ function ClassListPlugin() {
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
+          var data_arc = class_class[i].map((x) => (
+            x == "" ? "0" : (x.includes("even") || x.includes("odd") ? "2" : "1")
+          )).join('').slice(1);
+
           heading_html += `
             <div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">
               <span>${has_class[i] ? weekday_display_name[i][0] : weekday_display_name[i]}</span>
-              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${class_class[i].map((x) => (x=="" ? "0" : "1")).join('').slice(1)}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${class_class[i].map((x) => (x=="" ? "0" : "1")).join('').slice(1)}" width="100" height="100"></canvas>` : ''}
+              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${data_arc}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${data_arc}" width="100" height="100"></canvas>` : ''}
             </div>`;
 
           var body_html_span = "";
@@ -364,7 +368,7 @@ function ClassListPlugin() {
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
 
-      // Draw weekday lesson time ring
+      // Draw weekday lesson time rings
       var deg_list = [
         [0,2],[2,4],
         [5,7],[7,9],
@@ -377,20 +381,32 @@ function ClassListPlugin() {
         "white", "white",
         "white", "white",
         "#ff5400", "#ff5400",
-        "#2a83d2", "#2a83d2", "#2a83d2"
+        "#8178f9", "#8178f9", "#8178f9"
       ];
       this.weekcal.find("canvas").each((index, val) => {
         var ctx = val.getContext("2d");
         var arc_list = $$(val).attr("data-arc");
 
         for (var i = 0; i < 11; i++) {
-          ctx.beginPath();
-          ctx.lineWidth = 7;
-          if ($$(val).hasClass("pjw-class-weekcal-arc"))
-            ctx.strokeStyle = arc_list[i] == "0" ? "#9c2297" : color_list[i];
-          else
-            ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "white";
-          ctx.arc(50, 50, 35, (deg_list[i][0] * (2/27) - 1.25) * Math.PI, (deg_list[i][1] * (2/27) - 1.25) * Math.PI);
+          ctx.beginPath();  
+          if ($$(val).hasClass("pjw-class-weekcal-arc")) {
+            ctx.lineWidth = 9;
+            // Stroke color in compressed calendar
+            ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : color_list[i];
+          } else {
+            ctx.lineWidth = 6;
+            // Stroke color in expanded calendar
+            ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "rgba(255, 255, 255, 1)";
+          }
+          var deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.05;
+          var deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.05;
+          if (arc_list[i] == "2" || arc_list[i] == "0") {
+            // Draw dotted line
+            var deg_mid = (deg_start + deg_end) / 2, deg_gap = (deg_end - deg_start) / 8;
+            deg_start = deg_mid - deg_gap;
+            deg_end = deg_mid + deg_gap;
+          }
+          ctx.arc(50, 50, 35, deg_start, deg_end);
           ctx.stroke();
         }
       });
@@ -811,11 +827,23 @@ function ClassListPlugin() {
     checkScroll() {
       if ("scroll_lock" in this && this.scroll_lock == true) return;
       this.scroll_lock = true;
-      if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1800 >= $$(document).height()) {
-        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
+      if (this.class_data.length > this.max_classes_loaded 
+          && $$(window).scrollTop() + $$(window).height() + 1800 >= $$(document).height()) {
+        for (var i = this.max_classes_loaded; 
+            i < this.max_classes_loaded + this.class_load_size 
+            && i < this.class_data.length 
+            && this.class_data[i].data.priority >= 0; i++)
           this.class_data[i].obj.show();
+
         this.max_classes_loaded += this.class_load_size;
         window.mdc.autoInit();
+        setTimeout((t) => {t.scroll_lock = false;}, 100, this);
+      } else if (this.max_classes_loaded >= 2 * this.class_load_size 
+          && $$(window).scrollTop() + $$(window).height() + this.class_load_size * 150 + 1800 <= $$(document).height()) {
+        this.max_classes_loaded -= this.class_load_size;
+        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size; i++)
+          this.class_data[i].obj.hide();
+        
         setTimeout((t) => {t.scroll_lock = false;}, 100, this);
       } else {
         this.scroll_lock = false;

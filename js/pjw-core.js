@@ -41,6 +41,27 @@ window.potatojw_intl = function() {
       e.stopPropagation();
     });
     $$("#TopLink").children("img").remove();
+    if ($$(".Line").length) {
+      $$("table").find("tr").each((index, obj) => {
+        if ($$(obj).html().trim() == "")
+          $$(obj).remove();
+      });
+      $$("table").find("td[align=right] > b").css({
+        "font-size": "14px",
+        "color": "rgba(0, 0, 0, .75)",
+        "font-weight": "bold"
+      });
+      $$("table").find("td[align=left] > b").css({
+        "font-size": "14px",
+        "color": "rgba(0, 0, 0, .65)",
+        "font-weight": "normal"
+      });
+      $$("table").find("td[align=left] > b > a").css({
+        "font-size": "14px",
+        "color": "rgba(0, 0, 0, .65)",
+        "font-weight": "normal"
+      });
+    }
   }
 
   window.reset_storage_confirm = false;
@@ -300,25 +321,6 @@ window.potatojw_intl = function() {
     `;
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
-    $$("table").find("tr").each((index, obj) => {
-      if ($$(obj).html().trim() == "")
-        $$(obj).remove();
-    });
-    $$("table").find("td[align=right] > b").css({
-      "font-size": "14px",
-      "color": "rgba(0, 0, 0, .75)",
-      "font-weight": "bold"
-    });
-    $$("table").find("td[align=left] > b").css({
-      "font-size": "14px",
-      "color": "rgba(0, 0, 0, .65)",
-      "font-weight": "normal"
-    });
-    $$("table").find("td[align=left] > b > a").css({
-      "font-size": "14px",
-      "color": "rgba(0, 0, 0, .65)",
-      "font-weight": "normal"
-    });
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
