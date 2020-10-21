@@ -1,5 +1,43 @@
 var pjw_filter = {
-  /* avail module v1.1 */
+  /* switch module v1.0 */
+  switch: {
+    html: `
+      <div id="pjw-switch-filter">
+        <div class="pjw-switch-box">
+          <div class="mdc-switch" id="pjw-switch-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-switch-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+          <label id="pjw-switch-switch-label" for="pjw-switch-switch-input">过滤器：关闭</label>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-switch-switch")[0]);
+      $$("#pjw-switch-filter").find("#pjw-switch-switch-input").on("change", null, {
+        space: space,
+        list: list
+      }, (e) => {
+        if (e.data.space.switch.checked) {
+          $$("#pjw-switch-switch-label").html("过滤器：开启");
+          e.data.list.filter_panel.css("filter", "saturate(3)");
+        } else {
+          $$("#pjw-switch-switch-label").html("过滤器：关闭");
+          e.data.list.filter_panel.css("filter", "");
+        }
+        e.data.list.filter_enabled = !e.data.list.filter_enabled;
+        e.data.list.update();
+      });
+    },
+    check: (space, data) => {
+      return 0;
+    }
+  },
+
+  /* avail module v1.2 */
   avail: {
     html: `
       <div id="pjw-avail-filter">
@@ -37,19 +75,19 @@ var pjw_filter = {
       space.status = true;
 
       space.dom.find("#pjw-avail-switch-input").on("change", null, {
-        target: space,
+        space: space,
         list: list
       }, (e) => {
-        e.data.target.status = e.data.target.switch.checked;
-        e.data.target.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
+        e.data.space.status = e.data.space.switch.checked;
+        e.data.space.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
         e.data.list.update();
       });
 
       space.dom.find("#pjw-deselect-switch-input").on("change", null, {
-        target: space,
+        space: space,
         list: list
       }, (e) => {
-        e.data.target.keep_deselect = e.data.target.deselect_switch.checked;
+        e.data.space.keep_deselect = e.data.space.deselect_switch.checked;
         e.data.list.update();
       });
     },
@@ -65,7 +103,7 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.1 */
+  /* hours module v0.2 */
   hours: {
     html: `
       <div id="pjw-hours-filter">
@@ -112,7 +150,6 @@ var pjw_filter = {
           <div id="pjw-hours-filter-control">
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
             <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
-            <div id="reset-calendar-allow-all" class="pjw-mini-button">重置并允许单双周课程</div>
           </div>
         </div>
       </div>
@@ -186,14 +223,6 @@ var pjw_filter = {
       }, (e) => {
         e.data.space.clear();
         e.data.space.loadMyClass().then(() => {e.data.list.update();});
-      });
-
-      $$("#reset-calendar-allow-all").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.space.clear();
-        e.data.space.loadMyClass(false).then(() => {e.data.list.update();});
       });
 
       space.mouse_select = false;
@@ -442,18 +471,20 @@ var pjw_filter = {
     }
   },
 
-  /* frozen module v1.0 */
+  /* frozen module v1.1 */
   frozen: {
     html: `
       <div id="pjw-frozen-filter" style="order: 3;">
-        <heading><span class="material-icons-round">ac_unit</span><span id="frozen-quotes"></span></heading>
+        <heading><span class="material-icons-round" id="frozen-icon" style="cursor: pointer;">ac_unit</span><span id="frozen-quotes"></span></heading>
       </div>
     `,
     intl: (space, list) => {
+      $$("#frozen-icon").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.target.html(e.data.space.getRandomQuotes());
+      });
       space.target = $$("#frozen-quotes");
-    },
-    handleShow: (space, list) => {
-      space.target.html(space.getRandomQuotes());
     },
     handleParseComplete: (space, list) => {
       space.target.html(space.getRandomQuotes());

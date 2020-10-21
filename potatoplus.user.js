@@ -72,6 +72,7 @@ function injectStyleFromString(str) {
     }
   }
 
+  /* BELOW COMMENTS ARE USED TO GENERATE USERSCRIPT */
 
 /* css/material-components-web.min.css */
 injectStyleFromString(`/**
@@ -745,6 +746,13 @@ injectStyleFromString(`/* PJW MiniList */
   --pjw-dark-background: rgba(54, 79, 125, 1);
 }
 
+.pjw-classlist-main {
+  margin: 4px 3%;
+  width: 94%;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 /* Heading */
 
 .pjw-classlist-heading {
@@ -854,7 +862,7 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 #pjw-classlist-search-field {
-  min-width: 300px;
+  min-width: 250px;
   margin-top: 10px;
   margin-bottom: 10px;
 }
@@ -862,14 +870,19 @@ injectStyleFromString(`/* PJW MiniList */
 /* Body */
 
 .pjw-classlist-body {
-  margin: 0 3% 20px 3%;
-  width: 94%;
-  top: 20px;
+  margin: 0 10px;
   position: relative;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   opacity: 0;
+}
+
+.pjw-classlist-body__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .pjw-class-container {
@@ -886,10 +899,6 @@ injectStyleFromString(`/* PJW MiniList */
   background: linear-gradient(200deg, rgba(99,6,95,.2) 0%, rgba(175,55,232,.2) 73%, rgba(255,71,152,.2) 100%);
   transition: background .2s ease-out;
   flex: 1 0 90%;
-}
-
-.two-column .pjw-class-container {
-  flex: 1 0 42%;
 }
 
 .pjw-class-container--compressed {
@@ -921,7 +930,7 @@ injectStyleFromString(`/* PJW MiniList */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: max(20%, 250px);
+  width: max(40%, 250px);
 }
 
 .pjw-classlist-body--condensed .pjw-class-info {
@@ -933,11 +942,19 @@ injectStyleFromString(`/* PJW MiniList */
   max-width: 50%;
 }
 
+.pjw-class-info-important {
+  display: none;
+}
+
+.pjw-class-container--compressed .pjw-class-info-important {
+  display: block;
+}
+
 .pjw-class-container--compressed .pjw-class-info-additional {
   display: none;
 }
 
-.pjw-class-info-bottom {
+.pjw-class-info-additional {
   margin-top: 8px;
 }
 
@@ -950,6 +967,9 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 .pjw-class-course-number {
+  flex-direction: row;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
   transition: color .1s ease-out;
 }
@@ -983,10 +1003,10 @@ injectStyleFromString(`/* PJW MiniList */
 .pjw-class-weekcal {
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex-shrink: 0;
   border-radius: 14px;
   background-color: rgba(0, 0, 0, .05);
-  padding: 6px;
   justify-content: space-around;
   user-select: none;
 }
@@ -996,6 +1016,7 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 .pjw-class-weekcal-heading {
+  margin: 2px;
   border: 2px solid rgba(0, 0, 0, .3);
   border-radius: 18px;
   height: 34px;
@@ -1007,11 +1028,11 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading {
-  margin: 10px 0;
   cursor: pointer;
 }
 
 .pjw-class-weekcal-heading-day {
+  position: relative;
   text-align: center;
   vertical-align: middle;
   font-size: 12px;
@@ -1027,6 +1048,34 @@ injectStyleFromString(`/* PJW MiniList */
   color: white;
   background-color: var(--pjw-dark-background);
   margin: 0 2px;
+}
+
+.pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc {
+  display: none;
+}
+
+.pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc-white {
+  display: block;
+}
+
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected {
+  background-color: rgba(0, 0, 0, .8);
+}
+
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc {
+  display: block;
+}
+
+.pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc-white {
+  display: none;
+}
+
+.pjw-class-weekcal-heading-day.selected > canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
 }
 
 .pjw-class-weekcal-calendar {
@@ -1116,19 +1165,45 @@ injectStyleFromString(`/* PJW MiniList */
 
 .pjw-class-time-detail {
   color: rgba(0, 0, 0, .6);
+  margin: 3px;
 }
 
 .pjw-class-container--compressed .pjw-class-time-detail {
   display: none;
 }
 
+.pjw-class-weeknums {
+  display: none;
+  background: linear-gradient(95deg, rgba(229, 119, 180, 1), rgba(123, 11, 94, 1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-box-decoration-break: clone;
+}
+
+.pjw-class-container--compressed .pjw-class-weeknums {
+  display: block;
+}
+
+.pjw-class-weeknums > span {
+  line-height: 14px;
+  vertical-align: middle;
+  font-size: 7px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, .6);
+  margin: 0 1px;
+}
+
 .pjw-class-weeknum-bar {
-  height: 16px;
-  width: 200px;
+  height: 18px;
+  width: 180px;
   border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 9px;
+  border-radius: 10px;
   position: relative;
   margin: 6px 0;
+}
+
+.pjw-class-container--compressed .pjw-class-sideinfo .pjw-class-weeknum-bar {
+  display: none;
 }
 
 .pjw-class-container--compressed .pjw-class-weeknum-bar {
@@ -1138,14 +1213,14 @@ injectStyleFromString(`/* PJW MiniList */
 
 .pjw-class-weeknum-bar__fill {
   position: absolute;
-  height: 16px;
-  border-radius: 9px;
+  height: 18px;
+  border-radius: 10px;
   background: linear-gradient(95deg, var(--pjw-dark-background), rgba(123, 11, 94, 1));
   color: white;
   text-align: center;
   vertical-align: middle;
-  font-size: 10px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .pjw-class-num-info {
@@ -1292,7 +1367,140 @@ injectStyleFromString(`/* PJW MiniList */
   letter-spacing: 0;
 }
 
-/* PJW Console */
+/* Fit Screen Size */
+.narrow-desktop .pjw-class-sub {
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.narrow-desktop .pjw-class-operation {
+  flex-direction: column;
+  padding: 5px 0;
+}
+`);
+
+/* css/pjw-filter.css */
+injectStyleFromString(`.pjw-filter-panel {
+  color: rgba(0, 0, 0, .4);
+  margin: 0 20px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
+  --mdc-theme-secondary: rgb(16, 89, 223);
+  
+  display: flex;
+  flex-direction: column;
+  flex-basis: 10%;
+
+  height: fit-content;
+  height: -moz-fit-content;
+
+  transition: filter .3s ease-out;
+}
+
+.pjw-filter-panel > div {
+  margin: 10px 0;
+}
+
+.pjw-filter-panel heading {
+  display: block;
+  color: rgba(0, 0, 0, .7);
+  margin: 6px 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.pjw-filter-panel .content {
+  margin: 10px 16px;
+}
+
+.pjw-filter-panel heading > .material-icons-round {
+  font-size: 26px;
+  margin: 0 5px;
+  color: rgba(0, 0, 0, .7);
+}
+
+.pjw-filter-panel__content {
+  margin: 20px 24px;
+}
+
+.pjw-filter-panel .mdc-switch {
+  margin: 5px 10px;
+}
+
+.pjw-switch-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 15px;
+}
+
+#pjw-hours-filter > .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-heading-day {
+  cursor: pointer;
+  transition: color .1s ease-out;
+}
+
+#pjw-hours-filter .select-time > span {
+  cursor: pointer;
+  transition: color .1s ease-out;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-heading-day:hover {
+  color: var(--white);
+}
+
+#pjw-hours-filter .select-time > span:hover {
+  color: var(--white);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
+  color: rgba(255, 255, 255, .7);
+  text-decoration: line-through;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day.select-time > span {
+  font-weight: bold;
+  border-color: transparent;
+}
+
+#pjw-hours-filter-control {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  opacity: 0.65;
+  transition: opacity .1s ease-out;
+}
+
+#pjw-hours-filter-control:hover {
+  display: flex;
+  margin: 10px 0;
+  opacity: 1;
+}
+
+#pjw-hours-filter-control > .pjw-mini-button {
+  color: var(--pjw-dark-background);
+}
+
+#pjw-hours-filter-control > .pjw-mini-button:hover {
+  color: rgb(208, 196, 16);
+}
+
+#frozen-quotes {
+  font-size: 12px;
+  color: rgba(0, 0, 0, .35);
+}`);
+
+/* css/pjw-console.css */
+injectStyleFromString(`/* PJW Console */
 #pjw-console {
   position: fixed;
   margin: 10px 20%;
@@ -1378,147 +1586,8 @@ injectStyleFromString(`/* PJW MiniList */
 .pjw-console-text {
   overflow-wrap: anywhere;
   hyphens: "-";
-}
-
-.narrow-desktop .pjw-class-sub {
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-}
-.narrow-desktop .pjw-class-operation {
-  flex-direction: column;
-  padding: 5px 0;
-}
-`);
-
-/* css/pjw-filter.css */
-injectStyleFromString(`.pjw-filter-panel {
-  color: rgba(0, 0, 0, .4);
-  margin: 0 12%;
-  border-radius: 20px;
-  width: 76%;
-  background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
-  --mdc-theme-secondary: rgb(16, 89, 223);
-  transition: transform .2s ease-in, opacity .2s ease-in;
-
-  pointer-events: none;
-  transform: translate(-20px, -40px) scale(1.1, 1.1);
-  opacity: 0;
-  height: 0;
-}
-
-.pjw-filter-panel.shown {
-  height: auto;
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-}
-
-.pjw-filter-panel__content {
-  margin: 10px 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.pjw-filter-panel__content > div {
-  margin: 20px 0;
-}
-
-.pjw-filter-panel heading {
-  display: block;
-  color: rgba(0, 0, 0, .7);
-  margin: 6px 0;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-}
-
-.pjw-filter-panel .content {
-  margin: 10px 16px;
-}
-
-.pjw-filter-panel heading > .material-icons-round {
-  font-size: 26px;
-  margin: 0 5px;
-  color: rgba(0, 0, 0, .7);
-}
-
-.pjw-filter-panel__content {
-  margin: 20px 24px;
-}
-
-.pjw-filter-panel .mdc-switch {
-  margin: 5px 10px;
-}
-
-.pjw-switch-box {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 15px;
-}
-
-#pjw-hours-filter > .content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#pjw-hours-filter .pjw-class-weekcal-heading-day {
-  cursor: pointer;
-  transition: color .1s ease-out;
-}
-
-#pjw-hours-filter .select-time > span {
-  cursor: pointer;
-  transition: color .1s ease-out;
-}
-
-#pjw-hours-filter .pjw-class-weekcal-heading-day:hover {
-  color: var(--white);
-}
-
-#pjw-hours-filter .select-time > span:hover {
-  color: var(--white);
-}
-
-#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
-  color: rgba(255, 255, 255, .7);
-  text-decoration: line-through;
-  background-color: rgba(0, 0, 0, .5);
-}
-
-#pjw-hours-filter .pjw-class-weekcal-calendar-day.select-time > span {
-  font-weight: bold;
-  border-color: transparent;
-}
-
-#pjw-hours-filter-control {
-  display: flex;
-  margin: 10px 0;
-  opacity: 0.65;
-  transition: opacity .1s ease-out;
-}
-
-#pjw-hours-filter-control:hover {
-  display: flex;
-  margin: 10px 0;
-  opacity: 1;
-}
-
-#pjw-hours-filter-control > .pjw-mini-button {
-  color: var(--pjw-dark-background);
-}
-
-#pjw-hours-filter-control > .pjw-mini-button:hover {
-  color: rgb(208, 196, 16);
-}
-
-#frozen-quotes {
-  font-size: 12px;
-  color: rgba(0, 0, 0, .35);
 }`);
+  /* DO NOT REMOVE */
 
 
 /* js/jquery.min.js */
@@ -2030,7 +2099,45 @@ var numkeys = [["7","00000111000000000000;00001111111000000000;00011111111100000
 
 /* js/pjw-filter.js */
 var pjw_filter = {
-  /* avail module v1.1 */
+  /* switch module v1.0 */
+  switch: {
+    html: `
+      <div id="pjw-switch-filter">
+        <div class="pjw-switch-box">
+          <div class="mdc-switch" id="pjw-switch-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-switch-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+          <label id="pjw-switch-switch-label" for="pjw-switch-switch-input">过滤器：关闭</label>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-switch-switch")[0]);
+      $$("#pjw-switch-filter").find("#pjw-switch-switch-input").on("change", null, {
+        space: space,
+        list: list
+      }, (e) => {
+        if (e.data.space.switch.checked) {
+          $$("#pjw-switch-switch-label").html("过滤器：开启");
+          e.data.list.filter_panel.css("filter", "saturate(3)");
+        } else {
+          $$("#pjw-switch-switch-label").html("过滤器：关闭");
+          e.data.list.filter_panel.css("filter", "");
+        }
+        e.data.list.filter_enabled = !e.data.list.filter_enabled;
+        e.data.list.update();
+      });
+    },
+    check: (space, data) => {
+      return 0;
+    }
+  },
+
+  /* avail module v1.2 */
   avail: {
     html: `
       <div id="pjw-avail-filter">
@@ -2068,19 +2175,19 @@ var pjw_filter = {
       space.status = true;
 
       space.dom.find("#pjw-avail-switch-input").on("change", null, {
-        target: space,
+        space: space,
         list: list
       }, (e) => {
-        e.data.target.status = e.data.target.switch.checked;
-        e.data.target.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
+        e.data.space.status = e.data.space.switch.checked;
+        e.data.space.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
         e.data.list.update();
       });
 
       space.dom.find("#pjw-deselect-switch-input").on("change", null, {
-        target: space,
+        space: space,
         list: list
       }, (e) => {
-        e.data.target.keep_deselect = e.data.target.deselect_switch.checked;
+        e.data.space.keep_deselect = e.data.space.deselect_switch.checked;
         e.data.list.update();
       });
     },
@@ -2096,11 +2203,11 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.1 */
+  /* hours module v0.2 */
   hours: {
     html: `
       <div id="pjw-hours-filter">
-        <heading><span class="material-icons-round">schedule</span>课程时间 *Beta</heading>
+        <heading><span class="material-icons-round">schedule</span>课程时间</heading>
         <div class="content">
           <div class="pjw-class-weekcal">
             <div class="pjw-class-weekcal-heading">
@@ -2143,7 +2250,6 @@ var pjw_filter = {
           <div id="pjw-hours-filter-control">
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
             <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
-            <div id="reset-calendar-allow-all" class="pjw-mini-button">重置并允许单双周课程</div>
           </div>
         </div>
       </div>
@@ -2217,14 +2323,6 @@ var pjw_filter = {
       }, (e) => {
         e.data.space.clear();
         e.data.space.loadMyClass().then(() => {e.data.list.update();});
-      });
-
-      $$("#reset-calendar-allow-all").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.space.clear();
-        e.data.space.loadMyClass(false).then(() => {e.data.list.update();});
       });
 
       space.mouse_select = false;
@@ -2473,18 +2571,20 @@ var pjw_filter = {
     }
   },
 
-  /* frozen module v1.0 */
+  /* frozen module v1.1 */
   frozen: {
     html: `
       <div id="pjw-frozen-filter" style="order: 3;">
-        <heading><span class="material-icons-round">ac_unit</span><span id="frozen-quotes"></span></heading>
+        <heading><span class="material-icons-round" id="frozen-icon" style="cursor: pointer;">ac_unit</span><span id="frozen-quotes"></span></heading>
       </div>
     `,
     intl: (space, list) => {
+      $$("#frozen-icon").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.target.html(e.data.space.getRandomQuotes());
+      });
       space.target = $$("#frozen-quotes");
-    },
-    handleShow: (space, list) => {
-      space.target.html(space.getRandomQuotes());
     },
     handleParseComplete: (space, list) => {
       space.target.html(space.getRandomQuotes());
@@ -2570,52 +2670,71 @@ function ClassListPlugin() {
       }
 
       function getTeachers(content) {
-        var is_first = true; var accu = "";
+        var is_first = true; var html = "";
         for (var str of content) {
-          if (!is_first) accu += "，";
+          if (!is_first) html += "，";
           is_first = false;
-          accu += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
+          html += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
         }
-        return accu;
+        return html;
       }
 
       function getClassInfo(content, classID) {
         if (!classID || classID[0] == "#") classID = "0";
-        var appear_accu = "", hidden_accu = "";
+        var appear_html = [], hidden_html = "";
         for (var item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');">${item.val}</span>`;
+              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');event.stopPropagation();">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
             }
             if (item.val == "") continue;
             if (!item.hidden)
-              appear_accu += `<p>${item.key}：${item.val}</p>`;
-            else
-              hidden_accu += `<p>${item.key}：${item.val}</p>`;
+              appear_html.push(`${item.val}`);
+            hidden_html += `<p>${item.key}：${item.val}</p>`;
           } else {
-            appear_accu += `<p>${item}</p>`;
+            hidden_html += `<p>${item}</p>`;
           }
         }
-        return `<div class="pjw-class-info-important">${appear_accu}</div><div class="pjw-class-info-additional">${hidden_accu}</div>`;
+        return `<div class="pjw-class-info-important"><p>${appear_html.join(" / ")}</p></div><div class="pjw-class-info-additional">${hidden_html}</div>`;
       }
 
       function getNumInfo(content) {
-        var accu = "";
+        var html = "";
         for (var item of content)
-          accu += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
-        return accu;
+          html += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
+        return html;
       }
 
-      function getWeekNum(data) {
-        var accu = "";
+      function getWeeksBar(data) {
+        var html = "";
         for (var item of data) {
-          var style = `left: ${String((item.start - 1) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1) / total_weeks * 100) + "%"}`;
+          var style = `left: ${String((item.start - 1.4) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1.8) / total_weeks * 100) + "%"}`;
           if (item.start != item.end)
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 3 ? "周" : ""}</div>`;
+            html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
           else
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
+            html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
-        return accu;
+        return html;
+      }
+
+      function getWeeks(data) {
+        var html = "";
+        var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (var item of data) {
+          for (var i = item.start; i <= item.end; i++)
+            weeks[i] = 1;
+          weeks[item.start] = 2;
+          weeks[item.end] = 2;
+        }
+        for (var i = 1; i <= total_weeks; i++)
+          if (weeks[i] == 1) {
+            html += `<span style="-webkit-text-fill-color: transparent;">&gt;</span>`;
+          } else if (weeks[i] == 2) {
+            html += `<span style="font-size: 10px; -webkit-text-fill-color: transparent;">${i}</span>`;
+          } else {
+            html += `<span>·</span>`;
+          }
+        return html;
       }
 
       function getLessonTime(data) {
@@ -2623,7 +2742,7 @@ function ClassListPlugin() {
         var body_html = ``;
 
         var weekend_flag = false;
-        var has_class = [false, false, false, false, false, false, false, false];
+        var has_class = [0, 0, 0, 0, 0, 0, 0, 0];
         var class_class = [
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
@@ -2639,7 +2758,7 @@ function ClassListPlugin() {
           if (item.weekday > 5 && weekend_flag == false)
             weekend_flag = true;
 
-          has_class[item.weekday] = true;
+          has_class[item.weekday]++;
 
           var cssclass = "selected";
           if (item.type == "odd") cssclass += " sel-odd-class";
@@ -2655,7 +2774,15 @@ function ClassListPlugin() {
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
-          heading_html += `<div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">${weekday_display_name[i]}</div>`;
+          var data_arc = class_class[i].map((x) => (
+            x == "" ? "0" : (x.includes("even") || x.includes("odd") ? "2" : "1")
+          )).join('').slice(1);
+
+          heading_html += `
+            <div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">
+              <span>${has_class[i] ? weekday_display_name[i][0] : weekday_display_name[i]}</span>
+              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${data_arc}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${data_arc}" width="100" height="100"></canvas>` : ''}
+            </div>`;
 
           var body_html_span = "";
           
@@ -2760,12 +2887,19 @@ function ClassListPlugin() {
             return getNumInfo(data.num_info);
           else return "";
 
-        case "weeknum":
+        case "weeksbar":
           if ("class_weeknum" in data) {
             if (data.class_weeknum.length)
-              return `<div class="pjw-class-weeknum-bar">${getWeekNum(data.class_weeknum)}</div>`
+              return `<div class="pjw-class-weeknum-bar">${getWeeksBar(data.class_weeknum)}</div>`
             else
               return `<div class="pjw-class-weeknum-bar" style="display: none;"></div>`;
+          } else {
+            return "";
+          }
+
+        case "weeks":
+          if ("class_weeknum" in data && data.class_weeknum.length) {
+            return `<div class="pjw-class-weeknums">${getWeeks(data.class_weeknum)}</div>`
           } else {
             return "";
           }
@@ -2802,10 +2936,13 @@ function ClassListPlugin() {
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
         <div class="pjw-class-sub">
-          <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
+          <div class="pjw-class-weekcal">
+            ${this.getHTML(data, "lessontime")}
+            ${this.getHTML(data, "weeks")}
+          </div>
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
-            ${this.getHTML(data, "weeknum")}
+            ${this.getHTML(data, "weeksbar")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
         </div>
@@ -2858,6 +2995,49 @@ function ClassListPlugin() {
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
+
+      // Draw weekday lesson time rings
+      var deg_list = [
+        [0,2],[2,4],
+        [5,7],[7,9],
+        [10,12],[12,14],
+        [15,17],[17,19],
+        [20,22],[22,24],[24,26]
+      ];
+      var color_list = [
+        "yellow", "yellow",
+        "white", "white",
+        "#e5ffc7", "#e5ffc7",
+        "#ff5400", "#ff5400",
+        "#8178f9", "#8178f9", "#8178f9"
+      ];
+      this.weekcal.find("canvas").each((index, val) => {
+        var ctx = val.getContext("2d");
+        var arc_list = $$(val).attr("data-arc");
+
+        for (var i = 0; i < 11; i++) {
+          ctx.beginPath();  
+          if ($$(val).hasClass("pjw-class-weekcal-arc")) {
+            ctx.lineWidth = 8;
+            // Stroke color in compressed calendar
+            ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : color_list[i];
+          } else {
+            ctx.lineWidth = 6;
+            // Stroke color in expanded calendar
+            ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "rgba(255, 255, 255, 1)";
+          }
+          var deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.02;
+          var deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.02;
+          if (arc_list[i] == "2" || arc_list[i] == "0") {
+            // Draw dotted line
+            var deg_mid = (deg_start + deg_end) / 2, deg_gap = (deg_end - deg_start) / 6;
+            deg_start = deg_mid - (arc_list[i] == "0" ? 1 : 2) * deg_gap;
+            deg_end = deg_mid + deg_gap;
+          }
+          ctx.arc(50, 50, 35, deg_start, deg_end);
+          ctx.stroke();
+        }
+      });
 
       // Set select button click event
       this.select_button.click({
@@ -2998,7 +3178,7 @@ function ClassListPlugin() {
 
     // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
-      if (!pattern || !str) return 0;
+      if (typeof(pattern) == "undefined" || pattern == "") return 0;
 
       function testString(keyword, str) {
         if (keyword.length != 1 && keyword[0] == "-") {
@@ -3152,6 +3332,8 @@ function ClassListPlugin() {
         if (i < this.max_classes_loaded && this.class_data[i].data.priority >= 0) {
           this.class_data[i].obj.intl();
           this.class_data[i].obj.show();
+        } else {
+          this.class_data[i].obj.hide();
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
@@ -3220,7 +3402,7 @@ function ClassListPlugin() {
               if (num_arr.length == 1)
                 weeks[parseInt(num_arr[0])] = 1;
               else if (num_arr.length == 2)
-                for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
+                for (var i = parseInt(num_arr[0]); i <= Math.min(total_weeks, parseInt(num_arr[1])); i++)
                   weeks[i] = 1;
             }
           } else if (jtem.search(/从第(\d+)周开始/) != -1) {
@@ -3273,11 +3455,31 @@ function ClassListPlugin() {
     checkScroll() {
       if ("scroll_lock" in this && this.scroll_lock == true) return;
       this.scroll_lock = true;
-      if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1600 >= $$(document).height()) {
-        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
+      if (this.class_data.length > this.max_classes_loaded 
+          && $$(window).scrollTop() + $$(window).height() + 1800 >= $$(document).height()) {
+        var count = 0;
+        for (var i = this.max_classes_loaded; 
+            i < this.max_classes_loaded + this.class_load_size 
+            && i < this.class_data.length 
+            && this.class_data[i].data.priority >= 0; i++) {
           this.class_data[i].obj.show();
-        this.max_classes_loaded += this.class_load_size;
+          count++;
+        }
+
+        this.max_classes_loaded += count;
         window.mdc.autoInit();
+        setTimeout((t) => {t.scroll_lock = false;}, 100, this);
+      } else if (this.max_classes_loaded >= 2 * this.class_load_size 
+          && $$(window).scrollTop() + $$(window).height() + this.class_load_size * 150 + 1800 <= $$(document).height()) {
+        var orig_classes_count = this.max_classes_loaded;
+        this.max_classes_loaded -= this.class_load_size * parseInt(
+          ($$(document).height() - $$(window).scrollTop() - $$(window).height() - 1800) / 150 / this.class_load_size
+        );
+        this.max_classes_loaded = Math.max(this.class_load_size, this.max_classes_loaded);
+
+        for (var i = this.max_classes_loaded; i < orig_classes_count; i++)
+          this.class_data[i].obj.hide();
+        
         setTimeout((t) => {t.scroll_lock = false;}, 100, this);
       } else {
         this.scroll_lock = false;
@@ -3447,23 +3649,6 @@ function ClassListPlugin() {
         }
         this.auto_refresh_frequency = 1.0;
         this.toggleAutoRefresh(status);
-      } else if (id == "filter-switch") {
-        if (!this.filter_enabled)
-          this.filter_enabled = true;
-        else
-          this.filter_enabled = false;
-        this.update();
-      }
-    }
-
-    // Triggered by filter button
-    showFilter() {
-      if (this.filter_panel.css("pointer-events") == "none") {
-        this.addFilterHook("handleShow");
-        this.filter_panel.addClass("shown");
-        $$(window).scrollTop(this.heading.offset().top - 10);
-      } else {
-        this.filter_panel.removeClass("shown");
       }
     }
 
@@ -3471,11 +3656,8 @@ function ClassListPlugin() {
       var width = this.body.children(":visible:eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
-      if (body_width < 1450) this.body.removeClass("two-column");
-      else this.body.addClass("two-column");
       if (width < 700) this.body.addClass("narrow-desktop");
       else this.body.removeClass("narrow-desktop");
-      setTimeout((t) => {t.handleResize();}, 60, this);
     }
 
     getClassID(obj) {
@@ -3505,7 +3687,7 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent, modules = ["avail", "hours", "frozen"]) {
+    constructor(parent, modules = ["switch", "avail", "hours", "frozen"]) {
       this.filter_modules = modules;
 
       // Deploy filter DOM
@@ -3518,7 +3700,7 @@ function ClassListPlugin() {
         <div class="pjw-classlist-heading">
           <div class="pjw-classlist-selectors">
           </div>
-          <div class="pjw-classlist-controls pjw-float--fixed">
+          <div class="pjw-classlist-controls">
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
@@ -3529,19 +3711,6 @@ function ClassListPlugin() {
               <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
-              </button>
-            </section>
-
-            <section id="filter-control-section">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
-                <div class="mdc-button__ripple"></div>
-                <div class="material-icons-round">filter_alt</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
-              </button>
-
-              <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="filter-switch">
-                <div class="material-icons-round">toggle_off</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
               </button>
             </section>
 
@@ -3559,20 +3728,22 @@ function ClassListPlugin() {
             </section>
           </div>
         </div>
-        <div class="pjw-filter-panel">
-          <div class="pjw-filter-panel__content">
+        <div class="pjw-classlist-main">
+          <div class="pjw-filter-panel">  
             ${filter_modules}
             <div class="pjw-mini-brand" style="order: 10;">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
             </div>
           </div>
-        </div>
-        <div class="pjw-classlist-body narrow-desktop"></div>
-        <div class="pjw-mini-brand">
-          <p id="pjw-classlist-count">Loading...</p>
-        </div>
-        <div class="pjw-mini-brand">
-          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+          <div class="pjw-classlist-body__container">
+            <div class="pjw-classlist-body"></div>
+            <div class="pjw-mini-brand">
+              <p id="pjw-classlist-count">Loading...</p>
+            </div>
+            <div class="pjw-mini-brand">
+              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+            </div>
+          </div>
         </div>
       </div>`;
 
@@ -3580,12 +3751,12 @@ function ClassListPlugin() {
       this.heading = this.dom.children(".pjw-classlist-heading");
       this.selectors = this.heading.children(".pjw-classlist-selectors");
       this.controls = this.heading.children(".pjw-classlist-controls");
-      this.body = this.dom.children(".pjw-classlist-body");
+      this.main = this.dom.children(".pjw-classlist-main");
+      this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
-      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
-      this.filter_panel = this.dom.children(".pjw-filter-panel");
+      this.filter_panel = this.main.children(".pjw-filter-panel");
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
@@ -3619,12 +3790,6 @@ function ClassListPlugin() {
       }, (e) => {
         if ($$("#autorefresh-switch").hasClass("off"))
           e.data.target.refresh(true);
-      });
-
-      this.filter_button.on("click", null, {
-        target: this
-      }, (e) => {
-        e.data.target.showFilter();
       });
 
       this.refresh_button.on("mousedown", null, {
@@ -3848,7 +4013,7 @@ function ClassListPlugin() {
     constructor() {
       var list_html = `
       <div class="pjw-minilist">
-        <div class="pjw-minilist-heading pjw-float--fixed"></div>
+        <div class="pjw-minilist-heading"></div>
         <div class="pjw-minilist-body"></div>
         <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
@@ -3880,7 +4045,7 @@ function ClassListPlugin() {
         }
       });
       $$(".pjw-float--fixed").each((index, val) => {
-        if ($$(val).offset().top < $$(window).scrollTop() - 100) {
+        if ($$(val).offset().top + 100 < $$(window).scrollTop()) {
           $$(val).css({
             "position": "fixed",
             "top": "10px",
@@ -3888,7 +4053,7 @@ function ClassListPlugin() {
             "border": "1px solid #000",
             "border-radius": "14px",
             "padding": "3px 15px",
-            "background": "rgba(255, 255, 255, .6)"
+            "background": "rgba(0, 0, 0, .1)"
           });
           $$(val).removeClass("pjw-float--fixed");
           $$(val).addClass("pjw-float--floating");
@@ -4537,6 +4702,27 @@ window.potatojw_intl = function() {
       e.stopPropagation();
     });
     $$("#TopLink").children("img").remove();
+    if ($$(".Line").length) {
+      $$("table").find("tr").each((index, obj) => {
+        if ($$(obj).html().trim() == "")
+          $$(obj).remove();
+      });
+      $$("table").find("td[align=right] > b").css({
+        "font-size": "14px",
+        "color": "rgba(0, 0, 0, .75)",
+        "font-weight": "bold"
+      });
+      $$("table").find("td[align=left] > b").css({
+        "font-size": "14px",
+        "color": "rgba(0, 0, 0, .65)",
+        "font-weight": "normal"
+      });
+      $$("table").find("td[align=left] > b > a").css({
+        "font-size": "14px",
+        "color": "rgba(0, 0, 0, .65)",
+        "font-weight": "normal"
+      });
+    }
   }
 
   window.reset_storage_confirm = false;
@@ -4796,25 +4982,6 @@ window.potatojw_intl = function() {
     `;
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
-    $$("table").find("tr").each((index, obj) => {
-      if ($$(obj).html().trim() == "")
-        $$(obj).remove();
-    });
-    $$("table").find("td[align=right] > b").css({
-      "font-size": "14px",
-      "color": "rgba(0, 0, 0, .75)",
-      "font-weight": "bold"
-    });
-    $$("table").find("td[align=left] > b").css({
-      "font-size": "14px",
-      "color": "rgba(0, 0, 0, .65)",
-      "font-weight": "normal"
-    });
-    $$("table").find("td[align=left] > b > a").css({
-      "font-size": "14px",
-      "color": "rgba(0, 0, 0, .65)",
-      "font-weight": "normal"
-    });
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
@@ -4979,9 +5146,11 @@ window.potatojw_intl = function() {
       var stu_grade = stu_info.grade, stu_dept = stu_info.department, stu_major = stu_info.major;
       var sel = list.selectors;
       sel.grade.setByText(stu_grade);
-      sel.institution.setByText(stu_dept);
+      sel.institution.setByText("全部课程");
+      list.selectors.major.dom.hide();
+      // sel.institution.setByText(stu_dept);
       reloadMajor();
-      sel.major.setByText(stu_major);
+      // sel.major.setByText(stu_major);
       list.refresh();
       fillCompleted();
     }
@@ -5802,11 +5971,11 @@ window.potatojw_intl = function() {
               title: td(2).html(),
               teachers: this.parseTeacherNames(td(6).html()),
               info: [{
-                key: "开课年级",
-                val: td(4).html()
-              }, {
                 key: "课程编号",
                 val: this.parseClassNumber(td(0))
+              }, {
+                key: "开课年级",
+                val: td(4).html()
               }, {
                 key: "开课院系",
                 val: this.selectors.academy.text(),
@@ -6171,7 +6340,7 @@ window.potatojw_intl = function() {
 
     window.list = new PJWMiniList();
     list.dom.prependTo($$("td[valign=top][align=left]"));
-    list.dom.after(`<div class="pjw-mini-button" onclick='$$("table.TABLE_BODY").css("display", "table");'>显示成绩表格</div>`)
+    list.dom.after(`<div class="pjw-mini-button" id="show-grade-table" onclick="$$('table.TABLE_BODY').css('display', 'table'); $$('#show-grade-table').hide();">显示成绩表格</div>`)
 
     initGradeList = () => {
       $$(".click-to-show").on("click", (e) => {
@@ -6190,10 +6359,14 @@ window.potatojw_intl = function() {
           <label for="hide-grade">默认隐藏成绩</label>
           <span id="show-all-grade" class="pjw-mini-button">显示全部成绩</span>
         </div>
-        <div>
-          <span id="average-score">PotatoPlus GPA计算器</span>
-          <span id="calc-all-grade" class="pjw-mini-button">计算全部</span>
-          <span id="remove-all-grade" class="pjw-mini-button">移除全部</span>
+        <div class="pjw-float--fixed" style="flex-direction: column;">
+          <div>
+            <span id="average-score" style="font-size: 14px; height: 24px; line-height: 24px">PotatoPlus GPA计算器</span>
+          </div>
+          <div>
+            <span id="calc-all-grade" class="pjw-mini-button">计算全部</span>
+            <span id="remove-all-grade" class="pjw-mini-button">移除全部</span>
+          </div>
         </div>
       `);
 

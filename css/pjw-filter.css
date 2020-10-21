@@ -1,7 +1,7 @@
 .pjw-filter-panel {
   color: rgba(0, 0, 0, .4);
   margin: 0 20px;
-  padding: 10px 30px;
+  padding: 10px 20px;
   border-radius: 20px;
   background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
   --mdc-theme-secondary: rgb(16, 89, 223);
@@ -12,10 +12,12 @@
 
   height: fit-content;
   height: -moz-fit-content;
+
+  transition: filter .3s ease-out;
 }
 
 .pjw-filter-panel > div {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .pjw-filter-panel heading {

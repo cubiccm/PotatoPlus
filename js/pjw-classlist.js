@@ -1088,7 +1088,7 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent, modules = ["avail", "hours", "frozen"]) {
+    constructor(parent, modules = ["switch", "avail", "hours", "frozen"]) {
       this.filter_modules = modules;
 
       // Deploy filter DOM
