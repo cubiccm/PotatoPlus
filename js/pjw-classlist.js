@@ -1050,23 +1050,6 @@ function ClassListPlugin() {
         }
         this.auto_refresh_frequency = 1.0;
         this.toggleAutoRefresh(status);
-      } else if (id == "filter-switch") {
-        if (!this.filter_enabled)
-          this.filter_enabled = true;
-        else
-          this.filter_enabled = false;
-        this.update();
-      }
-    }
-
-    // Triggered by filter button
-    showFilter() {
-      if (this.filter_panel.css("pointer-events") == "none") {
-        this.addFilterHook("handleShow");
-        this.filter_panel.addClass("shown");
-        $$(window).scrollTop(this.heading.offset().top - 10);
-      } else {
-        this.filter_panel.removeClass("shown");
       }
     }
 
@@ -1118,7 +1101,7 @@ function ClassListPlugin() {
         <div class="pjw-classlist-heading">
           <div class="pjw-classlist-selectors">
           </div>
-          <div class="pjw-classlist-controls pjw-float--fixed">
+          <div class="pjw-classlist-controls">
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
@@ -1129,19 +1112,6 @@ function ClassListPlugin() {
               <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
                 <div class="material-icons-round">toggle_off</div>
                 <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
-              </button>
-            </section>
-
-            <section id="filter-control-section">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
-                <div class="mdc-button__ripple"></div>
-                <div class="material-icons-round">filter_alt</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
-              </button>
-
-              <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="filter-switch">
-                <div class="material-icons-round">toggle_off</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
               </button>
             </section>
 
@@ -1159,20 +1129,22 @@ function ClassListPlugin() {
             </section>
           </div>
         </div>
-        <div class="pjw-filter-panel">
-          <div class="pjw-filter-panel__content">
+        <div class="pjw-classlist-main">
+          <div class="pjw-filter-panel">  
             ${filter_modules}
             <div class="pjw-mini-brand" style="order: 10;">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
             </div>
           </div>
-        </div>
-        <div class="pjw-classlist-body narrow-desktop"></div>
-        <div class="pjw-mini-brand">
-          <p id="pjw-classlist-count">Loading...</p>
-        </div>
-        <div class="pjw-mini-brand">
-          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+          <div class="pjw-classlist-body__container">
+            <div class="pjw-classlist-body"></div>
+            <div class="pjw-mini-brand">
+              <p id="pjw-classlist-count">Loading...</p>
+            </div>
+            <div class="pjw-mini-brand">
+              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+            </div>
+          </div>
         </div>
       </div>`;
 
@@ -1180,12 +1152,12 @@ function ClassListPlugin() {
       this.heading = this.dom.children(".pjw-classlist-heading");
       this.selectors = this.heading.children(".pjw-classlist-selectors");
       this.controls = this.heading.children(".pjw-classlist-controls");
-      this.body = this.dom.children(".pjw-classlist-body");
+      this.main = this.dom.children(".pjw-classlist-main");
+      this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
-      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-class-search-input");
-      this.filter_panel = this.dom.children(".pjw-filter-panel");
+      this.filter_panel = this.main.children(".pjw-filter-panel");
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
@@ -1219,12 +1191,6 @@ function ClassListPlugin() {
       }, (e) => {
         if ($$("#autorefresh-switch").hasClass("off"))
           e.data.target.refresh(true);
-      });
-
-      this.filter_button.on("click", null, {
-        target: this
-      }, (e) => {
-        e.data.target.showFilter();
       });
 
       this.refresh_button.on("mousedown", null, {
@@ -1448,7 +1414,7 @@ function ClassListPlugin() {
     constructor() {
       var list_html = `
       <div class="pjw-minilist">
-        <div class="pjw-minilist-heading pjw-float--fixed"></div>
+        <div class="pjw-minilist-heading"></div>
         <div class="pjw-minilist-body"></div>
         <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
@@ -1465,7 +1431,7 @@ function ClassListPlugin() {
   (() => {
     $$(window).on("scroll", () => {
       $$(".pjw-float--floating").each((index, val) => {
-        if ($$(val).parent().offset().top + 100 >= $$(window).scrollTop()) {
+        if ($$(val).parent().offset().top >= $$(window).scrollTop()) {
           $$(val).css({
             "position": "",
             "top": "",
@@ -1480,7 +1446,7 @@ function ClassListPlugin() {
         }
       });
       $$(".pjw-float--fixed").each((index, val) => {
-        if ($$(val).offset().top + 300 < $$(window).scrollTop()) {
+        if ($$(val).offset().top + 100 < $$(window).scrollTop()) {
           $$(val).css({
             "position": "fixed",
             "top": "10px",
@@ -1488,7 +1454,7 @@ function ClassListPlugin() {
             "border": "1px solid #000",
             "border-radius": "14px",
             "padding": "3px 15px",
-            "background": "rgba(255, 255, 255, .6)"
+            "background": "rgba(0, 0, 0, .1)"
           });
           $$(val).removeClass("pjw-float--fixed");
           $$(val).addClass("pjw-float--floating");

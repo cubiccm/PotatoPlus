@@ -169,6 +169,13 @@
   --pjw-dark-background: rgba(54, 79, 125, 1);
 }
 
+.pjw-classlist-main {
+  margin: 4px 3%;
+  width: 94%;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 /* Heading */
 
 .pjw-classlist-heading {
@@ -286,14 +293,19 @@
 /* Body */
 
 .pjw-classlist-body {
-  margin: 0 3% 20px 3%;
-  width: 94%;
-  top: 20px;
+  margin: 0 10px;
   position: relative;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   opacity: 0;
+}
+
+.pjw-classlist-body__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .pjw-class-container {

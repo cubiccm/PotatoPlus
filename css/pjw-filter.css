@@ -1,32 +1,20 @@
 .pjw-filter-panel {
   color: rgba(0, 0, 0, .4);
-  margin: 0 12%;
+  margin: 0 20px;
+  padding: 10px 30px;
   border-radius: 20px;
-  width: 76%;
   background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
   --mdc-theme-secondary: rgb(16, 89, 223);
-  transition: transform .2s ease-in, opacity .2s ease-in;
-
-  pointer-events: none;
-  transform: translate(-20px, -40px) scale(1.1, 1.1);
-  opacity: 0;
-  height: 0;
-}
-
-.pjw-filter-panel.shown {
-  height: auto;
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-}
-
-.pjw-filter-panel__content {
-  margin: 10px 0;
+  
   display: flex;
   flex-direction: column;
+  flex-basis: 10%;
+
+  height: fit-content;
+  height: -moz-fit-content;
 }
 
-.pjw-filter-panel__content > div {
+.pjw-filter-panel > div {
   margin: 20px 0;
 }
 
@@ -102,6 +90,7 @@
 
 #pjw-hours-filter-control {
   display: flex;
+  flex-wrap: wrap;
   margin: 10px 0;
   opacity: 0.65;
   transition: opacity .1s ease-out;

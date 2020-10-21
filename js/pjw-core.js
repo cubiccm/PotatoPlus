@@ -1679,7 +1679,7 @@ window.potatojw_intl = function() {
 
     window.list = new PJWMiniList();
     list.dom.prependTo($$("td[valign=top][align=left]"));
-    list.dom.after(`<div class="pjw-mini-button" onclick='$$("table.TABLE_BODY").css("display", "table");'>显示成绩表格</div>`)
+    list.dom.after(`<div class="pjw-mini-button" id="show-grade-table" onclick="$$('table.TABLE_BODY').css('display', 'table'); $$('#show-grade-table').hide();">显示成绩表格</div>`)
 
     initGradeList = () => {
       $$(".click-to-show").on("click", (e) => {
@@ -1698,10 +1698,14 @@ window.potatojw_intl = function() {
           <label for="hide-grade">默认隐藏成绩</label>
           <span id="show-all-grade" class="pjw-mini-button">显示全部成绩</span>
         </div>
-        <div>
-          <span id="average-score">PotatoPlus GPA计算器</span>
-          <span id="calc-all-grade" class="pjw-mini-button">计算全部</span>
-          <span id="remove-all-grade" class="pjw-mini-button">移除全部</span>
+        <div class="pjw-float--fixed" style="flex-direction: column;">
+          <div>
+            <span id="average-score" style="font-size: 14px; height: 24px; line-height: 24px">PotatoPlus GPA计算器</span>
+          </div>
+          <div>
+            <span id="calc-all-grade" class="pjw-mini-button">计算全部</span>
+            <span id="remove-all-grade" class="pjw-mini-button">移除全部</span>
+          </div>
         </div>
       `);
 
