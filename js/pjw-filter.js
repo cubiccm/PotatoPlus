@@ -69,7 +69,7 @@ var pjw_filter = {
   hours: {
     html: `
       <div id="pjw-hours-filter">
-        <heading><span class="material-icons-round">schedule</span>课程时间 *Beta</heading>
+        <heading><span class="material-icons-round">schedule</span>课程时间</heading>
         <div class="content">
           <div class="pjw-class-weekcal">
             <div class="pjw-class-weekcal-heading">

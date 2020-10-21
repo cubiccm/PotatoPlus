@@ -71,52 +71,71 @@ function ClassListPlugin() {
       }
 
       function getTeachers(content) {
-        var is_first = true; var accu = "";
+        var is_first = true; var html = "";
         for (var str of content) {
-          if (!is_first) accu += "，";
+          if (!is_first) html += "，";
           is_first = false;
-          accu += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
+          html += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
         }
-        return accu;
+        return html;
       }
 
       function getClassInfo(content, classID) {
         if (!classID || classID[0] == "#") classID = "0";
-        var appear_accu = "", hidden_accu = "";
+        var appear_html = [], hidden_html = "";
         for (var item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');">${item.val}</span>`;
+              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');event.stopPropagation();">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
             }
             if (item.val == "") continue;
             if (!item.hidden)
-              appear_accu += `<p>${item.key}：${item.val}</p>`;
-            else
-              hidden_accu += `<p>${item.key}：${item.val}</p>`;
+              appear_html.push(`${item.val}`);
+            hidden_html += `<p>${item.key}：${item.val}</p>`;
           } else {
-            appear_accu += `<p>${item}</p>`;
+            hidden_html += `<p>${item}</p>`;
           }
         }
-        return `<div class="pjw-class-info-important">${appear_accu}</div><div class="pjw-class-info-additional">${hidden_accu}</div>`;
+        return `<div class="pjw-class-info-important"><p>${appear_html.join(" / ")}</p></div><div class="pjw-class-info-additional">${hidden_html}</div>`;
       }
 
       function getNumInfo(content) {
-        var accu = "";
+        var html = "";
         for (var item of content)
-          accu += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
-        return accu;
+          html += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
+        return html;
       }
 
-      function getWeekNum(data) {
-        var accu = "";
+      function getWeeksBar(data) {
+        var html = "";
         for (var item of data) {
           var style = `left: ${String((item.start - 1.4) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1.8) / total_weeks * 100) + "%"}`;
           if (item.start != item.end)
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
+            html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
           else
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
+            html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
-        return accu;
+        return html;
+      }
+
+      function getWeeks(data) {
+        var html = "";
+        var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (var item of data) {
+          for (var i = item.start; i <= item.end; i++)
+            weeks[i] = 1;
+          weeks[item.start] = 2;
+          weeks[item.end] = 2;
+        }
+        for (var i = 1; i <= total_weeks; i++)
+          if (weeks[i] == 1) {
+            html += `<span style="-webkit-text-fill-color: transparent;">&gt;</span>`;
+          } else if (weeks[i] == 2) {
+            html += `<span style="font-size: 10px; -webkit-text-fill-color: transparent;">${i}</span>`;
+          } else {
+            html += `<span>·</span>`;
+          }
+        return html;
       }
 
       function getLessonTime(data) {
@@ -269,12 +288,19 @@ function ClassListPlugin() {
             return getNumInfo(data.num_info);
           else return "";
 
-        case "weeknum":
+        case "weeksbar":
           if ("class_weeknum" in data) {
             if (data.class_weeknum.length)
-              return `<div class="pjw-class-weeknum-bar">${getWeekNum(data.class_weeknum)}</div>`
+              return `<div class="pjw-class-weeknum-bar">${getWeeksBar(data.class_weeknum)}</div>`
             else
               return `<div class="pjw-class-weeknum-bar" style="display: none;"></div>`;
+          } else {
+            return "";
+          }
+
+        case "weeks":
+          if ("class_weeknum" in data && data.class_weeknum.length) {
+            return `<div class="pjw-class-weeknums">${getWeeks(data.class_weeknum)}</div>`
           } else {
             return "";
           }
@@ -311,10 +337,13 @@ function ClassListPlugin() {
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
         <div class="pjw-class-sub">
-          <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
+          <div class="pjw-class-weekcal">
+            ${this.getHTML(data, "lessontime")}
+            ${this.getHTML(data, "weeks")}
+          </div>
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
-            ${this.getHTML(data, "weeknum")}
+            ${this.getHTML(data, "weeksbar")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
         </div>
@@ -379,7 +408,7 @@ function ClassListPlugin() {
       var color_list = [
         "yellow", "yellow",
         "white", "white",
-        "white", "white",
+        "#e5ffc7", "#e5ffc7",
         "#ff5400", "#ff5400",
         "#8178f9", "#8178f9", "#8178f9"
       ];
@@ -390,7 +419,7 @@ function ClassListPlugin() {
         for (var i = 0; i < 11; i++) {
           ctx.beginPath();  
           if ($$(val).hasClass("pjw-class-weekcal-arc")) {
-            ctx.lineWidth = 9;
+            ctx.lineWidth = 8;
             // Stroke color in compressed calendar
             ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : color_list[i];
           } else {
@@ -398,12 +427,12 @@ function ClassListPlugin() {
             // Stroke color in expanded calendar
             ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "rgba(255, 255, 255, 1)";
           }
-          var deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.05;
-          var deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.05;
+          var deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.02;
+          var deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.02;
           if (arc_list[i] == "2" || arc_list[i] == "0") {
             // Draw dotted line
-            var deg_mid = (deg_start + deg_end) / 2, deg_gap = (deg_end - deg_start) / 8;
-            deg_start = deg_mid - deg_gap;
+            var deg_mid = (deg_start + deg_end) / 2, deg_gap = (deg_end - deg_start) / 6;
+            deg_start = deg_mid - (arc_list[i] == "0" ? 1 : 2) * deg_gap;
             deg_end = deg_mid + deg_gap;
           }
           ctx.arc(50, 50, 35, deg_start, deg_end);
@@ -829,19 +858,27 @@ function ClassListPlugin() {
       this.scroll_lock = true;
       if (this.class_data.length > this.max_classes_loaded 
           && $$(window).scrollTop() + $$(window).height() + 1800 >= $$(document).height()) {
+        var count = 0;
         for (var i = this.max_classes_loaded; 
             i < this.max_classes_loaded + this.class_load_size 
             && i < this.class_data.length 
-            && this.class_data[i].data.priority >= 0; i++)
+            && this.class_data[i].data.priority >= 0; i++) {
           this.class_data[i].obj.show();
+          count++;
+        }
 
-        this.max_classes_loaded += this.class_load_size;
+        this.max_classes_loaded += count;
         window.mdc.autoInit();
         setTimeout((t) => {t.scroll_lock = false;}, 100, this);
       } else if (this.max_classes_loaded >= 2 * this.class_load_size 
           && $$(window).scrollTop() + $$(window).height() + this.class_load_size * 150 + 1800 <= $$(document).height()) {
-        this.max_classes_loaded -= this.class_load_size;
-        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size; i++)
+        var orig_classes_count = this.max_classes_loaded;
+        this.max_classes_loaded -= this.class_load_size * parseInt(
+          ($$(document).height() - $$(window).scrollTop() - $$(window).height() - 1800) / 150 / this.class_load_size
+        );
+        this.max_classes_loaded = Math.max(this.class_load_size, this.max_classes_loaded);
+
+        for (var i = this.max_classes_loaded; i < orig_classes_count; i++)
           this.class_data[i].obj.hide();
         
         setTimeout((t) => {t.scroll_lock = false;}, 100, this);
@@ -1037,11 +1074,8 @@ function ClassListPlugin() {
       var width = this.body.children(":visible:eq(0)").width();
       var body_width = this.body.width();
       if (!width) width = body_width;
-      // if (body_width < 1450) this.body.removeClass("two-column");
-      // else this.body.addClass("two-column");
       if (width < 700) this.body.addClass("narrow-desktop");
       else this.body.removeClass("narrow-desktop");
-      setTimeout((t) => {t.handleResize();}, 60, this);
     }
 
     getClassID(obj) {
@@ -1431,7 +1465,7 @@ function ClassListPlugin() {
   (() => {
     $$(window).on("scroll", () => {
       $$(".pjw-float--floating").each((index, val) => {
-        if ($$(val).parent().offset().top >= $$(window).scrollTop()) {
+        if ($$(val).parent().offset().top + 100 >= $$(window).scrollTop()) {
           $$(val).css({
             "position": "",
             "top": "",
@@ -1446,7 +1480,7 @@ function ClassListPlugin() {
         }
       });
       $$(".pjw-float--fixed").each((index, val) => {
-        if ($$(val).offset().top < $$(window).scrollTop() - 100) {
+        if ($$(val).offset().top + 300 < $$(window).scrollTop()) {
           $$(val).css({
             "position": "fixed",
             "top": "10px",

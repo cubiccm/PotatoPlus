@@ -278,7 +278,7 @@
 }
 
 #pjw-classlist-search-field {
-  min-width: 300px;
+  min-width: 250px;
   margin-top: 10px;
   margin-bottom: 10px;
 }
@@ -312,10 +312,6 @@
   flex: 1 0 90%;
 }
 
-.two-column .pjw-class-container {
-  flex: 1 0 42%;
-}
-
 .pjw-class-container--compressed {
   padding: 8px 24px;
   background: rgba(255, 255, 255, .2);
@@ -345,7 +341,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: max(20%, 250px);
+  width: max(40%, 250px);
 }
 
 .pjw-classlist-body--condensed .pjw-class-info {
@@ -357,11 +353,19 @@
   max-width: 50%;
 }
 
+.pjw-class-info-important {
+  display: none;
+}
+
+.pjw-class-container--compressed .pjw-class-info-important {
+  display: block;
+}
+
 .pjw-class-container--compressed .pjw-class-info-additional {
   display: none;
 }
 
-.pjw-class-info-bottom {
+.pjw-class-info-additional {
   margin-top: 8px;
 }
 
@@ -374,6 +378,9 @@
 }
 
 .pjw-class-course-number {
+  flex-direction: row;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
   transition: color .1s ease-out;
 }
@@ -407,6 +414,7 @@
 .pjw-class-weekcal {
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex-shrink: 0;
   border-radius: 14px;
   background-color: rgba(0, 0, 0, .05);
@@ -462,7 +470,6 @@
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-heading-day.selected {
-  font-size: 10.5px;
   background-color: rgba(0, 0, 0, .8);
 }
 
@@ -576,13 +583,38 @@
   display: none;
 }
 
+.pjw-class-weeknums {
+  display: none;
+  background: linear-gradient(95deg, rgba(229, 119, 180, 1), rgba(123, 11, 94, 1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-box-decoration-break: clone;
+}
+
+.pjw-class-container--compressed .pjw-class-weeknums {
+  display: block;
+}
+
+.pjw-class-weeknums > span {
+  line-height: 14px;
+  vertical-align: middle;
+  font-size: 7px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, .6);
+  margin: 0 1px;
+}
+
 .pjw-class-weeknum-bar {
-  height: 16px;
-  width: 200px;
+  height: 18px;
+  width: 180px;
   border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 9px;
+  border-radius: 10px;
   position: relative;
   margin: 6px 0;
+}
+
+.pjw-class-container--compressed .pjw-class-sideinfo .pjw-class-weeknum-bar {
+  display: none;
 }
 
 .pjw-class-container--compressed .pjw-class-weeknum-bar {
@@ -592,14 +624,14 @@
 
 .pjw-class-weeknum-bar__fill {
   position: absolute;
-  height: 16px;
-  border-radius: 9px;
+  height: 18px;
+  border-radius: 10px;
   background: linear-gradient(95deg, var(--pjw-dark-background), rgba(123, 11, 94, 1));
   color: white;
   text-align: center;
   vertical-align: middle;
-  font-size: 10px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .pjw-class-num-info {

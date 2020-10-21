@@ -1310,11 +1310,11 @@ window.potatojw_intl = function() {
               title: td(2).html(),
               teachers: this.parseTeacherNames(td(6).html()),
               info: [{
-                key: "开课年级",
-                val: td(4).html()
-              }, {
                 key: "课程编号",
                 val: this.parseClassNumber(td(0))
+              }, {
+                key: "开课年级",
+                val: td(4).html()
               }, {
                 key: "开课院系",
                 val: this.selectors.academy.text(),
