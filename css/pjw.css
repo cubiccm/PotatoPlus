@@ -104,6 +104,7 @@
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
+  user-select: none;
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
