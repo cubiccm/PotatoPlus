@@ -331,15 +331,18 @@ function ClassListPlugin() {
       var class_html = `
         <div class="pjw-class-info">
           <div class="pjw-class-info-top">
-            <p class="pjw-class-title">${this.getHTML(data, "title")}</p>
-            <p class="pjw-class-teacher">${this.getHTML(data, "teachers")}</p>
+            <span class="pjw-class-title">${this.getHTML(data, "title")}</span>
+            <span class="pjw-class-teacher">${this.getHTML(data, "teachers")}</span>
           </div>
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
         <div class="pjw-class-sub">
+          <div class="pjw-class-places">
+            ${this.getHTML(data, "weeks")}
+            ${data.places == "" ? "" : `<span>${data.places}</span>`}
+          </div>
           <div class="pjw-class-weekcal">
             ${this.getHTML(data, "lessontime")}
-            ${this.getHTML(data, "weeks")}
           </div>
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
@@ -777,6 +780,7 @@ function ClassListPlugin() {
 
       var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       var ans = [];
+      var places = [];
 
       for (var item of classes) {
         var words = item.split(/\s|\&nbsp;/g);
@@ -784,6 +788,7 @@ function ClassListPlugin() {
         var is_odd = false, is_even = false;
         var has_week_info = false;
         var has_lesson_time_info = false;
+        var place = [];
 
         for (var jtem of words) {
           if (jtem[0] == "周") {
@@ -831,12 +836,16 @@ function ClassListPlugin() {
                 type: "normal"
               });
             }
+          } else {
+            place.push(jtem);
           }
         }
 
         if (has_week_info == false && has_lesson_time_info == true)
           for (var i = 1; i <= total_weeks; i++)
             weeks[i] = 1;
+
+        places.push(place.join(' '));
       }
 
       var ans_weeks = [];
@@ -850,7 +859,14 @@ function ClassListPlugin() {
           ans_weeks[ans_weeks.length - 1].end = i-1;
         }
       }
-      return {lesson_time: ans, class_weeknum: ans_weeks};
+      return {
+        lesson_time: ans,
+        class_weeknum: ans_weeks,
+        places: places.map((x) => (x.trim().replaceAll("/", " ")))
+            .filter((v, i, s) => (s.indexOf(v) === i))
+            .join('/')
+            .replaceAll("Ⅱ", "II").replaceAll("Ⅰ", "I").replaceAll("、", " ")
+      };
     }
 
     checkScroll() {
@@ -1054,11 +1070,22 @@ function ClassListPlugin() {
     }
 
     handleResize() {
-      var width = this.body.children(":visible:eq(0)").width();
-      var body_width = this.body.width();
-      if (!width) width = body_width;
-      if (width < 700) this.body.addClass("narrow-desktop");
-      else this.body.removeClass("narrow-desktop");
+      var width = this.main.width();
+      if (width < 900) {
+        this.dom.addClass("view-single-column");
+      } else {
+        this.dom.removeClass("view-single-column");
+      }
+      if (width < 500) {
+        this.dom.addClass("view-mobile");
+        this.dom.addClass("view-narrow-desktop");
+      } else if (width < 1200) {
+        this.dom.removeClass("view-mobile");
+        this.dom.addClass("view-narrow-desktop");
+      } else {
+        this.dom.removeClass("view-narrow-desktop");
+        this.dom.removeClass("view-mobile");
+      }
     }
 
     getClassID(obj) {

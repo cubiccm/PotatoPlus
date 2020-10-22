@@ -371,7 +371,7 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    // $$("#termList > option:eq(0)").after('<option value="20202">2020-2021学年第二学期(*pjw+)</option>');
+    $$("#termList > option:eq(1)").after('<option value="20202">*2020-2021学年第二学期</option>');
 
     window.list = new PJWClassList($$("body"));
 
@@ -411,6 +411,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(8).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: false
@@ -675,6 +676,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(1).html(),
+              places: res.places,
               select_button: {
                 status: select_status,
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
@@ -1049,6 +1051,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(4).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
@@ -1183,6 +1186,7 @@ window.potatojw_intl = function() {
                 }],
                 lesson_time: res.lesson_time,
                 time_detail: td(4).html(),
+                places: res.places,
                 class_weeknum: res.class_weeknum,
                 select_button: {
                   status: select_status,
@@ -1326,6 +1330,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(5).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
@@ -1464,6 +1469,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(5).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,

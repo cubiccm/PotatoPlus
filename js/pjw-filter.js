@@ -149,7 +149,7 @@ var pjw_filter = {
           </div>
           <div id="pjw-hours-filter-control">
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
-            <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
+            <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
           </div>
         </div>
       </div>
