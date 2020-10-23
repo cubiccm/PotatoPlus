@@ -293,6 +293,7 @@
 /* Body */
 
 .pjw-classlist-body {
+  width: 100%;
   margin: 0 10px;
   position: relative;
   display: flex;
@@ -396,11 +397,11 @@
   color: var(--black);
 }
 
-
 .pjw-class-title {
   font-size: 17px;
   font-weight: bold;
   color: rgba(0, 0, 0, .9);
+  margin-right: 4px;
 }
 
 .pjw-class-teacher {
@@ -501,6 +502,7 @@
   display: flex;
   flex-direction: row;
   padding: 0 7px;
+  margin-bottom: 4px;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-calendar {
@@ -576,15 +578,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  order: -1;
-}
-
-.pjw-class-container--compressed .pjw-class-sideinfo {
-  order: 0;
 }
 
 .pjw-class-places {
   display: none;
+}
+
+.pjw-class-places > span {
+  text-align: center;
+  font-size: 12px;
+  color: transparent;
+  background: linear-gradient(95deg, rgba(81, 18, 127, 1), rgba(123, 11, 94, 1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-box-decoration-break: clone;
 }
 
 .pjw-class-container--compressed .pjw-class-places {
@@ -592,9 +599,6 @@
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  text-align: center;
-  font-size: 13px;
-  color: rgba(0, 0, 0, .75);
 }
 
 .pjw-class-time-detail {
@@ -830,4 +834,6 @@
 }
 .view-mobile .pjw-class-info-top {
   flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
 }

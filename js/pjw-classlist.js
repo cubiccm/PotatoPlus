@@ -337,15 +337,15 @@ function ClassListPlugin() {
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
         <div class="pjw-class-sub">
-          <div class="pjw-class-places">
-            ${this.getHTML(data, "weeks")}
-            ${data.places == "" ? "" : `<span>${data.places}</span>`}
-          </div>
           <div class="pjw-class-weekcal">
             ${this.getHTML(data, "lessontime")}
           </div>
+          <div class="pjw-class-places">
+            ${data.places == "" ? "" : `${this.getHTML(data, "weeks")}<span>${data.places}</span>`}
+          </div>
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
+            ${data.places == "" ? this.getHTML(data, "weeks") : ""}
             ${this.getHTML(data, "weeksbar")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
