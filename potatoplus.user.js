@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.5
+// @version      0.2.5 Beta 1
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -462,7 +462,7 @@ body * {
 #Function {
   border-radius: 18px;
   background: rgba(0, 0, 0, .6);
-  margin: 25px !important;
+  margin: 10px !important;
   padding: 10px;
   transform: background 1.2s ease-in;
   max-width: fit-content;
@@ -4823,9 +4823,9 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.5";
+  window.pjw_version = "0.2.5 Beta 1";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.5";
+    window.pjw_version = "0.2.5 Beta 1";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -5122,12 +5122,27 @@ window.potatojw_intl = function() {
       </div>
     `;
 
+    const welcome_html = `
+      <div id="pjw-welcome" class="pjw-card">
+        <p>感谢您参与到 PotatoPlus v0.2.5 Beta 的测试中！您现在使用的 PotatoPlus 不是正式版本，可能需要手动检查更新。</p>
+        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。<p>
+        <br>
+        <div class="pjw-welcome-get-update">${update_html}</div>
+        ${mailing_list_html}
+        <note>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
+          <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
+        </note>
+      </div>
+    `;
+
     const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
 
     const menu_html = `
       <div id="pjw-menu" class="pjw-card">
         <heading>Howdy, NJUer</heading><br>
-        <subheading>${new Date().getMonth()}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <subheading>${new Date().getMonth() - 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
         <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
           <div class="mdc-button__ripple"></div>
@@ -5153,21 +5168,10 @@ window.potatojw_intl = function() {
       </div>
     `;
 
-    const welcome_html = `
-      <div id="pjw-welcome" class="pjw-card">
-        <p>感谢您参与到 PotatoPlus v0.2.5 Beta 的测试中！</p>
-        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。<p>
-        <br>
-        <div class="pjw-welcome-get-update">${update_html}</div>
-        ${mailing_list_html}
-        <note>
-          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
-          <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
-          <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
-        </note>
-      </div>
-    `;
     $$("#Function").before(menu_html);
+    $$("#pjw-menu").append($$("#Function"));
+    $$("#Function:eq(1)").remove();
+
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
     $$(".pjw-menu-button").on("click", (e) => {

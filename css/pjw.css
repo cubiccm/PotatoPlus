@@ -373,7 +373,7 @@ body * {
 #Function {
   border-radius: 18px;
   background: rgba(0, 0, 0, .6);
-  margin: 25px !important;
+  margin: 10px !important;
   padding: 10px;
   transform: background 1.2s ease-in;
   max-width: fit-content;
