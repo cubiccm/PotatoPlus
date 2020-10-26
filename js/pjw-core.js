@@ -304,8 +304,13 @@ window.potatojw_intl = function() {
       </div>
     `;
 
+    const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
+
     const menu_html = `
-      <div id="pjw-menu">
+      <div id="pjw-menu" class="pjw-card">
+        <heading>Howdy, NJUer</heading><br>
+        <subheading>${new Date().getMonth()}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
           <div class="mdc-button__ripple"></div>
           <i class="material-icons-round">today</i>
@@ -331,16 +336,15 @@ window.potatojw_intl = function() {
     `;
 
     const welcome_html = `
-      <div id="pjw-welcome">
-        <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.5！</p>
+      <div id="pjw-welcome" class="pjw-card">
+        <p>感谢您参与到 PotatoPlus v0.2.5 Beta 的测试中！</p>
+        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。<p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
         <note>
           <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
-          <a href="https://cubiccm.ddns.net/about" target="_blank">一个还没写好的链接..</a>
           <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
         </note>
       </div>
@@ -407,7 +411,7 @@ window.potatojw_intl = function() {
   } else if (pjw_mode == "all_course_list") {
     $$("#termList > option:eq(1)").after('<option value="20202">*2020-2021学年第二学期</option>');
 
-    window.list = new PJWClassList($$("body"));
+    window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
 
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
@@ -527,6 +531,15 @@ window.potatojw_intl = function() {
       // sel.major.setByText(stu_major);
       list.refresh();
       fillCompleted();
+      $$("#acl-major-switch-label").html(`${stu_dept} > ${stu_major}`);
+      $$("#acl-major-switch-button").on("click", null, {
+        dept: stu_dept,
+        major: stu_major
+      }, (e) => {
+        sel.institution.setByText(e.data.dept);
+        sel.major.setByText(e.data.major);
+        list.refresh(true);
+      }).css("display", "inline-block");
     }
 
     function fillCompleted() {

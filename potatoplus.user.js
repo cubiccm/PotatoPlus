@@ -193,6 +193,7 @@ injectStyleFromString(`/* PJW Toolbar (Legacy) */
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
+  user-select: none;
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -331,61 +332,6 @@ body * {
   cursor: wait;
 }
 
-.Line {
-  opacity: 0;
-}
-
-#pjw-welcome {
-  width: 90%;
-  max-width: 600px;
-  margin: 20px min(5%, 25px);
-  background: linear-gradient(-70deg, #ff6390, #9995ef);
-  border-radius: 30px;
-  color: rgba(255, 255, 255, .82) !important;
-  padding: 12px 24px;
-}
-
-#pjw-welcome > * {
-  margin: 6px 0;
-}
-
-#pjw-welcome hr {
-  border-style: dotted;
-  opacity: .6;
-}
-
-#pjw-welcome heading {
-  margin: 10px 0;
-  font-weight: bold;
-  font-size: 24px;
-  color: rgba(255, 255, 255, .9) !important;
-}
-
-#pjw-welcome p {
-  margin: 4px 0;
-  font-size: 15px;
-  color: rgba(255, 255, 255, .82) !important;
-}
-
-#pjw-welcome note {
-  margin: 2px 0;
-  display: block;
-  font-size: 12px;
-  color: rgba(255, 255, 255, .75) !important;
-}
-
-#pjw-welcome a {
-  margin: 0 5px;
-  font-size: inherit;
-  text-decoration: none;
-  color: rgba(255, 255, 255, .75) !important;
-  transition: color .1s ease-out;
-}
-
-#pjw-welcome a:hover {
-  color: rgba(255, 255, 255, 1) !important;
-}
-
 #pjw-logout-button {
   color: darkred;
 }
@@ -394,6 +340,109 @@ body * {
   color: red;
 }
 
+.Line {
+  opacity: 0;
+}
+
+/* pjw-card */
+.pjw-card {
+  margin: 20px min(5%, 25px);
+  border-radius: 30px;
+  color: rgba(255, 255, 255, .82) !important;
+  padding: 12px 24px;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
+}
+
+.pjw-card > * {
+  margin: 6px 0;
+}
+
+.pjw-card hr {
+  border-style: dotted;
+  opacity: .6;
+}
+
+.pjw-card heading {
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 24px;
+  color: rgba(255, 255, 255, .9) !important;
+}
+
+.pjw-card subheading {
+  margin: 4px 0 8px 0;
+  font-size: 18px;
+  color: rgba(255, 255, 255, .9) !important;
+}
+
+.pjw-card p {
+  margin: 4px 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, .82) !important;
+}
+
+.pjw-card note {
+  margin: 2px 0;
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, .75) !important;
+}
+
+.pjw-card a {
+  margin: 0 5px;
+  font-size: inherit;
+  text-decoration: none;
+  color: rgba(255, 255, 255, .75) !important;
+  transition: color .1s ease-out;
+}
+
+.pjw-card a:hover {
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+#pjw-welcome {
+  width: 90%;
+  max-width: 600px;
+  background: linear-gradient(-70deg, #ff6390, #9995ef);
+}
+
+#pjw-menu {
+  background: linear-gradient(-70deg, rgb(99 110 255), rgb(88 150 185));
+  --mdc-theme-primary: #63065f;
+}
+
+#pjw-menu > * {
+  margin: 6px;
+}
+
+#pjw-menu .pjw-menu-button, #pjw-menu .mdc-button__ripple {
+  border-radius: 14px;
+}
+
+#pjw-menu .pjw-menu-button {
+  height: 46px;
+}
+
+#pjw-menu .mdc-button__label {
+  margin-right: 4px;
+}
+
+#pjw-menu .pjw-menu-button--inserted {
+  margin: 0 5px;
+  padding: 0 4px;
+  height: 28px;
+}
+
+#pjw-menu .pjw-menu-button--inserted .mdc-button__label {
+  letter-spacing: .75px;
+}
+
+#pjw-menu .material-icons-round {
+  margin: 0 3px;
+}
+
+/* Original functions */
 #Function.light {
   background: rgba(0, 0, 0, .15);
 }
@@ -476,6 +525,7 @@ body * {
   transform: scale(1.1);
 }
 
+/* Legacy filter & toolbar */
 #potatojw_mask {
   display: none;
   position: fixed;
@@ -788,8 +838,8 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 #pjw-select-gradeList {
-  min-width: 130px;
-  max-width: 130px;
+  min-width: 100px;
+  max-width: 100px;
 }
 
 #pjw-select-specialitySelect {
@@ -867,9 +917,23 @@ injectStyleFromString(`/* PJW MiniList */
   margin-bottom: 10px;
 }
 
+.pjw-classlist-search-clear {
+  outline: none;
+  transition: color .1s ease-out;
+}
+
+.pjw-classlist-search-clear:hover {
+  color: rgba(0, 0, 0, 0.36) !important;
+}
+
+.pjw-classlist-search-clear:active {
+  color: rgba(0, 0, 0, 0.72) !important;
+}
+
 /* Body */
 
 .pjw-classlist-body {
+  width: 100%;
   margin: 0 10px;
   position: relative;
   display: flex;
@@ -933,11 +997,6 @@ injectStyleFromString(`/* PJW MiniList */
   width: max(40%, 250px);
 }
 
-.pjw-classlist-body--condensed .pjw-class-info {
-  align-items: center;
-  flex-direction: row;
-}
-
 .pjw-class-container--compressed .pjw-class-info {
   max-width: 50%;
 }
@@ -978,11 +1037,11 @@ injectStyleFromString(`/* PJW MiniList */
   color: var(--black);
 }
 
-
 .pjw-class-title {
   font-size: 17px;
   font-weight: bold;
   color: rgba(0, 0, 0, .9);
+  margin-right: 4px;
 }
 
 .pjw-class-teacher {
@@ -990,8 +1049,9 @@ injectStyleFromString(`/* PJW MiniList */
   color: rgba(0, 0, 0, .75);
 }
 
-.pjw-class-info-top > p {
-  margin: 0;
+.pjw-class-info-top {
+  display: flex;
+  flex-direction: column;
 }
 
 .pjw-class-name-initial {
@@ -1082,6 +1142,7 @@ injectStyleFromString(`/* PJW MiniList */
   display: flex;
   flex-direction: row;
   padding: 0 7px;
+  margin-bottom: 4px;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-calendar {
@@ -1159,8 +1220,25 @@ injectStyleFromString(`/* PJW MiniList */
   justify-content: space-evenly;
 }
 
-.pjw-classlist-body--condensed .pjw-class-sideinfo {
-  flex-direction: row;
+.pjw-class-places {
+  display: none;
+}
+
+.pjw-class-places > span {
+  text-align: center;
+  font-size: 12px;
+  color: transparent;
+  background: linear-gradient(95deg, rgba(81, 18, 127, 1), rgba(123, 11, 94, 1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-box-decoration-break: clone;
+}
+
+.pjw-class-container--compressed .pjw-class-places {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .pjw-class-time-detail {
@@ -1368,21 +1446,42 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 /* Fit Screen Size */
-.narrow-desktop .pjw-class-sub {
+.view-narrow-desktop .pjw-class-sub {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
 }
-.narrow-desktop .pjw-class-operation {
+.view-narrow-desktop .pjw-class-operation {
   flex-direction: column;
   padding: 5px 0;
 }
-`);
+.view-narrow-desktop .pjw-class-places > span {
+  display: none;
+}
+.view-single-column .pjw-classlist-main {
+  flex-direction: column;
+}
+.view-mobile .pjw-class-container {
+  flex-direction: column;
+}
+.view-mobile .pjw-class-info {
+  max-width: 100%;
+  width: 100%;
+}
+.view-mobile .pjw-class-operation {
+  flex-direction: row;
+  justify-content: center;
+}
+.view-mobile .pjw-class-info-top {
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}`);
 
 /* css/pjw-filter.css */
 injectStyleFromString(`.pjw-filter-panel {
   color: rgba(0, 0, 0, .4);
-  margin: 0 20px;
+  margin: 0 20px 10px 20px;
   padding: 10px 20px;
   border-radius: 20px;
   background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
@@ -2249,7 +2348,7 @@ var pjw_filter = {
           </div>
           <div id="pjw-hours-filter-control">
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
-            <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
+            <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
           </div>
         </div>
       </div>
@@ -2593,6 +2692,19 @@ var pjw_filter = {
       var quotes_lib = frozen_quotes.split("\n");
       return quotes_lib[Math.floor(Math.random() * quotes_lib.length)];
     }
+  },
+
+  acl_major_switch: {
+    html: `
+      <div>
+        <div class="pjw-mini-button" id="acl-major-switch-button" style="display: none;">转至我的专业</div>
+        <br>
+        <span id="acl-major-switch-label" style="margin-left: 6px;"></span>
+      </div>
+    `,
+    intl: (space, list) => {
+
+    }
   }
 }
 
@@ -2930,18 +3042,21 @@ function ClassListPlugin() {
       var class_html = `
         <div class="pjw-class-info">
           <div class="pjw-class-info-top">
-            <p class="pjw-class-title">${this.getHTML(data, "title")}</p>
-            <p class="pjw-class-teacher">${this.getHTML(data, "teachers")}</p>
+            <span class="pjw-class-title">${this.getHTML(data, "title")}</span>
+            <span class="pjw-class-teacher">${this.getHTML(data, "teachers")}</span>
           </div>
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
         <div class="pjw-class-sub">
           <div class="pjw-class-weekcal">
             ${this.getHTML(data, "lessontime")}
-            ${this.getHTML(data, "weeks")}
+          </div>
+          <div class="pjw-class-places">
+            ${data.places == "" ? "" : `${this.getHTML(data, "weeks")}<span>${data.places}</span>`}
           </div>
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
+            ${data.places == "" ? this.getHTML(data, "weeks") : ""}
             ${this.getHTML(data, "weeksbar")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
@@ -3252,7 +3367,7 @@ function ClassListPlugin() {
         [data.title, 8], 
         [data.teachers, 6], 
         [data.info.map((item) => (item.val)), 3],
-        [data.time_detail.replace("Ⅱ", "II").replace("Ⅰ", "I"), 1]
+        [data.places || "", 1]
       ];
       for (var item of priority_map) {
         var res = this.matchDegree(search_str, item[0]);
@@ -3376,6 +3491,7 @@ function ClassListPlugin() {
 
       var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       var ans = [];
+      var places = [];
 
       for (var item of classes) {
         var words = item.split(/\s|\&nbsp;/g);
@@ -3383,6 +3499,7 @@ function ClassListPlugin() {
         var is_odd = false, is_even = false;
         var has_week_info = false;
         var has_lesson_time_info = false;
+        var place = [];
 
         for (var jtem of words) {
           if (jtem[0] == "周") {
@@ -3430,12 +3547,16 @@ function ClassListPlugin() {
                 type: "normal"
               });
             }
+          } else {
+            place.push(jtem);
           }
         }
 
         if (has_week_info == false && has_lesson_time_info == true)
           for (var i = 1; i <= total_weeks; i++)
             weeks[i] = 1;
+
+        places.push(place.join(' '));
       }
 
       var ans_weeks = [];
@@ -3449,7 +3570,14 @@ function ClassListPlugin() {
           ans_weeks[ans_weeks.length - 1].end = i-1;
         }
       }
-      return {lesson_time: ans, class_weeknum: ans_weeks};
+      return {
+        lesson_time: ans,
+        class_weeknum: ans_weeks,
+        places: places.map((x) => (x.trim().replaceAll("/", " ")))
+            .filter((v, i, s) => (s.indexOf(v) === i))
+            .join('/')
+            .replaceAll("Ⅱ", "II").replaceAll("Ⅰ", "I").replaceAll("、", " ")
+      };
     }
 
     checkScroll() {
@@ -3653,11 +3781,22 @@ function ClassListPlugin() {
     }
 
     handleResize() {
-      var width = this.body.children(":visible:eq(0)").width();
-      var body_width = this.body.width();
-      if (!width) width = body_width;
-      if (width < 700) this.body.addClass("narrow-desktop");
-      else this.body.removeClass("narrow-desktop");
+      var width = this.main.width();
+      if (width < 900) {
+        this.dom.addClass("view-single-column");
+      } else {
+        this.dom.removeClass("view-single-column");
+      }
+      if (width < 500) {
+        this.dom.addClass("view-mobile");
+        this.dom.addClass("view-narrow-desktop");
+      } else if (width < 1200) {
+        this.dom.removeClass("view-mobile");
+        this.dom.addClass("view-narrow-desktop");
+      } else {
+        this.dom.removeClass("view-narrow-desktop");
+        this.dom.removeClass("view-mobile");
+      }
     }
 
     getClassID(obj) {
@@ -3715,12 +3854,13 @@ function ClassListPlugin() {
             </section>
 
             <section id="search-section">
-              <label class="mdc-text-field mdc-text-field--outlined" id="pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
-                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input__label" id="pjw-class-search-input">
+              <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon" id="pjw-classlist-search-field">
+                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-classlist-search-input__label" id="pjw-classlist-search-input">
+                <i aria-hidden="true" class="material-icons-round mdc-text-field__icon mdc-text-field__icon--trailing pjw-classlist-search-clear" role="button" tabindex="0">clear</i>
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
                   <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="pjw-class-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
                   </span>
                   <span class="mdc-notched-outline__trailing"></span>
                 </span>
@@ -3755,7 +3895,7 @@ function ClassListPlugin() {
       this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
-      this.search_input = this.controls.find("#pjw-class-search-input");
+      this.search_input = this.controls.find("#pjw-classlist-search-input");
       this.filter_panel = this.main.children(".pjw-filter-panel");
       this.filters = {};
       for (var name of this.filter_modules) {
@@ -3766,11 +3906,19 @@ function ClassListPlugin() {
 
       this.class_load_size = 30;
 
+      /* Initializes search field */
+      this.search_obj = new mdc.textField.MDCTextField(this.controls.find(".mdc-text-field")[0]);
+
       this.search_input.on("input", null, {
         target: this
       }, (e) => {
         if (typeof(e.data.target.input_timeout_id) != "undefined")
           clearTimeout(e.data.target.input_timeout_id);
+        if (e.data.target.search_obj.value != "") {
+          this.controls.find(".pjw-classlist-search-clear").show();
+        } else {
+          this.controls.find(".pjw-classlist-search-clear").hide();
+        }
         if (e.data.target.class_data.length <= 200) {
           e.data.target.search_string = this.search_input.val();
           e.data.target.max_classes_loaded = this.class_load_size;
@@ -3785,6 +3933,14 @@ function ClassListPlugin() {
       });
       if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {this.loadModule("potatoes"); this.max_frequency = 15.0;}
 
+      this.controls.find(".pjw-classlist-search-clear").hide().on("click", null, {
+        target: this
+      }, (e) => {
+        e.data.target.search_obj.value = "";
+        e.data.target.search_input.trigger("input");
+      });
+
+      /* Initializes refresh button */
       this.refresh_button.on("click", null, {
         target: this
       }, (e) => {
@@ -3822,6 +3978,7 @@ function ClassListPlugin() {
         e.data.target.triggerSwitch(t.attr("id"));
       });
 
+      /* Handle window scroll and resize event */
       $$(window).on("scroll", null, {
         target: this
       }, (e) => {
@@ -4965,23 +5122,61 @@ window.potatojw_intl = function() {
       </div>
     `;
 
+    const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
+
+    const menu_html = `
+      <div id="pjw-menu" class="pjw-card">
+        <heading>Howdy, NJUer</heading><br>
+        <subheading>${new Date().getMonth()}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <br>
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">today</i>
+          <div class="mdc-button__label">我的课程</div>
+          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(99, 110, 255);" data-link="/jiaowu/student/elective/index.do">
+            <div class="mdc-button__ripple"></div>
+            <i class="material-icons-round">add</i>
+            <div class="mdc-button__label">选课</div>
+          </div>
+        </div>
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/teachinginfo/allCourseList.do?method=getTermAcademy">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">search</i>
+          <div class="mdc-button__label">查询全部课程</div>
+        </div>
+
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">calculate</i>
+          <div class="mdc-button__label">成绩查看</div>
+        </div>
+      </div>
+    `;
+
     const welcome_html = `
-      <div id="pjw-welcome">
-        <heading>Hello, NJUer</heading>
-        <p>PotatoPlus v0.2.5！</p>
+      <div id="pjw-welcome" class="pjw-card">
+        <p>感谢您参与到 PotatoPlus v0.2.5 Beta 的测试中！</p>
+        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。<p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
         <note>
           <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
-          <a href="https://cubiccm.ddns.net/about" target="_blank">一个还没写好的链接..</a>
           <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
         </note>
       </div>
     `;
+    $$("#Function").before(menu_html);
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
+    $$(".pjw-menu-button").on("click", (e) => {
+      e.stopPropagation();
+      var target = $$(e.delegateTarget);
+      if (target.attr("data-link"))
+        window.location.href = target.attr("data-link");
+    })
+    window.mdc.autoInit();
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
@@ -5032,9 +5227,9 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    // $$("#termList > option:eq(0)").after('<option value="20202">2020-2021学年第二学期(*pjw+)</option>');
+    $$("#termList > option:eq(1)").after('<option value="20202">*2020-2021学年第二学期</option>');
 
-    window.list = new PJWClassList($$("body"));
+    window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
 
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
@@ -5072,6 +5267,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(8).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: false
@@ -5153,6 +5349,15 @@ window.potatojw_intl = function() {
       // sel.major.setByText(stu_major);
       list.refresh();
       fillCompleted();
+      $$("#acl-major-switch-label").html(`${stu_dept} > ${stu_major}`);
+      $$("#acl-major-switch-button").on("click", null, {
+        dept: stu_dept,
+        major: stu_major
+      }, (e) => {
+        sel.institution.setByText(e.data.dept);
+        sel.major.setByText(e.data.major);
+        list.refresh(true);
+      }).css("display", "inline-block");
     }
 
     function fillCompleted() {
@@ -5336,6 +5541,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(1).html(),
+              places: res.places,
               select_button: {
                 status: select_status,
                 text: `${parseInt(td(3).html())}/${parseInt(td(4).html())}`,
@@ -5710,6 +5916,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(4).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
@@ -5844,6 +6051,7 @@ window.potatojw_intl = function() {
                 }],
                 lesson_time: res.lesson_time,
                 time_detail: td(4).html(),
+                places: res.places,
                 class_weeknum: res.class_weeknum,
                 select_button: {
                   status: select_status,
@@ -5987,6 +6195,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(5).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,
@@ -6125,6 +6334,7 @@ window.potatojw_intl = function() {
               }],
               lesson_time: res.lesson_time,
               time_detail: td(5).html(),
+              places: res.places,
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: select_status,

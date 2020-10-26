@@ -493,5 +493,18 @@ var pjw_filter = {
       var quotes_lib = frozen_quotes.split("\n");
       return quotes_lib[Math.floor(Math.random() * quotes_lib.length)];
     }
+  },
+
+  acl_major_switch: {
+    html: `
+      <div>
+        <div class="pjw-mini-button" id="acl-major-switch-button" style="display: none;">转至我的专业</div>
+        <br>
+        <span id="acl-major-switch-label" style="margin-left: 6px;"></span>
+      </div>
+    `,
+    intl: (space, list) => {
+
+    }
   }
 }
