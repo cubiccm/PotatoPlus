@@ -304,6 +304,32 @@ window.potatojw_intl = function() {
       </div>
     `;
 
+    const menu_html = `
+      <div id="pjw-menu">
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">today</i>
+          <div class="mdc-button__label">我的课程</div>
+          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(99, 110, 255);" data-link="/jiaowu/student/elective/index.do">
+            <div class="mdc-button__ripple"></div>
+            <i class="material-icons-round">add</i>
+            <div class="mdc-button__label">选课</div>
+          </div>
+        </div>
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/teachinginfo/allCourseList.do?method=getTermAcademy">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">search</i>
+          <div class="mdc-button__label">查询全部课程</div>
+        </div>
+
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">calculate</i>
+          <div class="mdc-button__label">成绩查看</div>
+        </div>
+      </div>
+    `;
+
     const welcome_html = `
       <div id="pjw-welcome">
         <heading>Hello, NJUer</heading>
@@ -319,8 +345,16 @@ window.potatojw_intl = function() {
         </note>
       </div>
     `;
+    $$("#Function").before(menu_html);
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
+    $$(".pjw-menu-button").on("click", (e) => {
+      e.stopPropagation();
+      var target = $$(e.delegateTarget);
+      if (target.attr("data-link"))
+        window.location.href = target.attr("data-link");
+    })
+    window.mdc.autoInit();
   } else if (pjw_mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {

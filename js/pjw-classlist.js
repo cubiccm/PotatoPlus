@@ -656,7 +656,7 @@ function ClassListPlugin() {
         [data.title, 8], 
         [data.teachers, 6], 
         [data.info.map((item) => (item.val)), 3],
-        [data.time_detail.replace("Ⅱ", "II").replace("Ⅰ", "I"), 1]
+        [data.places || "", 1]
       ];
       for (var item of priority_map) {
         var res = this.matchDegree(search_str, item[0]);
@@ -1143,12 +1143,13 @@ function ClassListPlugin() {
             </section>
 
             <section id="search-section">
-              <label class="mdc-text-field mdc-text-field--outlined" id="pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
-                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input__label" id="pjw-class-search-input">
+              <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon" id="pjw-classlist-search-field">
+                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-classlist-search-input__label" id="pjw-classlist-search-input">
+                <i aria-hidden="true" class="material-icons-round mdc-text-field__icon mdc-text-field__icon--trailing pjw-classlist-search-clear" role="button" tabindex="0">clear</i>
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
                   <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="pjw-class-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
                   </span>
                   <span class="mdc-notched-outline__trailing"></span>
                 </span>
@@ -1183,7 +1184,7 @@ function ClassListPlugin() {
       this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
-      this.search_input = this.controls.find("#pjw-class-search-input");
+      this.search_input = this.controls.find("#pjw-classlist-search-input");
       this.filter_panel = this.main.children(".pjw-filter-panel");
       this.filters = {};
       for (var name of this.filter_modules) {
@@ -1194,11 +1195,19 @@ function ClassListPlugin() {
 
       this.class_load_size = 30;
 
+      /* Initializes search field */
+      this.search_obj = new mdc.textField.MDCTextField(this.controls.find(".mdc-text-field")[0]);
+
       this.search_input.on("input", null, {
         target: this
       }, (e) => {
         if (typeof(e.data.target.input_timeout_id) != "undefined")
           clearTimeout(e.data.target.input_timeout_id);
+        if (e.data.target.search_obj.value != "") {
+          this.controls.find(".pjw-classlist-search-clear").show();
+        } else {
+          this.controls.find(".pjw-classlist-search-clear").hide();
+        }
         if (e.data.target.class_data.length <= 200) {
           e.data.target.search_string = this.search_input.val();
           e.data.target.max_classes_loaded = this.class_load_size;
@@ -1213,6 +1222,14 @@ function ClassListPlugin() {
       });
       if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {this.loadModule("potatoes"); this.max_frequency = 15.0;}
 
+      this.controls.find(".pjw-classlist-search-clear").hide().on("click", null, {
+        target: this
+      }, (e) => {
+        e.data.target.search_obj.value = "";
+        e.data.target.search_input.trigger("input");
+      });
+
+      /* Initializes refresh button */
       this.refresh_button.on("click", null, {
         target: this
       }, (e) => {
@@ -1250,6 +1267,7 @@ function ClassListPlugin() {
         e.data.target.triggerSwitch(t.attr("id"));
       });
 
+      /* Handle window scroll and resize event */
       $$(window).on("scroll", null, {
         target: this
       }, (e) => {

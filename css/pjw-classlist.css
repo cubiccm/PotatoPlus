@@ -211,8 +211,8 @@
 }
 
 #pjw-select-gradeList {
-  min-width: 130px;
-  max-width: 130px;
+  min-width: 100px;
+  max-width: 100px;
 }
 
 #pjw-select-specialitySelect {
@@ -288,6 +288,19 @@
   min-width: 250px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.pjw-classlist-search-clear {
+  outline: none;
+  transition: color .1s ease-out;
+}
+
+.pjw-classlist-search-clear:hover {
+  color: rgba(0, 0, 0, 0.36) !important;
+}
+
+.pjw-classlist-search-clear:active {
+  color: rgba(0, 0, 0, 0.72) !important;
 }
 
 /* Body */

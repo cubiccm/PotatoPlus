@@ -243,10 +243,19 @@ body * {
   cursor: wait;
 }
 
+#pjw-logout-button {
+  color: darkred;
+}
+
+#pjw-logout-button:hover {
+  color: red;
+}
+
 .Line {
   opacity: 0;
 }
 
+/* pjw-welcome */
 #pjw-welcome {
   width: 90%;
   max-width: 600px;
@@ -298,14 +307,49 @@ body * {
   color: rgba(255, 255, 255, 1) !important;
 }
 
-#pjw-logout-button {
-  color: darkred;
+/* pjw-menu */
+#pjw-menu {
+  margin: 20px min(5%, 25px);
+  background: linear-gradient(-70deg, rgb(99 110 255), rgb(88 150 185));
+  border-radius: 30px;
+  color: rgba(255, 255, 255, .82) !important;
+  padding: 12px 24px;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
+  --mdc-theme-primary: #63065f;
 }
 
-#pjw-logout-button:hover {
-  color: red;
+#pjw-menu > * {
+  margin: 6px;
 }
 
+#pjw-menu .pjw-menu-button, #pjw-menu .mdc-button__ripple {
+  border-radius: 14px;
+}
+
+#pjw-menu .pjw-menu-button {
+  height: 46px;
+}
+
+#pjw-menu .mdc-button__label {
+  margin-right: 4px;
+}
+
+#pjw-menu .pjw-menu-button--inserted {
+  margin: 0 5px;
+  padding: 0 4px;
+  height: 28px;
+}
+
+#pjw-menu .pjw-menu-button--inserted .mdc-button__label {
+  letter-spacing: .75px;
+}
+
+#pjw-menu .material-icons-round {
+  margin: 0 3px;
+}
+
+/* Original functions */
 #Function.light {
   background: rgba(0, 0, 0, .15);
 }
@@ -388,6 +432,7 @@ body * {
   transform: scale(1.1);
 }
 
+/* Legacy filter & toolbar */
 #potatojw_mask {
   display: none;
   position: fixed;
