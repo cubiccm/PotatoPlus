@@ -304,10 +304,11 @@ window.potatojw_intl = function() {
       </div>
     `;
 
-    const welcome_html = `
+    var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
         <p>感谢您参与到 PotatoPlus v0.2.5 Beta 的测试中！您现在使用的 PotatoPlus 不是正式版本，可能需要手动检查更新。</p>
-        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。<p>
+        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。</p>
+        <p id="pjw-bulletin-content"></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         ${mailing_list_html}
@@ -349,6 +350,20 @@ window.potatojw_intl = function() {
         </div>
       </div>
     `;
+
+    if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
+      welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw_version}" width="300" height="300" style="display: none;"></iframe>`;
+
+      window.addEventListener("message", (e) => {
+        if (e.origin !== "https://cubiccm.ddns.net") return;
+        store.set("bulletin_update_timestamp", new Date().getTime());
+        store.set("bulletin_content", e.data);
+        $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
+      });
+    } else {
+      $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
+    }
+
 
     $$("#Function").before(menu_html);
     $$("#pjw-menu").append($$("#Function"));

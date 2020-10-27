@@ -373,11 +373,18 @@ body * {
 #Function {
   border-radius: 18px;
   background: rgba(0, 0, 0, .6);
-  margin: 10px !important;
   padding: 10px;
   transform: background 1.2s ease-in;
   max-width: fit-content;
   max-width: -moz-fit-content;
+}
+
+:not(.pjw-card) #Function {
+  margin: 25px !important;
+}
+
+.pjw-card #Function {
+  margin: 5px !important;
 }
 
 #Function > ul {
