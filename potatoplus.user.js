@@ -5176,6 +5176,13 @@ window.potatojw_intl = function() {
       </div>
     `;
 
+    $$("#Function").before(menu_html);
+    $$("#pjw-menu").append($$("#Function"));
+    $$("#Function:eq(1)").remove();
+
+    $$(".Line").before(welcome_html);
+    $$(".Line").remove();
+
     if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
       welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw_version}" width="300" height="300" style="display: none;"></iframe>`;
 
@@ -5189,13 +5196,6 @@ window.potatojw_intl = function() {
       $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
     }
 
-
-    $$("#Function").before(menu_html);
-    $$("#pjw-menu").append($$("#Function"));
-    $$("#Function:eq(1)").remove();
-
-    $$(".Line").before(welcome_html);
-    $$(".Line").remove();
     $$(".pjw-menu-button").on("click", (e) => {
       e.stopPropagation();
       var target = $$(e.delegateTarget);
