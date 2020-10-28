@@ -845,8 +845,8 @@ injectStyleFromString(`/* PJW MiniList */
 }
 
 #pjw-select-gradeList {
-  min-width: 100px;
-  max-width: 100px;
+  min-width: 120px;
+  max-width: 120px;
 }
 
 #pjw-select-specialitySelect {
@@ -5150,7 +5150,8 @@ window.potatojw_intl = function() {
     const menu_html = `
       <div id="pjw-menu" class="pjw-card">
         <heading>Howdy, NJUer</heading><br>
-        <subheading>${new Date().getMonth() - 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <br>
         <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
           <div class="mdc-button__ripple"></div>
@@ -5173,6 +5174,8 @@ window.potatojw_intl = function() {
           <i class="material-icons-round">calculate</i>
           <div class="mdc-button__label">成绩查看</div>
         </div>
+        <br>
+        <br>
       </div>
     `;
 
