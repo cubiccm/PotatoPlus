@@ -368,6 +368,7 @@ window.potatojw_intl = function() {
     $$("#Function").before(menu_html);
     $$("#pjw-menu").append($$("#Function"));
     $$("#Function:eq(1)").remove();
+    $$("#Function").addClass("main-page-function");
 
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
