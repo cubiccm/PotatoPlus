@@ -680,6 +680,7 @@
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+  margin: 2px;
 }
 
 .pjw-class-container--compressed .pjw-class-num-info {
