@@ -42,7 +42,6 @@ function injectStyleFromString(str) {
     // dis_view: /elective\/freshman_discuss.do/i, // 导学、研讨、通识课初选
     open_view: /elective\/open.do/i, // 跨专业初选
 
-    freshmen_exam: /student\/exam\/index.do/i, // 新生测试
     course_eval: /evalcourse\/courseEval.do\?method=currentEvalCourse/i, // 课程评估
 
     all_course_list: /teachinginfo\/allCourseList.do\?method=getTermAcademy/i, // 全校课程

@@ -99,10 +99,6 @@ window.potatojw_intl = function() {
   var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true};
 
   const custom_toolbar_html = {
-    freshmen_exam: `
-      <span class="pjw-mini-button" onclick="autoSolve();">开始自动答题</span>
-      <span>若答题意外停止，请再次点击自动答题按钮。</span>
-    `,
     course_eval: `
       <span class="pjw-mini-button" onclick="toggleAutoEval();" id="toggle_auto_eval_button">开启自动评价</span>
       <span>开启后，点一下对应课程即自动五星好评。</span>
@@ -430,7 +426,7 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    $$("#termList > option:eq(1)").after('<option value="20202">*2020-2021学年第二学期</option>');
+    // $$("#termList > option:eq(1)").after('<option value="20202">*2020-2021学年第二学期</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
 
@@ -602,73 +598,6 @@ window.potatojw_intl = function() {
         fillCompleted();
       });
     }
-  } else if (pjw_mode == "freshmen_exam") {
-    window.findSelection = function(pos) {
-      var sel_A = lib.lastIndexOf('A', pos);
-      var sel_B = lib.lastIndexOf('B', pos);
-      var sel_C = lib.lastIndexOf('C', pos);
-      var sel_D = lib.lastIndexOf('D', pos);
-      return Math.max(sel_A, sel_B, sel_C, sel_D);
-    };
-
-    window.problemNum = function(pos) {
-      return lib.substr(0, pos - 1).split('\n').length;
-    };
-
-    window.prob_times = new Array();
-
-    window.solve = function() {
-      for (var i = 0; i < 4; i++) {
-        var cont = $$("fieldset > div:eq(" + i + ")").html();
-        var start_pos = 0;
-        if (cont.length > 80) start_pos = 15;
-        while (lib.indexOf(cont.substr(start_pos, 12)) == -1) {
-          start_pos += 10;
-          if (start_pos > cont.length) {
-            console.log("PROBLEM NOT FOUND");
-            return false;
-          }
-        }
-        var sel_pos = findSelection(lib.indexOf(cont.substr(start_pos, 12)));
-        var sel_cont = lib.slice(sel_pos + 2, lib.indexOf(';', sel_pos + 2));
-        var found_sel = false;
-        for (var j = 0; j < 4; j++) {
-          real_sel_cont = $$("li:eq(" + (i*4 + j) +  ")").html();
-          if (real_sel_cont.substr(real_sel_cont.indexOf(')') + 1).replace(/\s+/g,"") == sel_cont.replace(/\s+/g,"")) {
-            found_sel = true;
-            $$("input[type='radio']:eq(" + (i*4 + j) + ")").click();
-            console.log("#" + problemNum(sel_pos) + ": " + String.fromCharCode('A'.charCodeAt() + j));
-            if (typeof(prob_times[problemNum(sel_pos)]) == "undefined") {
-              prob_times[problemNum(sel_pos)] = 1;
-            } else {
-              prob_times[problemNum(sel_pos)]++;
-              console.log("WARNING: PROBLEM REPEATED: #" + problemNum(sel_pos));
-              return false;
-            }
-            break;
-          }
-        }
-        if (found_sel == false) {
-          console.log("SELECTION NOT FOUND: " + $$.trim(sel_cont));
-          return false;
-        }
-      }
-      return true;
-    };
-
-    window.autoSolve = function() {
-      if (solve()) {
-        getnextpage();
-        if (parseInt($$("#currentpage").val()) == 20) {
-          console.log(prob_times);
-          console.log("Done.");
-          return true;
-        }
-        window.setTimeout(autoSolve, 1000);
-      } else {
-        return false;
-      }
-    };
   } else if (pjw_mode == "gym") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
