@@ -71,52 +71,71 @@ function ClassListPlugin() {
       }
 
       function getTeachers(content) {
-        var is_first = true; var accu = "";
+        var is_first = true; var html = "";
         for (var str of content) {
-          if (!is_first) accu += "，";
+          if (!is_first) html += "，";
           is_first = false;
-          accu += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
+          html += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
         }
-        return accu;
+        return html;
       }
 
       function getClassInfo(content, classID) {
         if (!classID || classID[0] == "#") classID = "0";
-        var appear_accu = "", hidden_accu = "";
+        var appear_html = [], hidden_html = "";
         for (var item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');">${item.val}</span>`;
+              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');event.stopPropagation();">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
             }
             if (item.val == "") continue;
             if (!item.hidden)
-              appear_accu += `<p>${item.key}：${item.val}</p>`;
-            else
-              hidden_accu += `<p>${item.key}：${item.val}</p>`;
+              appear_html.push(`${item.val}`);
+            hidden_html += `<p>${item.key}：${item.val}</p>`;
           } else {
-            appear_accu += `<p>${item}</p>`;
+            hidden_html += `<p>${item}</p>`;
           }
         }
-        return `<div class="pjw-class-info-important">${appear_accu}</div><div class="pjw-class-info-additional">${hidden_accu}</div>`;
+        return `<div class="pjw-class-info-important"><p>${appear_html.join(" / ")}</p></div><div class="pjw-class-info-additional">${hidden_html}</div>`;
       }
 
       function getNumInfo(content) {
-        var accu = "";
+        var html = "";
         for (var item of content)
-          accu += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
-        return accu;
+          html += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
+        return html;
       }
 
-      function getWeekNum(data) {
-        var accu = "";
+      function getWeeksBar(data) {
+        var html = "";
         for (var item of data) {
-          var style = `left: ${String((item.start - 1) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1) / total_weeks * 100) + "%"}`;
+          var style = `left: ${String((item.start - 1.4) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1.8) / total_weeks * 100) + "%"}`;
           if (item.start != item.end)
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
+            html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
           else
-            accu += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
+            html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
         }
-        return accu;
+        return html;
+      }
+
+      function getWeeks(data) {
+        var html = "";
+        var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (var item of data) {
+          for (var i = item.start; i <= item.end; i++)
+            weeks[i] = 1;
+          weeks[item.start] = 2;
+          weeks[item.end] = 2;
+        }
+        for (var i = 1; i <= total_weeks; i++)
+          if (weeks[i] == 1) {
+            html += `<span style="-webkit-text-fill-color: transparent;">&gt;</span>`;
+          } else if (weeks[i] == 2) {
+            html += `<span style="font-size: 10px; -webkit-text-fill-color: transparent;">${i}</span>`;
+          } else {
+            html += `<span>·</span>`;
+          }
+        return html;
       }
 
       function getLessonTime(data) {
@@ -124,23 +143,23 @@ function ClassListPlugin() {
         var body_html = ``;
 
         var weekend_flag = false;
-        var has_class = [false, false, false, false, false, false, false, false];
+        var has_class = [0, 0, 0, 0, 0, 0, 0, 0];
         var class_class = [
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", ""]
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
         for (var item of data) {
           if (item.weekday > 5 && weekend_flag == false)
             weekend_flag = true;
 
-          has_class[item.weekday] = true;
+          has_class[item.weekday]++;
 
           var cssclass = "selected";
           if (item.type == "odd") cssclass += " sel-odd-class";
@@ -156,14 +175,22 @@ function ClassListPlugin() {
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
-          heading_html += `<div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">${weekday_display_name[i]}</div>`;
+          var data_arc = class_class[i].map((x) => (
+            x == "" ? "0" : (x.includes("even") || x.includes("odd") ? "2" : "1")
+          )).join('').slice(1);
+
+          heading_html += `
+            <div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">
+              <span>${has_class[i] ? weekday_display_name[i][0] : weekday_display_name[i]}</span>
+              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${data_arc}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${data_arc}" width="100" height="100"></canvas>` : ''}
+            </div>`;
 
           var body_html_span = "";
           
-          for (var j = 1; j <= 11; j++) {
+          for (var j = 1; j <= 12; j++) {
             if (class_class[i][j] != "")
               body_html_span += `<span class="${class_class[i][j]}">${j}</span>`;
-            else
+            else if (j != 12)
               body_html_span += `<span>${j}</span>`;
           }
 
@@ -261,12 +288,19 @@ function ClassListPlugin() {
             return getNumInfo(data.num_info);
           else return "";
 
-        case "weeknum":
+        case "weeksbar":
           if ("class_weeknum" in data) {
             if (data.class_weeknum.length)
-              return `<div class="pjw-class-weeknum-bar">${getWeekNum(data.class_weeknum)}</div>`
+              return `<div class="pjw-class-weeknum-bar">${getWeeksBar(data.class_weeknum)}</div>`
             else
               return `<div class="pjw-class-weeknum-bar" style="display: none;"></div>`;
+          } else {
+            return "";
+          }
+
+        case "weeks":
+          if ("class_weeknum" in data && data.class_weeknum.length) {
+            return `<div class="pjw-class-weeknums">${getWeeks(data.class_weeknum)}</div>`
           } else {
             return "";
           }
@@ -297,16 +331,22 @@ function ClassListPlugin() {
       var class_html = `
         <div class="pjw-class-info">
           <div class="pjw-class-info-top">
-            <p class="pjw-class-title">${this.getHTML(data, "title")}</p>
-            <p class="pjw-class-teacher">${this.getHTML(data, "teachers")}</p>
+            <span class="pjw-class-title">${this.getHTML(data, "title")}</span>
+            <span class="pjw-class-teacher">${this.getHTML(data, "teachers")}</span>
           </div>
           <div class="pjw-class-info-bottom">${this.getHTML(data, "info")}</div>
         </div>
         <div class="pjw-class-sub">
-          <div class="pjw-class-weekcal">${this.getHTML(data, "lessontime")}</div>
+          <div class="pjw-class-weekcal">
+            ${this.getHTML(data, "lessontime")}
+          </div>
+
+          ${data.places == "" ? "" : `<div class="pjw-class-places">${this.getHTML(data, "weeks")}<span>${data.places}</span></div>`}
+          
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
-            ${this.getHTML(data, "weeknum")}
+            ${data.places == "" ? this.getHTML(data, "weeks") : ""}
+            ${this.getHTML(data, "weeksbar")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
         </div>
@@ -359,6 +399,49 @@ function ClassListPlugin() {
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.comment_button = this.operation.children(".pjw-class-comment-button");
+
+      // Draw weekday lesson time rings
+      var deg_list = [
+        [0,2],[2,4],
+        [5,7],[7,9],
+        [10,12],[12,14],
+        [15,17],[17,19],
+        [20,22],[22,24],[24,26]
+      ];
+      var color_list = [
+        "yellow", "yellow",
+        "white", "white",
+        "#e5ffc7", "#e5ffc7",
+        "#ff5400", "#ff5400",
+        "#8178f9", "#8178f9", "#8178f9"
+      ];
+      this.weekcal.find("canvas").each((index, val) => {
+        var ctx = val.getContext("2d");
+        var arc_list = $$(val).attr("data-arc");
+
+        for (var i = 0; i < 11; i++) {
+          ctx.beginPath();  
+          if ($$(val).hasClass("pjw-class-weekcal-arc")) {
+            ctx.lineWidth = 8;
+            // Stroke color in compressed calendar
+            ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : color_list[i];
+          } else {
+            ctx.lineWidth = 6;
+            // Stroke color in expanded calendar
+            ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "rgba(255, 255, 255, 1)";
+          }
+          var deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.02;
+          var deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.02;
+          if (arc_list[i] == "2" || arc_list[i] == "0") {
+            // Draw dotted line
+            var deg_mid = (deg_start + deg_end) / 2, deg_gap = (deg_end - deg_start) / 6;
+            deg_start = deg_mid - (arc_list[i] == "0" ? 1 : 2) * deg_gap;
+            deg_end = deg_mid + deg_gap;
+          }
+          ctx.arc(50, 50, 35, deg_start, deg_end);
+          ctx.stroke();
+        }
+      });
 
       // Set select button click event
       this.select_button.click({
@@ -499,6 +582,8 @@ function ClassListPlugin() {
 
     // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
+      if (typeof(pattern) == "undefined" || pattern == "") return 0;
+
       function testString(keyword, str) {
         if (keyword.length != 1 && keyword[0] == "-") {
           if (testString(keyword.slice(1), str) !== 0)
@@ -571,7 +656,7 @@ function ClassListPlugin() {
         [data.title, 8], 
         [data.teachers, 6], 
         [data.info.map((item) => (item.val)), 3],
-        [data.time_detail, 1]
+        [data.places || "", 1]
       ];
       for (var item of priority_map) {
         var res = this.matchDegree(search_str, item[0]);
@@ -651,6 +736,8 @@ function ClassListPlugin() {
         if (i < this.max_classes_loaded && this.class_data[i].data.priority >= 0) {
           this.class_data[i].obj.intl();
           this.class_data[i].obj.show();
+        } else {
+          this.class_data[i].obj.hide();
         }
         this.class_data[i].obj.setPriority(this.class_data.length - i);
       }
@@ -693,6 +780,7 @@ function ClassListPlugin() {
 
       var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       var ans = [];
+      var places = [];
 
       for (var item of classes) {
         var words = item.split(/\s|\&nbsp;/g);
@@ -700,6 +788,7 @@ function ClassListPlugin() {
         var is_odd = false, is_even = false;
         var has_week_info = false;
         var has_lesson_time_info = false;
+        var place = [];
 
         for (var jtem of words) {
           if (jtem[0] == "周") {
@@ -719,7 +808,7 @@ function ClassListPlugin() {
               if (num_arr.length == 1)
                 weeks[parseInt(num_arr[0])] = 1;
               else if (num_arr.length == 2)
-                for (var i = parseInt(num_arr[0]); i <= parseInt(num_arr[1]); i++)
+                for (var i = parseInt(num_arr[0]); i <= Math.min(total_weeks, parseInt(num_arr[1])); i++)
                   weeks[i] = 1;
             }
           } else if (jtem.search(/从第(\d+)周开始/) != -1) {
@@ -747,12 +836,16 @@ function ClassListPlugin() {
                 type: "normal"
               });
             }
+          } else {
+            place.push(jtem);
           }
         }
 
         if (has_week_info == false && has_lesson_time_info == true)
           for (var i = 1; i <= total_weeks; i++)
             weeks[i] = 1;
+
+        places.push(place.join(' '));
       }
 
       var ans_weeks = [];
@@ -766,17 +859,44 @@ function ClassListPlugin() {
           ans_weeks[ans_weeks.length - 1].end = i-1;
         }
       }
-      return {lesson_time: ans, class_weeknum: ans_weeks};
+      return {
+        lesson_time: ans,
+        class_weeknum: ans_weeks,
+        places: places.map((x) => (x.trim().replaceAll("/", " ")))
+            .filter((v, i, s) => (s.indexOf(v) === i && v))
+            .join('/')
+            .replaceAll("Ⅱ", "II").replaceAll("Ⅰ", "I").replaceAll("、", " ")
+      };
     }
 
     checkScroll() {
       if ("scroll_lock" in this && this.scroll_lock == true) return;
       this.scroll_lock = true;
-      if (this.class_data.length > this.max_classes_loaded && $$(window).scrollTop() + $$(window).height() + 1600 >= $$(document).height()) {
-        for (var i = this.max_classes_loaded; i < this.max_classes_loaded + this.class_load_size && i < this.class_data.length && this.class_data[i].data.priority >= 0; i++)
+      if (this.class_data.length > this.max_classes_loaded 
+          && $$(window).scrollTop() + $$(window).height() + 1800 >= $$(document).height()) {
+        var count = 0;
+        for (var i = this.max_classes_loaded; 
+            i < this.max_classes_loaded + this.class_load_size 
+            && i < this.class_data.length 
+            && this.class_data[i].data.priority >= 0; i++) {
           this.class_data[i].obj.show();
-        this.max_classes_loaded += this.class_load_size;
+          count++;
+        }
+
+        this.max_classes_loaded += count;
         window.mdc.autoInit();
+        setTimeout((t) => {t.scroll_lock = false;}, 100, this);
+      } else if (this.max_classes_loaded >= 2 * this.class_load_size 
+          && $$(window).scrollTop() + $$(window).height() + this.class_load_size * 150 + 1800 <= $$(document).height()) {
+        var orig_classes_count = this.max_classes_loaded;
+        this.max_classes_loaded -= this.class_load_size * parseInt(
+          ($$(document).height() - $$(window).scrollTop() - $$(window).height() - 1800) / 150 / this.class_load_size
+        );
+        this.max_classes_loaded = Math.max(this.class_load_size, this.max_classes_loaded);
+
+        for (var i = this.max_classes_loaded; i < orig_classes_count; i++)
+          this.class_data[i].obj.hide();
+        
         setTimeout((t) => {t.scroll_lock = false;}, 100, this);
       } else {
         this.scroll_lock = false;
@@ -789,20 +909,18 @@ function ClassListPlugin() {
         this.body.css("transition", "");
         this.body.css("opacity", "0");
       }
-      $$("#pjw-classlist-count").html("Loading...");
+      $$("#pjw-classlist-count").html("正在加载...");
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
         if (this.class_data.length == 0)
-          $$("#pjw-classlist-count").html(`No class found : (`);
-        else if (this.class_data.length == 1)
-          $$("#pjw-classlist-count").html(`${this.class_data.length} class loaded`);
+          $$("#pjw-classlist-count").html(`这里没有课程 : (`);
         else
-          $$("#pjw-classlist-count").html(`${this.class_data.length} classes loaded`);
+          $$("#pjw-classlist-count").html(`已加载 ${this.class_data.length} 门课程`);
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
-        $$("#pjw-classlist-count").html("Load failed : (");
+        $$("#pjw-classlist-count").html("加载失败 : (");
         this.console.error("无法加载课程列表：" + e);
       });
     }
@@ -817,7 +935,7 @@ function ClassListPlugin() {
     loadModule(name) {
       if (this.filter_modules.include(name)) return false;
       this.filter_modules.push(name);
-      this.filter_panel.find(".pjw-classlist-bottom").before(pjw_filter[name].html);
+      this.filter_panel.find(".pjw-mini-brand").before(pjw_filter[name].html);
       this.filters[name] = pjw_filter[name];
       this.filters[name].intl(this.filters[name], this);
       return this.filters[name];
@@ -948,35 +1066,26 @@ function ClassListPlugin() {
         }
         this.auto_refresh_frequency = 1.0;
         this.toggleAutoRefresh(status);
-      } else if (id == "filter-switch") {
-        if (!this.filter_enabled)
-          this.filter_enabled = true;
-        else
-          this.filter_enabled = false;
-        this.update();
-      }
-    }
-
-    // Triggered by filter button
-    showFilter() {
-      if (this.filter_panel.css("pointer-events") == "none") {
-        this.addFilterHook("handleShow");
-        this.filter_panel.addClass("shown");
-        $$(window).scrollTop(this.heading.offset().top - 10);
-      } else {
-        this.filter_panel.removeClass("shown");
       }
     }
 
     handleResize() {
-      var width = this.body.children(":visible:eq(0)").width();
-      var body_width = this.body.width();
-      if (!width) width = body_width;
-      if (body_width < 1450) this.body.removeClass("two-column");
-      else this.body.addClass("two-column");
-      if (width < 700) this.body.addClass("narrow-desktop");
-      else this.body.removeClass("narrow-desktop");
-      setTimeout((t) => {t.handleResize();}, 60, this);
+      var width = this.main.width();
+      if (width < 900) {
+        this.dom.addClass("view-single-column");
+      } else {
+        this.dom.removeClass("view-single-column");
+      }
+      if (width < 500) {
+        this.dom.addClass("view-mobile");
+        this.dom.addClass("view-narrow-desktop");
+      } else if (width < 1200) {
+        this.dom.removeClass("view-mobile");
+        this.dom.addClass("view-narrow-desktop");
+      } else {
+        this.dom.removeClass("view-narrow-desktop");
+        this.dom.removeClass("view-mobile");
+      }
     }
 
     getClassID(obj) {
@@ -1006,7 +1115,7 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent, modules = ["avail", "hours", "frozen"]) {
+    constructor(parent, modules = ["switch", "avail", "hours", "frozen"]) {
       this.filter_modules = modules;
 
       // Deploy filter DOM
@@ -1019,7 +1128,7 @@ function ClassListPlugin() {
         <div class="pjw-classlist-heading">
           <div class="pjw-classlist-selectors">
           </div>
-          <div class="pjw-classlist-controls pjw-float--fixed">
+          <div class="pjw-classlist-controls">
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
@@ -1033,26 +1142,14 @@ function ClassListPlugin() {
               </button>
             </section>
 
-            <section id="filter-control-section">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
-                <div class="mdc-button__ripple"></div>
-                <div class="material-icons-round">filter_alt</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px">课程筛选</div>
-              </button>
-
-              <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="filter-switch">
-                <div class="material-icons-round">toggle_off</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="关闭" data-on="开启">关闭</div>
-              </button>
-            </section>
-
             <section id="search-section">
-              <label class="mdc-text-field mdc-text-field--outlined" id="pjw-classlist-search-field" data-mdc-auto-init="MDCTextField">
-                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-class-search-input__label" id="pjw-class-search-input">
+              <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon" id="pjw-classlist-search-field">
+                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-classlist-search-input__label" id="pjw-classlist-search-input">
+                <i aria-hidden="true" class="material-icons-round mdc-text-field__icon mdc-text-field__icon--trailing pjw-classlist-search-clear" role="button" tabindex="0">clear</i>
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
                   <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="pjw-class-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
                   </span>
                   <span class="mdc-notched-outline__trailing"></span>
                 </span>
@@ -1060,20 +1157,22 @@ function ClassListPlugin() {
             </section>
           </div>
         </div>
-        <div class="pjw-filter-panel">
-          <div class="pjw-filter-panel__content">
+        <div class="pjw-classlist-main">
+          <div class="pjw-filter-panel">  
             ${filter_modules}
-            <div class="pjw-classlist-bottom" style="order: 10;">
+            <div class="pjw-mini-brand" style="order: 10;">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
             </div>
           </div>
-        </div>
-        <div class="pjw-classlist-body narrow-desktop"></div>
-        <div class="pjw-classlist-bottom">
-          <p id="pjw-classlist-count">Loading...</p>
-        </div>
-        <div class="pjw-classlist-bottom">
-          <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+          <div class="pjw-classlist-body__container">
+            <div class="pjw-classlist-body"></div>
+            <div class="pjw-mini-brand">
+              <p id="pjw-classlist-count">Loading...</p>
+            </div>
+            <div class="pjw-mini-brand">
+              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+            </div>
+          </div>
         </div>
       </div>`;
 
@@ -1081,12 +1180,12 @@ function ClassListPlugin() {
       this.heading = this.dom.children(".pjw-classlist-heading");
       this.selectors = this.heading.children(".pjw-classlist-selectors");
       this.controls = this.heading.children(".pjw-classlist-controls");
-      this.body = this.dom.children(".pjw-classlist-body");
+      this.main = this.dom.children(".pjw-classlist-main");
+      this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
-      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
-      this.search_input = this.controls.find("#pjw-class-search-input");
-      this.filter_panel = this.dom.children(".pjw-filter-panel");
+      this.search_input = this.controls.find("#pjw-classlist-search-input");
+      this.filter_panel = this.main.children(".pjw-filter-panel");
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
@@ -1096,11 +1195,19 @@ function ClassListPlugin() {
 
       this.class_load_size = 30;
 
+      /* Initializes search field */
+      this.search_obj = new mdc.textField.MDCTextField(this.controls.find(".mdc-text-field")[0]);
+
       this.search_input.on("input", null, {
         target: this
       }, (e) => {
         if (typeof(e.data.target.input_timeout_id) != "undefined")
           clearTimeout(e.data.target.input_timeout_id);
+        if (e.data.target.search_obj.value != "") {
+          this.controls.find(".pjw-classlist-search-clear").show();
+        } else {
+          this.controls.find(".pjw-classlist-search-clear").hide();
+        }
         if (e.data.target.class_data.length <= 200) {
           e.data.target.search_string = this.search_input.val();
           e.data.target.max_classes_loaded = this.class_load_size;
@@ -1115,17 +1222,19 @@ function ClassListPlugin() {
       });
       if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {this.loadModule("potatoes"); this.max_frequency = 15.0;}
 
+      this.controls.find(".pjw-classlist-search-clear").hide().on("click", null, {
+        target: this
+      }, (e) => {
+        e.data.target.search_obj.value = "";
+        e.data.target.search_input.trigger("input");
+      });
+
+      /* Initializes refresh button */
       this.refresh_button.on("click", null, {
         target: this
       }, (e) => {
         if ($$("#autorefresh-switch").hasClass("off"))
           e.data.target.refresh(true);
-      });
-
-      this.filter_button.on("click", null, {
-        target: this
-      }, (e) => {
-        e.data.target.showFilter();
       });
 
       this.refresh_button.on("mousedown", null, {
@@ -1158,6 +1267,7 @@ function ClassListPlugin() {
         e.data.target.triggerSwitch(t.attr("id"));
       });
 
+      /* Handle window scroll and resize event */
       $$(window).on("scroll", null, {
         target: this
       }, (e) => {
@@ -1349,9 +1459,9 @@ function ClassListPlugin() {
     constructor() {
       var list_html = `
       <div class="pjw-minilist">
-        <div class="pjw-minilist-heading pjw-float--fixed"></div>
+        <div class="pjw-minilist-heading"></div>
         <div class="pjw-minilist-body"></div>
-        <div class="pjw-classlist-bottom">
+        <div class="pjw-mini-brand">
           <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">drag_indicator</span><p>PotatoPlus Mini List</p>
         </div>
       </div>`;
@@ -1381,7 +1491,7 @@ function ClassListPlugin() {
         }
       });
       $$(".pjw-float--fixed").each((index, val) => {
-        if ($$(val).offset().top < $$(window).scrollTop() - 100) {
+        if ($$(val).offset().top + 100 < $$(window).scrollTop()) {
           $$(val).css({
             "position": "fixed",
             "top": "10px",
@@ -1389,7 +1499,7 @@ function ClassListPlugin() {
             "border": "1px solid #000",
             "border-radius": "14px",
             "padding": "3px 15px",
-            "background": "rgba(255, 255, 255, .6)"
+            "background": "rgba(0, 0, 0, .1)"
           });
           $$(val).removeClass("pjw-float--fixed");
           $$(val).addClass("pjw-float--floating");

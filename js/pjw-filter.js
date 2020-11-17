@@ -1,5 +1,43 @@
 var pjw_filter = {
-  /* avail module v1.1 */
+  /* switch module v1.0 */
+  switch: {
+    html: `
+      <div id="pjw-switch-filter">
+        <div class="pjw-switch-box">
+          <div class="mdc-switch" id="pjw-switch-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" id="pjw-switch-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+          <label id="pjw-switch-switch-label" for="pjw-switch-switch-input">过滤器：关闭</label>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-switch-switch")[0]);
+      $$("#pjw-switch-filter").find("#pjw-switch-switch-input").on("change", null, {
+        space: space,
+        list: list
+      }, (e) => {
+        if (e.data.space.switch.checked) {
+          $$("#pjw-switch-switch-label").html("过滤器：开启");
+          e.data.list.filter_panel.css("filter", "saturate(3)");
+        } else {
+          $$("#pjw-switch-switch-label").html("过滤器：关闭");
+          e.data.list.filter_panel.css("filter", "");
+        }
+        e.data.list.filter_enabled = !e.data.list.filter_enabled;
+        e.data.list.update();
+      });
+    },
+    check: (space, data) => {
+      return 0;
+    }
+  },
+
+  /* avail module v1.2 */
   avail: {
     html: `
       <div id="pjw-avail-filter">
@@ -37,19 +75,19 @@ var pjw_filter = {
       space.status = true;
 
       space.dom.find("#pjw-avail-switch-input").on("change", null, {
-        target: space,
+        space: space,
         list: list
       }, (e) => {
-        e.data.target.status = e.data.target.switch.checked;
-        e.data.target.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
+        e.data.space.status = e.data.space.switch.checked;
+        e.data.space.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
         e.data.list.update();
       });
 
       space.dom.find("#pjw-deselect-switch-input").on("change", null, {
-        target: space,
+        space: space,
         list: list
       }, (e) => {
-        e.data.target.keep_deselect = e.data.target.deselect_switch.checked;
+        e.data.space.keep_deselect = e.data.space.deselect_switch.checked;
         e.data.list.update();
       });
     },
@@ -65,11 +103,11 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.1 */
+  /* hours module v0.2 */
   hours: {
     html: `
       <div id="pjw-hours-filter">
-        <heading><span class="material-icons-round">schedule</span>课程时间 *Beta</heading>
+        <heading><span class="material-icons-round">schedule</span>课程时间</heading>
         <div class="content">
           <div class="pjw-class-weekcal">
             <div class="pjw-class-weekcal-heading">
@@ -84,49 +122,48 @@ var pjw_filter = {
             </div>
             <div class="pjw-class-weekcal-calendar">
               <div class="pjw-class-weekcal-calendar-day select-time">
-                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span>
+                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span><span>12&gt;</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
-                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
               </div>
             </div>
           </div>
           <div id="pjw-hours-filter-control">
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
-            <div id="reset-calendar" class="pjw-mini-button">重置为空闲时间</div>
-            <div id="reset-calendar-allow-all" class="pjw-mini-button">重置并允许单双周课程</div>
+            <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
           </div>
         </div>
       </div>
     `,
     intl: (space, list) => {
       space.data = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       ];
       space.dom = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
 
@@ -140,7 +177,7 @@ var pjw_filter = {
 
       space.clear = function() {
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             space.setValue(i, j, 0);
       };
 
@@ -164,7 +201,7 @@ var pjw_filter = {
             });
             resolve();
           }).catch((res) => {
-            list.console.error("课程时间模块无法加载已有课程：" + res);
+            list.console.error("课程时间筛选器无法加载已有课程：" + res);
             reject();
           });
         });
@@ -186,14 +223,6 @@ var pjw_filter = {
       }, (e) => {
         e.data.space.clear();
         e.data.space.loadMyClass().then(() => {e.data.list.update();});
-      });
-
-      $$("#reset-calendar-allow-all").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.space.clear();
-        e.data.space.loadMyClass(false).then(() => {e.data.list.update();});
       });
 
       space.mouse_select = false;
@@ -281,12 +310,12 @@ var pjw_filter = {
         var elem = $$(e.delegateTarget);
         var day = elem.index();
         var val = 0;
-        for (var j = 1; j <= 11; j++)
+        for (var j = 1; j <= 12; j++)
           if (e.data.space.data[day][j] !== false) {
             val = false;
             break;
           }
-        for (var j = 1; j <= 11; j++)
+        for (var j = 1; j <= 12; j++)
           e.data.space.setValue(day, j, val);
         e.data.list.update();
       });
@@ -297,13 +326,13 @@ var pjw_filter = {
       }, (e) => {
         var val = 0;
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             if (e.data.space.data[i][j] !== false) {
               val = false;
               break;
             }
         for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 11; j++)
+          for (var j = 1; j <= 12; j++)
             e.data.space.setValue(i, j, val);
         e.data.list.update();
       });
@@ -442,18 +471,20 @@ var pjw_filter = {
     }
   },
 
-  /* frozen module v1.0 */
+  /* frozen module v1.1 */
   frozen: {
     html: `
       <div id="pjw-frozen-filter" style="order: 3;">
-        <heading><span class="material-icons-round">ac_unit</span><span id="frozen-quotes"></span></heading>
+        <heading><span class="material-icons-round" id="frozen-icon" style="cursor: pointer;">ac_unit</span><span id="frozen-quotes"></span></heading>
       </div>
     `,
     intl: (space, list) => {
+      $$("#frozen-icon").on("click", null, {
+        space: space
+      }, (e) => {
+        e.data.space.target.html(e.data.space.getRandomQuotes());
+      });
       space.target = $$("#frozen-quotes");
-    },
-    handleShow: (space, list) => {
-      space.target.html(space.getRandomQuotes());
     },
     handleParseComplete: (space, list) => {
       space.target.html(space.getRandomQuotes());
@@ -462,25 +493,18 @@ var pjw_filter = {
       var quotes_lib = frozen_quotes.split("\n");
       return quotes_lib[Math.floor(Math.random() * quotes_lib.length)];
     }
+  },
+
+  acl_major_switch: {
+    html: `
+      <div>
+        <div class="pjw-mini-button" id="acl-major-switch-button" style="display: none;">转至我的专业</div>
+        <br>
+        <span id="acl-major-switch-label" style="margin-left: 6px;"></span>
+      </div>
+    `,
+    intl: (space, list) => {
+
+    }
   }
 }
-
-/*
-if (!space.status) return 0;
-if (data.select_button && data.select_button.action)
-  if (data.select_button.status == "Select") {
-    if (!space.continue_on_success)
-      space.switch.checked = space.status = false;
-    else {
-      if ($$("#autorefresh-switch").hasClass("on"))
-        $$("#autorefresh-switch").click();
-    }
-
-    var e = {data: {target: class_obj}};
-    data.select_button.action(e).then(() => {
-      class_obj.list.console.debug("Got a success from the potatoes module!");
-    }).catch((res) => {
-      class_obj.list.console.debug("Got an error from the potatoes module: " + res);
-    });
-  }
-return 0;*/
