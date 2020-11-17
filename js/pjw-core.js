@@ -426,7 +426,8 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    // $$("#termList > option:eq(1)").after('<option value="20202">*2020-2021学年第二学期</option>');
+    if ($$("#termList > option:eq(1)").html() != "2020-2021学年第二学期")
+      $$("#termList > option:eq(1)").before('<option value="20202">*2020-2021学年第二学期</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
 

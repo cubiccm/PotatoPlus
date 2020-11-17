@@ -863,7 +863,7 @@ function ClassListPlugin() {
         lesson_time: ans,
         class_weeknum: ans_weeks,
         places: places.map((x) => (x.trim().replaceAll("/", " ")))
-            .filter((v, i, s) => (s.indexOf(v) === i))
+            .filter((v, i, s) => (s.indexOf(v) === i && v))
             .join('/')
             .replaceAll("Ⅱ", "II").replaceAll("Ⅰ", "I").replaceAll("、", " ")
       };
