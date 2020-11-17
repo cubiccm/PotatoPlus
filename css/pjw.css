@@ -303,13 +303,18 @@ body * {
 .pjw-card a {
   margin: 0 5px;
   font-size: inherit;
-  text-decoration: none;
+  text-decoration: none !important;
   color: rgba(255, 255, 255, .75) !important;
   transition: color .1s ease-out;
 }
 
 .pjw-card a:hover {
   color: rgba(255, 255, 255, 1) !important;
+}
+
+.pjw-card num {
+  font-weight: bold;
+  margin: 0 3px;
 }
 
 #pjw-welcome {
@@ -408,12 +413,25 @@ body * {
 }
 
 #Function > ul > li:hover {
-  transform: matrix(0.96, 0, 0, 1, 0, -8);
+  /*transform: matrix(0.90, 0, 0, 1.03, 0, 0);*/
+  padding: 20px 0;
+  margin: 5px 9px;
   border-radius: 24px;
   background: rgba(0, 0, 0, .7);
 }
 
+#Function.main-page-function > ul > li:hover {
+  transform: matrix(0.96, 0, 0, 1, 0, -10);
+  padding: 20px 6px;
+  margin: 5px 3px;
+}
+
 #Function > ul > li:active {
+  transform: matrix(0.92, 0, 0, 0.92, 0, 0);
+  background: rgba(0, 0, 0, .9);
+}
+
+#Function.main-page-function > ul > li:active {
   transform: matrix(0.92, 0, 0, 0.92, 0, -2);
   background: rgba(0, 0, 0, .9);
 }

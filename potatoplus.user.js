@@ -391,13 +391,18 @@ body * {
 .pjw-card a {
   margin: 0 5px;
   font-size: inherit;
-  text-decoration: none;
+  text-decoration: none !important;
   color: rgba(255, 255, 255, .75) !important;
   transition: color .1s ease-out;
 }
 
 .pjw-card a:hover {
   color: rgba(255, 255, 255, 1) !important;
+}
+
+.pjw-card num {
+  font-weight: bold;
+  margin: 0 3px;
 }
 
 #pjw-welcome {
@@ -496,12 +501,25 @@ body * {
 }
 
 #Function > ul > li:hover {
-  transform: matrix(0.96, 0, 0, 1, 0, -8);
+  /*transform: matrix(0.90, 0, 0, 1.03, 0, 0);*/
+  padding: 20px 0;
+  margin: 5px 9px;
   border-radius: 24px;
   background: rgba(0, 0, 0, .7);
 }
 
+#Function.main-page-function > ul > li:hover {
+  transform: matrix(0.96, 0, 0, 1, 0, -10);
+  padding: 20px 6px;
+  margin: 5px 3px;
+}
+
 #Function > ul > li:active {
+  transform: matrix(0.92, 0, 0, 0.92, 0, 0);
+  background: rgba(0, 0, 0, .9);
+}
+
+#Function.main-page-function > ul > li:active {
   transform: matrix(0.92, 0, 0, 0.92, 0, -2);
   background: rgba(0, 0, 0, .9);
 }
@@ -5065,10 +5083,28 @@ window.potatojw_intl = function() {
 
     const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
 
+    var calcCurrentWeek = () => {
+      const semester_begin = new Date("07SEP2020");
+      const exam_begin = new Date("04JAN2021");
+      const holiday_begin = new Date("18JAN2021");
+      const next_sem_begin = new Date("01MAR2021");
+      const today = new Date();
+      if (today < semester_begin)
+        return `学期将开始于 ${semester_begin}`;
+      else if (today < exam_begin)
+        return `学期第<num>${Math.ceil((today - semester_begin + 1) / (7 * 24 * 60 * 60 * 1000))}</num>周`;
+      else if (today < holiday_begin)
+        return "考试周";
+      else if (today < next_sem_begin)
+        return "寒假";
+      else
+        return "查看教学周历";
+    }
+
     const menu_html = `
       <div id="pjw-menu" class="pjw-card">
         <heading>Howdy, NJUer</heading><br>
-        <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]} <a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank">${calcCurrentWeek()}</a></subheading>
         <br>
         <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">

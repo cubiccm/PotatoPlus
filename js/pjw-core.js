@@ -318,10 +318,28 @@ window.potatojw_intl = function() {
 
     const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
 
+    var calcCurrentWeek = () => {
+      const semester_begin = new Date("07SEP2020");
+      const exam_begin = new Date("04JAN2021");
+      const holiday_begin = new Date("18JAN2021");
+      const next_sem_begin = new Date("01MAR2021");
+      const today = new Date();
+      if (today < semester_begin)
+        return `学期将开始于 ${semester_begin}`;
+      else if (today < exam_begin)
+        return `学期第<num>${Math.ceil((today - semester_begin + 1) / (7 * 24 * 60 * 60 * 1000))}</num>周`;
+      else if (today < holiday_begin)
+        return "考试周";
+      else if (today < next_sem_begin)
+        return "寒假";
+      else
+        return "查看教学周历";
+    }
+
     const menu_html = `
       <div id="pjw-menu" class="pjw-card">
         <heading>Howdy, NJUer</heading><br>
-        <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</subheading>
+        <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]} <a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank">${calcCurrentWeek()}</a></subheading>
         <br>
         <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
