@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.5 Beta 1
+// @version      0.2.5
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -4770,9 +4770,9 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.5 Beta 1";
+  window.pjw_version = "0.2.5";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.5 Beta 1";
+    window.pjw_version = "0.2.5";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -5067,8 +5067,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p>感谢您参与到 PotatoPlus v0.2.5 Beta 的测试中！您现在使用的 PotatoPlus 不是正式版本，可能需要手动检查更新。</p>
-        <p>PotatoPlus v0.2.5 带来了位于首页的快捷访问菜单、大量布局与交互优化及课程地点信息。</p>
+        <p>PotatoPlus 0.2.5 带来了位于首页的快捷访问菜单，课程列表的时间圆环和地点，以及大量布局与交互优化。</p>
         <p id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
