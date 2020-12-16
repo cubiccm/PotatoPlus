@@ -5083,10 +5083,10 @@ window.potatojw_intl = function() {
     const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
 
     var calcCurrentWeek = () => {
-      const semester_begin = new Date("07SEP2020");
-      const exam_begin = new Date("04JAN2021");
-      const holiday_begin = new Date("18JAN2021");
-      const next_sem_begin = new Date("01MAR2021");
+      const semester_begin = new Date("2020-09-07");
+      const exam_begin = new Date("2021-01-04");
+      const holiday_begin = new Date("2021-01-18");
+      const next_sem_begin = new Date("2021-03-01");
       const today = new Date();
       if (today < semester_begin)
         return `学期将开始于 ${semester_begin}`;
@@ -5233,8 +5233,7 @@ window.potatojw_intl = function() {
                 val: td(3).html()
               }, {
                 key: "课程性质",
-                val: td(2).html(),
-                hidden: true
+                val: td(2).html()
               }, {
                 key: "校区",
                 val: td(6).html(),
