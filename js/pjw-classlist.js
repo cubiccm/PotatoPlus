@@ -346,7 +346,7 @@ function ClassListPlugin() {
             ${this.getHTML(data, "lessontime")}
           </div>
 
-          ${data.places == "" ? "" : `<div class="pjw-class-places">${this.getHTML(data, "weeks")}<span>${data.places}</span></div>`}
+          ${(!("places" in data) || data.places == "") ? "" : `<div class="pjw-class-places">${this.getHTML(data, "weeks")}<span>${data.places}</span></div>`}
           
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}

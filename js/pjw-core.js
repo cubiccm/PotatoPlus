@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.6";
+    window.pjw_version = "0.2.6.1";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -79,7 +79,8 @@ window.potatojw_intl = function() {
     $$("#comment").css({
       width: "100%",
       left: 0,
-      top: "5px"
+      top: "5px",
+      color: "rgba(0, 0, 0, .4)"
     });
   }
 
@@ -461,8 +462,8 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    if ($$("#termList > option:eq(1)").html() != "2020-2021学年第二学期")
-      $$("#termList > option:eq(1)").before('<option value="20202">*2020-2021学年第二学期</option>');
+    // if ($$("#termList > option:eq(1)").html() != "2020-2021学年第二学期")
+    //   $$("#termList > option:eq(1)").before('<option value="20202">*2020-2021学年第二学期</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
     total_weeks_history = {
