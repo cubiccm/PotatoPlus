@@ -291,6 +291,8 @@ window.potatojw_intl = function() {
     store.set("is_toolbar_collapsed", false);
     store.remove("privilege");
     store.set("version", pjw_version);
+    store.remove("bulletin_update_timestamp");
+    store.remove("bulletin_content");
   }
 
 
@@ -1721,7 +1723,7 @@ window.potatojw_intl = function() {
           type: "POST",
           url: "/jiaowu/student/elective/courseList.do",
           data: {
-            method: "openCourse",
+            method: "opencourse",
             campus: "全部校区",
             academy: this.selectors.academy.val()
           }
@@ -1747,7 +1749,7 @@ window.potatojw_intl = function() {
       list.selectors.academy.onchange( (e) => {
         list.refresh(true);
       } );
-      list.parse(data);
+      list.refresh();
     });
   } else if (pjw_mode == "major_course") {
     window.hideCourseDetail = function(response){

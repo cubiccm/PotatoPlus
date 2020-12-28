@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PotatoPlus
-// @version      0.2.6
+// @version      0.2.6.1
 // @description  土豆改善工程！
 // @author       Limos
 // @match        *://*.nju.edu.cn/jiaowu*
@@ -4786,7 +4786,7 @@ window.potatojw_intl = function() {
   if (window.pjw_platform[0] == "@")
     window.pjw_platform = "General Plugin";
 
-  window.pjw_version = "0.2.6";
+  window.pjw_version = "0.2.6.1";
   if (window.pjw_version[0] == "@")
     window.pjw_version = "0.2.6";
   
@@ -5072,6 +5072,8 @@ window.potatojw_intl = function() {
     store.set("is_toolbar_collapsed", false);
     store.remove("privilege");
     store.set("version", pjw_version);
+    store.remove("bulletin_update_timestamp");
+    store.remove("bulletin_content");
   }
 
 
@@ -6502,7 +6504,7 @@ window.potatojw_intl = function() {
           type: "POST",
           url: "/jiaowu/student/elective/courseList.do",
           data: {
-            method: "openCourse",
+            method: "opencourse",
             campus: "全部校区",
             academy: this.selectors.academy.val()
           }
@@ -6528,7 +6530,7 @@ window.potatojw_intl = function() {
       list.selectors.academy.onchange( (e) => {
         list.refresh(true);
       } );
-      list.parse(data);
+      list.refresh();
     });
   } else if (pjw_mode == "major_course") {
     window.hideCourseDetail = function(response){
