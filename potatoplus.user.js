@@ -5099,7 +5099,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p>PotatoPlus 0.2.6 对初选选课进行了一些改善。</p>
+        <p>PotatoPlus 0.2.6 对初选选课进行了一些适配和改善。</p>
         <p id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -6372,6 +6372,27 @@ window.potatojw_intl = function() {
     window.list = new PJWClassList($$("body"));
     collapseSidebarIntoFilter();
     window.initList = () => {};
+    window.exitElective = function(classId) {
+      for(var i = 0; i < $('tbCourseListEx').rows.length; i++){
+        if($('tbCourseListEx').rows[i].id == "trClass" + classId){
+          $('tbCourseListEx').deleteRow($('tbCourseListEx').rows[i].rowIndex);
+        }
+      }
+      g_selectedLeft++;
+      var classIdList = $('classIdList').innerHTML;
+      var arrClassId = classIdList.split(",");
+      var arrTempClassId = new Array();
+      var j = 0;
+      for(var i = 0; i < arrClassId.length; i++){
+        if(arrClassId[i] != classId){
+          arrTempClassId[j] = arrClassId[i];
+          j++;
+        }
+      }
+      
+      $('classIdList').innerHTML = arrTempClassId.join(",");
+      list.console.log("这门课程已经从列表中移除，请在修改完成后按“提交”按钮保存。");
+    }
 
     list.select = function(classID, class_data) {
       var bIsExist = false;
