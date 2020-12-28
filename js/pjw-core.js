@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.5";
+    window.pjw_version = "0.2.6";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -64,6 +64,25 @@ window.potatojw_intl = function() {
     }
   }
 
+  if ($$("div#TopLink").length > 0) {
+    $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
+      <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
+  }
+
+  function collapseSidebarIntoFilter() {
+    $$("#comment").detach().prependTo(".pjw-filter-panel");
+    $$("#courseDetail").detach().prependTo(".pjw-filter-panel");
+    $$("#courseDetail").css({
+      width: "100%",
+      left: 0
+    });
+    $$("#comment").css({
+      width: "100%",
+      left: 0,
+      top: "5px"
+    });
+  }
+
   window.reset_storage_confirm = false;
   window.reset_storage_timeout = 0;
   window.resetStorage = function() {
@@ -81,9 +100,6 @@ window.potatojw_intl = function() {
       }, 2000);
     }
   }
-  if ($$("div#TopLink").length > 0)
-    $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
-      <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
 
   console.log(`PotatoPlus v${pjw_version} (${pjw_platform}) by Limos`);
 
@@ -96,7 +112,7 @@ window.potatojw_intl = function() {
   }
 
   var filter_mode_list = {"major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true};
 
   const custom_toolbar_html = {
     course_eval: `
@@ -302,7 +318,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p>PotatoPlus 0.2.5 带来了位于首页的快捷访问菜单，课程列表的时间圆环和地点，以及大量布局与交互优化。</p>
+        <p>PotatoPlus 0.2.6 对初选选课进行了一些适配和改善。</p>
         <p id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -447,6 +463,16 @@ window.potatojw_intl = function() {
       $$("#termList > option:eq(1)").before('<option value="20202">*2020-2021学年第二学期</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
+    total_weeks_history = {
+      "20202": 16,
+      "20201": 17,
+      "20192": 17,
+      "20191": 17,
+      "20182": 16,
+      "20181": 17,
+      "20172": 16,
+      "20171": 18
+    };
 
     list.parse = function(data) {
       return new Promise((resolve, reject) => {
@@ -522,6 +548,7 @@ window.potatojw_intl = function() {
             curSpeciality: major_code
           }
         }).done((data) => {
+          this.setTotalWeeks(total_weeks_history[sel.term.val()] || 18);
           this.parse(data);
           resolve();
         }).fail((data) => {
@@ -1260,8 +1287,161 @@ window.potatojw_intl = function() {
     $$("#campusList").parent().remove();
     $$("table#tbCourseList").remove();
     $$("body > div[align=center]").children("p").remove();
-  } else if (pjw_mode == "dis_view") {
-    // To be implemented...
+  } else if (pjw_mode == "dis_view" || pjw_mode == "public_view") {
+    window.list = new PJWClassList($$("body"));
+    collapseSidebarIntoFilter();
+    window.initList = () => {};
+    window.exitElective = function(classId) {
+      for(var i = 0; i < $('tbCourseListEx').rows.length; i++){
+        if($('tbCourseListEx').rows[i].id == "trClass" + classId){
+          $('tbCourseListEx').deleteRow($('tbCourseListEx').rows[i].rowIndex);
+        }
+      }
+      g_selectedLeft++;
+      var classIdList = $('classIdList').innerHTML;
+      var arrClassId = classIdList.split(",");
+      var arrTempClassId = new Array();
+      var j = 0;
+      for(var i = 0; i < arrClassId.length; i++){
+        if(arrClassId[i] != classId){
+          arrTempClassId[j] = arrClassId[i];
+          j++;
+        }
+      }
+      
+      $('classIdList').innerHTML = arrTempClassId.join(",");
+      list.console.log("这门课程已经从列表中移除，请在修改完成后按“提交”按钮保存。");
+    }
+
+    list.select = function(classID, class_data) {
+      var bIsExist = false;
+      var classIdList = $('classIdList').innerHTML;
+      var arrClassId = classIdList.split(",");
+      for(var i = 0; i < arrClassId.length; i++){
+        if (arrClassId[i] == classID) {
+          bIsExist = true;
+          break;
+        }
+      }
+      if (bIsExist) {
+        this.console.log("这门课程已经在已选列表中了。");
+        return;
+      }
+
+      var newRow = $('tbCourseListEx').insertRow(-1);
+      newRow.id = "trClass" + classID;
+      var mynewcell = newRow.insertCell(-1);
+      mynewcell.innerHTML = class_data.class_name_for_list;
+      mynewcell = newRow.insertCell(-1);
+      mynewcell.innerHTML = "<a href='javascript:upClick(" + classID + ")'>上移</a>";
+      mynewcell = newRow.insertCell(-1);
+      mynewcell.innerHTML = "<a href='javascript:exitElective(" + classID + ")'>退选</a>";
+      
+      $('classIdList').innerHTML = $('classIdList').innerHTML + "," + classID;
+      
+      g_selectedLeft--;
+
+      this.console.log(`${this.getClassInfoForAlert(class_data)} 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加，超出上限的课可能不会被抽中。` : ""));
+    }
+
+    list.parse = function(data) {
+      return new Promise((resolve, reject) => {
+        try {
+          var table = $$(data).filter("table#tbCourseList");
+          var campus_id = this.getCampusID(this.selectors.campus.val());
+          table.find(`tbody#tb_campus${campus_id}`).each((index, val) => {
+            $$(val).find("tr").each((index, val) => {
+              var td = (i) => ($$(val).children(`td:eq(${i})`));
+              var res = this.parseClassTime(td(4).html());
+              if (td(9).html() != "") select_status = "Select";
+              else select_status = "Full";
+
+              var class_name_for_list = this.getClassNameFromFuncStr(td(9));
+              var classID = this.getClassID(td(0));
+              if (classID === false) td(9).children("input").val();
+
+              data = {
+                classID: classID,
+                class_name_for_list: class_name_for_list,
+                title: td(2).html(),
+                teachers: this.parseTeacherNames(td(5).html()),
+                info: [{
+                  key: "课程编号",
+                  val: this.parseClassNumber(td(0)),
+                  hidden: false
+                }],
+                num_info: [{
+                  num: parseInt(td(3).html()),
+                  label: "学分"
+                }, {
+                  num: '' + parseInt(td(8).html()) + '/' + parseInt(td(7).html()),
+                  label: "已选/限额"
+                }],
+                lesson_time: res.lesson_time,
+                time_detail: td(4).html(),
+                places: res.places,
+                class_weeknum: res.class_weeknum,
+                select_button: {
+                  status: select_status,
+                  text: `${td(8).html()}/${td(7).html()}`,
+                  action: (e) => {
+                    return new Promise((resolve, reject) => {
+                      e.data.target.list.select(classID, e.data.target.data).then(() => {
+                        resolve();
+                      }).catch((res) => {
+                        reject(res);
+                      });
+                    });
+                  }
+                },
+                comment_button: {
+                  status: true,
+                  // text: (Math.random() * 10).toFixed(1)
+                }
+              };
+              this.add(data);
+            });
+          });
+          this.update();
+          resolve();
+        } catch(e) {
+          reject(e);
+        }
+      });
+    }
+
+    list.load = function() {
+      return new Promise((resolve, reject) => {
+        $$.ajax({
+          type: "POST",
+          url: "/jiaowu/student/elective/courseList.do",
+          data: {
+            method: pjw_mode == "dis_view" ? "discussGeneralCourse" : "publicCourseList"
+          }
+        }).done((data) => {
+          this.parse(data);
+          resolve();
+        }).fail((data) => {
+          reject("无法获取数据：" + data);
+        });
+      });
+    }
+
+    $$.ajax({
+      type: "POST",
+      url: "/jiaowu/student/elective/courseList.do",
+      data: {
+        method: pjw_mode == "dis_view" ? "discussGeneralCourse" : "publicCourseList"
+      }
+    }).done((data) => {
+      list.selectors = {
+        campus: new PJWSelect($$(data).filter("#campusList"), "校区", list.heading.children(".pjw-classlist-selectors"))
+      };
+      list.selectors.campus.onchange( (e) => {
+        list.refresh(true);
+      } );
+      list.refresh();
+    });
   } else if (pjw_mode == "open") {
     window.list = new PJWClassList($$("body"));
 
@@ -1408,7 +1588,8 @@ window.potatojw_intl = function() {
     $$("#myForm").remove();
     $$("#operationInfo").remove();
   } else if (pjw_mode == "open_view") {
-    window.list = new PJWClassList($$("#courseList"));
+    window.list = new PJWClassList($$("body"));
+    collapseSidebarIntoFilter();
     window.initList = () => {};
 
     list.select = function(classID, class_data) {
@@ -1439,7 +1620,7 @@ window.potatojw_intl = function() {
       
       g_selectedLeft--;
 
-      this.console.log(`${this.getClassInfoForAlert(class_data)} 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加。` : ""));
+      this.console.log(`${this.getClassInfoForAlert(class_data)} 已添加到已选列表，请在选择完成后按“提交”按钮保存。` + (g_selectedLeft <= 0 ? `选课数量已经达到初选阶段上限（${g_totalSelected}门），但似乎仍可继续添加，超出上限的课可能不会被抽中。` : ""));
     }
 
     list.parse = function(data) {
@@ -1519,7 +1700,7 @@ window.potatojw_intl = function() {
           type: "POST",
           url: "/jiaowu/student/elective/courseList.do",
           data: {
-            method: "opencourse",
+            method: "openCourse",
             campus: "全部校区",
             academy: this.selectors.academy.val()
           }
@@ -1545,7 +1726,7 @@ window.potatojw_intl = function() {
       list.selectors.academy.onchange( (e) => {
         list.refresh(true);
       } );
-      list.refresh();
+      list.parse(data);
     });
   } else if (pjw_mode == "major_course") {
     window.hideCourseDetail = function(response){
@@ -1841,7 +2022,6 @@ window.potatojw_intl = function() {
       initGradeList();
       $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList';">全部学期</div>`)
     }
-    
   } else return;
 
   if (pjw_mode in filter_mode_list) {

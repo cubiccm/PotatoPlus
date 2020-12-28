@@ -1,5 +1,10 @@
 function ClassListPlugin() {
-  const total_weeks = 17;
+  total_weeks = 16;
+  const campus_id_map = {
+    "仙林校区": 3,
+    "浦口校区": 2,
+    "鼓楼校区": 1
+  };
 
   /* 
     Class data format:
@@ -578,6 +583,16 @@ function ClassListPlugin() {
       this.body.html("");
       this.auto_inc = 0;
       this.max_classes_loaded = this.class_load_size;
+    }
+
+    // Get campus ID
+    getCampusID(text) {
+      return campus_id_map[text];
+    }
+
+    // Set total weeks
+    setTotalWeeks(weeks) {
+      total_weeks = weeks;
     }
 
     // Checks match of the search string ($pattern) in target string ($str)
@@ -1167,7 +1182,7 @@ function ClassListPlugin() {
           <div class="pjw-classlist-body__container">
             <div class="pjw-classlist-body"></div>
             <div class="pjw-mini-brand">
-              <p id="pjw-classlist-count">Loading...</p>
+              <p id="pjw-classlist-count">列表尚未加载</p>
             </div>
             <div class="pjw-mini-brand">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
