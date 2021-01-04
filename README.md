@@ -13,7 +13,7 @@ NJU土豆改善工程
 
 ## 安装 Installation
 
-[较详细的安装教程](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
+**[较详细的安装教程](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)**
 
 ### 通过插件安装
 
@@ -23,15 +23,19 @@ NJU土豆改善工程
 
 #### Edge
 
-[Microsoft Store](https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib)或[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
+[Microsoft Store](https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib) 或 [Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
 
 #### Firefox
 
 [GitHub Releases](https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi)
 
+### Safari (macOS)
+
+安装较为复杂，如有需要请联系 illimosity@gmail.com
+
 ### 通过Userscript安装
 
-请确保浏览器中已经安装[Tampermonkey](https://tampermonkey.net)等支持Userscript的插件。
+请确保浏览器中已经安装 [Tampermonkey](https://tampermonkey.net) 等支持Userscript的插件。
 
 [获取 Userscript](https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js)
 
@@ -122,7 +126,7 @@ NJU土豆改善工程
 ```javascript
 list.loadModule("potatoes");
 ```
-并将potatoes改为相应的模块名称。
+并将 `potatoes` 改为相应的模块名称。
     
 ## 更多信息 More Info
 
