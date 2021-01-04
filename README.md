@@ -111,6 +111,10 @@ NJU土豆改善工程
     - 专业选课
     - 其它含有 PotatoPlus 功能，但不含 PotatoPlus Class List 的页面
     
+## Stargazers over time 
+
+## [![Stargazers over time](https://starchart.cc/cubiccm/potatoplus.svg)](https://starchart.cc/cubiccm/potatoplus)
+
 ## 测试功能 Beta Features
 
 截至目前，部分功能仍在测试，相关源码已经存在于项目中，但默认不启用。
