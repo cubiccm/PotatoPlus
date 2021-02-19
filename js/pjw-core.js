@@ -321,7 +321,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p>PotatoPlus 0.2.6 对初选选课进行了一些适配和改善。</p>
+        <p>PotatoPlus 0.2.7 对成绩查询进行了一些小改进。</p>
         <p id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -390,7 +390,8 @@ window.potatojw_intl = function() {
     `;
 
     if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
-      welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw_version}" width="300" height="300" style="display: none;"></iframe>`;
+      var is_sharing_stats = ("share_stats" in store.get("login_settings")) && (store.get("login_settings")["share_stats"] == true);
+      welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw_version}&share_stats=${is_sharing_stats ? 1 : 0}" width="300" height="300" style="display: none;"></iframe>`;
 
       window.addEventListener("message", (e) => {
         if (e.origin !== "https://cubiccm.ddns.net") return;
