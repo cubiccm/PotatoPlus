@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.6.1";
+    window.pjw_version = "0.2.7";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -337,19 +337,22 @@ window.potatojw_intl = function() {
     const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
 
     var calcCurrentWeek = () => {
-      const semester_begin = new Date("2020-09-07");
-      const exam_begin = new Date("2021-01-04");
-      const holiday_begin = new Date("2021-01-18");
-      const next_sem_begin = new Date("2021-03-01");
+      const semester_begin = new Date(new Date("2021-03-01").getTime() - 8 * 3600000);
+      const exam_begin = new Date(new Date("2021-06-21").getTime() - 8 * 3600000);
+      const summer_school_begin = new Date(new Date("2021-07-05").getTime() - 8 * 3600000);
+      const holiday_begin = new Date(new Date("2021-08-02").getTime() - 8 * 3600000);
+      const next_sem_begin = new Date(new Date("2021-08-30").getTime() - 8 * 3600000); // Undetermined
       const today = new Date();
       if (today < semester_begin)
-        return `学期将开始于 ${semester_begin}`;
+        return `学期将开始于 ${semester_begin.toDateString()}`;
       else if (today < exam_begin)
         return `学期第<num>${Math.ceil((today - semester_begin + 1) / (7 * 24 * 60 * 60 * 1000))}</num>周`;
-      else if (today < holiday_begin)
+      else if (today < summer_school_begin)
         return "考试周";
+      else if (today < holiday_begin)
+        return "暑期学校";
       else if (today < next_sem_begin)
-        return "寒假";
+        return "暑假";
       else
         return "查看教学周历";
     }
@@ -2023,8 +2026,8 @@ window.potatojw_intl = function() {
       });
     }
 
-    function loadGrade(id) {
-      if (id >= $$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr`).length || !$$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr:eq(${id}) > td > a`).length) {
+    function loadGrade(id, limit = -1) {
+      if (limit == 0 || id >= $$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr`).length || !$$(`table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody > tr:eq(${id}) > td > a`).length) {
         initGradeList();
         return;
       }
@@ -2034,18 +2037,25 @@ window.potatojw_intl = function() {
           method: "GET"
         }).done((res) => {
           parseGrade($$(res));
-          loadGrade(id + 1);
+          loadGrade(id + 1, limit - 1);
         });
       });
     };
 
-    if (!window.location.href.includes("termCode")) {
-      loadGrade(2); 
+    var search_params = new URLSearchParams(window.location.search);
+    if (search_params.has("termCode")) {
+      if (search_params.get("termCode") == "all") {
+        loadGrade(2);
+      } else {
+        parseGrade($$("body"));
+        initGradeList();
+        $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList&termCode=all';">加载所有学期成绩</div>`);
+      }
     } else {
-      parseGrade($$("body"));
-      initGradeList();
-      $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList';">全部学期</div>`)
+      loadGrade(2, 1);
+      $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList&termCode=all';">加载所有学期成绩</div>`);
     }
+    
   } else return;
 
   if (pjw_mode in filter_mode_list) {
