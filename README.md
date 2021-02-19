@@ -29,7 +29,7 @@ NJU土豆改善工程
 
 [GitHub Releases](https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi)
 
-### Safari (macOS)
+#### Safari (macOS)
 
 安装较为复杂，如有需要请联系 illimosity@gmail.com
 
