@@ -128,6 +128,8 @@ window.PJWConsole = class {
     this.dom = $$(html).appendTo("body");
     this.history = this.dom.children("#pjw-console-history");
 
+    $$("body").css("margin-bottom", "40px");
+
     $$(document).on("mousemove", null, {
       target: this
     }, function(e) {
