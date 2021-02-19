@@ -1,3 +1,6 @@
+# Usage: python generate-userscript.py VERSION
+# The userscript will be automatically updated based on updateURL
+
 import sys
 
 version = "beta"

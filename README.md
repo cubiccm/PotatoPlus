@@ -119,6 +119,20 @@ NJU土豆改善工程
 
 ## [![Stargazers over time](https://starchart.cc/cubiccm/potatoplus.svg)](https://starchart.cc/cubiccm/potatoplus)
 
+
+
+## 生成 Userscript
+
+在目录下执行
+
+```shell
+python generate-userscript.py [VERSION]
+```
+
+即可生成对应版本的 Userscript。
+
+
+
 ## 测试功能 Beta Features
 
 截至目前，部分功能仍在测试，相关源码已经存在于项目中，但默认不启用。
@@ -127,7 +141,7 @@ NJU土豆改善工程
 list.loadModule("potatoes");
 ```
 并将 `potatoes` 改为相应的模块名称。
-    
+
 ## 更多信息 More Info
 
 [项目页面及更新日志](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
