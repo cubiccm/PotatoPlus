@@ -673,6 +673,9 @@ window.potatojw_intl = function() {
           } else if ($$(res).is("#errMsg")) {
             target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
             reject(res);
+          } else {
+            target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title") || res}`);
+            resolve(res);
           }
         }).fail((res) => {
           target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
