@@ -292,32 +292,26 @@ window.potatojw_intl = function() {
       pconsole.alert(window.alert_data);
     }
 
-    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray; opacity: 0.5;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
+    $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray; opacity: 0.7;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
 
     var update_html = "";
     if (pjw_platform == "Userscript") {
-      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Edge Add-ons</a>上线，Firefox 用户可以到<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi" target="_blank">GitHub Releases</a>获取，建议您迁移到插件版本以在部分功能上获得更好的体验。安装插件后请关闭当前脚本的执行。`;
+      update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Edge Add-ons</a>上线，您也可以可以到<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi" target="_blank">GitHub Releases</a>获取适用于 Firefox 浏览器的插件。迁移到插件版本会在部分功能上获得更好的体验；安装插件前请先关闭当前 Userscript 的执行。`;
     } else if (pjw_platform == "General Plugin") {
       update_html = `您所安装的版本可能不支持自动更新，请访问<a href="https://github.com/cubiccm/potatoplus/releases/latest/" target="_blank">GitHub Releases</a>页面检查及获取更新。`;
     }
 
-    const mailing_list_html = `
-      <div style="display: flex; opacity: .8;">
-        <div class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potato-mailing-list/');">加入邮件列表</div>
-        <div class="pjw-mini-button" onclick="window.open('mailto:illimosity@gmail.com');">发送反馈邮件</div>
-      </div>
-    `;
-
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p>PotatoPlus 0.2.7 对成绩查询进行了一些小改进。</p>
-        <p id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.2.8 新增了聚合选课的测试功能，现在您可以在选课菜单中试用；这一更新亦对课程列表进行了一些改进。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
-        ${mailing_list_html}
         <note>
           <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
+          <a href="https://cubiccm.ddns.net/potato-mailing-list/" target="_blank">加入邮件列表</a>
+          <a href="mailto:illimosity@gmail.com">发送反馈邮件</a>
           <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
         </note>
       </div>
@@ -352,11 +346,11 @@ window.potatojw_intl = function() {
         <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]} <a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank">${calcCurrentWeek()}</a></subheading>
         <br>
         <br>
-        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(46, 19, 197, .9);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(0, 60, 138, 1);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
           <div class="mdc-button__ripple"></div>
           <i class="material-icons-round">today</i>
           <div class="mdc-button__label">我的课程</div>
-          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(99, 110, 255);" data-link="/jiaowu/student/elective/index.do">
+          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(0, 60, 138);" data-link="/jiaowu/student/elective/index.do">
             <div class="mdc-button__ripple"></div>
             <i class="material-icons-round">add</i>
             <div class="mdc-button__label">选课</div>
@@ -671,8 +665,12 @@ window.potatojw_intl = function() {
       } else {
         $$(".pjw-classlist-selectors").html("");
       }
+      if (last_selected_mode) {
+        last_selected_mode.css("color", "");
+        last_selected_mode.removeClass("keep-hover");
+      }
       $$(this).css("color", "#0058ff");
-      if (last_selected_mode) last_selected_mode.css("color", "");
+      $$(this).addClass("keep-hover");
       last_selected_mode = $$(this);
       var mode = $$(this).attr("data-mode");
       window.pjw_select_mode = mode;

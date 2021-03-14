@@ -63,14 +63,24 @@
   display: inline-block;
   font-size: 14px; font-weight: bold;
   border: 0; border-radius: 7px;
-  background-color: white; color: #63065f;
+  background-color: rgba(255, 255, 255, .8);
+  color: #63065f;
   user-select: none; cursor: pointer;
   padding: 1px 7px;
   margin: 2px 5px;
   transition: all .1s ease-in;
 }
 
+.pjw-mini-button.keep-hover {
+  background: rgba(255, 255, 255, 1);
+  color: #f37232;
+  border-radius: 10px;
+  padding: 1px 10px;
+  margin: 2px;
+}
+
 .pjw-mini-button:hover {
+  background: rgba(255, 255, 255, 1);
   color: #f37232;
   border-radius: 10px;
   padding: 1px 10px;
@@ -79,7 +89,7 @@
 
 .pjw-mini-button:active {
   color: #c1c1c1 !important;
-  background-color: rgba(255, 255, 255, .8);
+  background-color: rgba(255, 255, 255, .9);
 }
 
 @font-face {
@@ -88,7 +98,7 @@
   font-weight: 400;
   src: 
     url("chrome-extension://__MSG_@@extension_id__/fonts/Material Icons Round.woff2") format('woff2'),
-    url("https://fonts.gstatic.com/s/materialiconsround/v26/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmPq_HTTw.woff2") format('woff2'),
+    url("https://fonts.gstatic.com/s/materialicons/v81/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2") format('woff2'),
     url("https://cubiccm.github.io/Material%20Icons%20Round.woff2") format('woff2');
 }
 
@@ -318,7 +328,7 @@ body * {
 }
 
 #pjw-union-panel {
-  background: linear-gradient(-70deg, rgb(99 110 255), rgb(88 150 185));
+  background: linear-gradient(-70deg, rgb(154, 110, 179), rgb(67, 126, 202));
 }
 
 #pjw-union-panel .pjw-mini-button {
@@ -329,18 +339,14 @@ body * {
   color: rgb(88 150 185);
 }
 
-#pjw-union-panel .pjw-mini-button:active {
-  color: rgb(88 150 185);
-}
-
 #pjw-welcome {
   width: 90%;
   max-width: 600px;
-  background: linear-gradient(-70deg, #ff6390, #9995ef);
+  background: rgb(0, 60, 138);
 }
 
 #pjw-menu {
-  background: linear-gradient(-70deg, rgb(99 110 255), rgb(88 150 185));
+  background: linear-gradient(-70deg, rgb(154, 110, 179), rgb(67, 126, 202));
   --mdc-theme-primary: #63065f;
 }
 
