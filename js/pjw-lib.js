@@ -8,7 +8,15 @@ var options_data = {
   "public": "[{\"value\": \"仙林校区\", \"text\": \"仙林校区\"}, {\"value\": \"鼓楼校区\", \"text\": \"鼓楼校区\"}]",
 
   "read": "[{\"value\": \"1\", \"text\": \"文学与艺术\"}, {\"value\": \"2\", \"text\": \"历史与文明\"}, {\"value\": \"3\", \"text\": \"哲学与宗教\"}, {\"value\": \"4\", \"text\": \"经济与社会\"}, {\"value\": \"5\", \"text\": \"自然与生命\"}, {\"value\": \"6\", \"text\": \"全球化与领导力\"}, {\"value\": \"7\", \"text\": \"全部\"}]"
-}
+};
+
+var options_id = {
+  "open": "academyList",
+  "common": "courseKindList",
+  "dis": "campusList",
+  "public": "campusList",
+  "read": "readRenewType"
+};
 
 var frozen_quotes = `
 The snow glows white on the mountain tonight, not a footprint to be seen.

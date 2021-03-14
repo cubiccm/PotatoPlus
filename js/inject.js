@@ -31,6 +31,7 @@ function injectStyleFromString(str) {
 (function() {
   var modes_reg = {
     major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
+    union: /student\/elective\/index.do/i, // 选课
     gym: /gymClassList.do/i, // 体育补选
     read: /readRenewCourseList.do/i, // 经典导读读书班补选
     dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
@@ -86,6 +87,7 @@ function injectStyleFromString(str) {
     injectScript("js/pjw-lib.js");
     injectScript("js/pjw-filter.js");
     injectScript("js/pjw-classlist.js");
+    injectScript("js/pjw-modes.js");
   }
   if (pjw_mode == "login_page") {
     injectScript("js/pjw-captcha.js");

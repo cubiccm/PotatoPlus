@@ -471,11 +471,11 @@ var pjw_filter = {
     }
   },
 
-  /* frozen module v1.1 */
+  /* frozen module v1.2 */
   frozen: {
     html: `
       <div id="pjw-frozen-filter" style="order: 3;">
-        <heading><span class="material-icons-round" id="frozen-icon" style="cursor: pointer;">ac_unit</span><span id="frozen-quotes"></span></heading>
+        <heading><span class="material-icons-round" id="frozen-icon" style="cursor: pointer;">ac_unit</span><span id="frozen-quotes">Frozen Quote</span></heading>
       </div>
     `,
     intl: (space, list) => {

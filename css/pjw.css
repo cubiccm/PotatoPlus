@@ -78,7 +78,7 @@
 }
 
 .pjw-mini-button:active {
-  color: #c1c1c1;
+  color: #c1c1c1 !important;
   background-color: rgba(255, 255, 255, .8);
 }
 
@@ -315,6 +315,22 @@ body * {
 .pjw-card num {
   font-weight: bold;
   margin: 0 3px;
+}
+
+#pjw-union-panel {
+  background: linear-gradient(-70deg, rgb(99 110 255), rgb(88 150 185));
+}
+
+#pjw-union-panel .pjw-mini-button {
+  color: darkblue;
+}
+
+#pjw-union-panel .pjw-mini-button:hover {
+  color: rgb(88 150 185);
+}
+
+#pjw-union-panel .pjw-mini-button:active {
+  color: rgb(88 150 185);
 }
 
 #pjw-welcome {

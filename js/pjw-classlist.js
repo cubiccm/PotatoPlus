@@ -1010,7 +1010,7 @@ function ClassListPlugin() {
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
-        this.console.debug("自动刷新已打开。")
+        this.console.debug("自动更新已打开。")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -1051,14 +1051,14 @@ function ClassListPlugin() {
             target.refresh(false).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(16, 141, 255))");
-              target.console.debug("自动刷新计数：" + auto_refresh_count++, "auto-refresh-count");
+              target.console.debug("自动更新计数：" + auto_refresh_count++, "auto-refresh-count");
             }).catch((e) => {
               target.console.error(e);
             });
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
       } else {
-        this.console.debug("自动刷新已关闭。")
+        this.console.debug("自动更新已关闭。")
         $$("#autoreload-control-section").css("filter", "");
         window.clearInterval(this.auto_refresh_interval_id);
       }
@@ -1070,7 +1070,7 @@ function ClassListPlugin() {
       if (id == "autorefresh-switch") {
         if (!status) {
           $$("#autorefresh-icon").html("autorenew");
-          $$("#autorefresh-label").html("刷新");
+          $$("#autorefresh-label").html("更新");
           if (typeof(this.refresh_button_interval_id) != "undefined")
             clearInterval(this.refresh_button_interval_id);
           if (typeof(this.show_refresh_level_timeout_id) != "undefined")
@@ -1088,8 +1088,13 @@ function ClassListPlugin() {
       var width = this.main.width();
       if (width < 900) {
         this.dom.addClass("view-single-column");
+        if (typeof(this.is_filter_panel_shown) == "undefined") this.is_filter_panel_shown = false;
+        if (!this.is_filter_panel_shown) this.filter_panel.hide();
+        $$("#filter-control-section").show();
       } else {
         this.dom.removeClass("view-single-column");
+        this.filter_panel.show();
+        $$("#filter-control-section").hide();
       }
       if (width < 500) {
         this.dom.addClass("view-mobile");
@@ -1144,11 +1149,19 @@ function ClassListPlugin() {
           <div class="pjw-classlist-selectors">
           </div>
           <div class="pjw-classlist-controls">
+            <section id="filter-control-section" style="display: none;">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button" style="border-radius: 30px;">
+                <div class="mdc-button__ripple" style="border-radius: 30px;"></div>
+                <div class="material-icons-round">filter_alt</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">筛选器面板</div>
+              </button>
+            </section>
+
             <section id="autoreload-control-section">
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
                 <div class="material-icons-round" id="autorefresh-icon">autorenew</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">刷新</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">更新</div>
               </button>
 
               <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
@@ -1198,6 +1211,7 @@ function ClassListPlugin() {
       this.main = this.dom.children(".pjw-classlist-main");
       this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
       this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
+      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-classlist-search-input");
       this.filter_panel = this.main.children(".pjw-filter-panel");
@@ -1244,12 +1258,19 @@ function ClassListPlugin() {
         e.data.target.search_input.trigger("input");
       });
 
-      /* Initializes refresh button */
+      /* Initializes refresh & filter button */
       this.refresh_button.on("click", null, {
         target: this
       }, (e) => {
-        if ($$("#autorefresh-switch").hasClass("off"))
-          e.data.target.refresh(true);
+        if ($$("#autorefresh-switch").hasClass("off")) {
+          e.data.target.refresh();
+          $$("#autorefresh-icon").css("transition", "transform .4s ease-out");
+          $$("#autorefresh-icon").css("transform", "rotate(180deg)");
+          window.setTimeout(() => {
+            $$("#autorefresh-icon").css("transition", "");
+            $$("#autorefresh-icon").css("transform", "rotate(0deg)");
+          }, 450);
+        }
       });
 
       this.refresh_button.on("mousedown", null, {
@@ -1280,6 +1301,18 @@ function ClassListPlugin() {
           t.children(":eq(1)").html(t.children(":eq(1)").attr("data-on"));
         }
         e.data.target.triggerSwitch(t.attr("id"));
+      });
+
+      this.filter_button.on("click", null, {
+        target: this
+      }, (e) => {
+        if (typeof(e.data.target.is_filter_panel_shown) == "undefined")
+          e.data.target.is_filter_panel_shown = true;
+        if (e.data.target.is_filter_panel_shown)
+          e.data.target.filter_panel.hide();
+        else
+          e.data.target.filter_panel.show();
+        e.data.target.is_filter_panel_shown = !e.data.target.is_filter_panel_shown;
       });
 
       /* Handle window scroll and resize event */
@@ -1346,16 +1379,18 @@ function ClassListPlugin() {
       this.count = 0;
     }
 
-    constructor(parent_list, id, name, target, start = 1, select_index = 0) {
+    constructor(parent_list, id, name, target, start = 1, select_index = 0, opt_data = "") {
       var list_html = "";
       this.count = 0;
-      if (!id && pjw_mode in options_data) {
-        parent_list.console.info("没有获取到课程选择器，正在使用预加载的选择器", "preloader");
+      if (pjw_mode == "union" || !id) {
+        if (pjw_mode != "union")
+          parent_list.console.info("没有获取到课程选择器，正在使用预加载的选择器", "preloader");
         // Load from pre-determined option data
-        var opt_data = JSON.parse(options_data[pjw_mode]);
+        if (opt_data == "") opt_data = JSON.parse(options_data[pjw_select_mode]);
         for (var item of opt_data) {
           list_html += this.convert(item.value, item.text);
         }
+        id = options_id[pjw_select_mode];
       } else {
         var list;
         if (typeof(id) == "string") {
