@@ -394,8 +394,7 @@ var pjw_filter = {
             </div>
             <label for="pjw-potatoes-continue-on-success-input">选课成功后继续</label>
           </div>
-          <p>使用前请确认课程筛选正确并开启自动刷新开关和过滤器总开关。</p>
-          <p>Take Care & Good Luck!</p>
+          <p>*使用前请确认课程筛选正确并开启自动刷新开关和过滤器总开关。</p>
         </div>
       </div>
     `,

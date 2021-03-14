@@ -1332,8 +1332,8 @@ function ClassListPlugin() {
       this.obj.listen('MDCSelect:change', func);
     }
 
-    convert(item) {
-      return `<li data-value="${item.value}" data-text="${item.innerHTML}" data-index="${this.count++}" class="mdc-list-item"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${item.innerHTML}</span></li>`;
+    convert(val, text) {
+      return `<li data-value="${val}" data-text="${text}" data-index="${this.count++}" class="mdc-list-item"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
     }
 
     addItem(item) {
@@ -1346,21 +1346,34 @@ function ClassListPlugin() {
       this.count = 0;
     }
 
-    constructor(id, name, target, start = 1, select_index = 0) {
-      var list;
-      if (typeof(id) == "string") {
-        list = $$(`#${id}`)[0].options;
-        $$(`#${id}`).hide();
-      } else {
-        id.hide();
-        list = id[0].options;
-        id = id.attr("id");
-      }
+    constructor(parent_list, id, name, target, start = 1, select_index = 0) {
       var list_html = "";
       this.count = 0;
-      for (var item of list) {
-        if (start-- > 0) continue;
-        list_html += this.convert(item);
+      if (!id && pjw_mode in options_data) {
+        parent_list.console.info("没有获取到课程选择器，正在使用预加载的选择器", "preloader");
+        // Load from pre-determined option data
+        var opt_data = JSON.parse(options_data[pjw_mode]);
+        for (var item of opt_data) {
+          list_html += this.convert(item.value, item.text);
+        }
+      } else {
+        var list;
+        if (typeof(id) == "string") {
+          list = $$(`#${id}`)[0].options;
+          $$(`#${id}`).hide();
+        } else {
+          id.hide();
+          list = id[0].options;
+          id = id.attr("id");
+        }
+
+        // var opt_data = [], i = 0;
+        for (var item of list) {
+          if (start-- > 0) continue;
+          list_html += this.convert(item.value, item.innerHTML);
+          // opt_data[i++] = {"value": item.value, "text": item.innerHTML};
+        }
+        // console.log(JSON.stringify(opt_data));
       }
 
       var html = `<div class="mdc-select mdc-select--outlined" id="pjw-select-${id}">

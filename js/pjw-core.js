@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.7";
+    window.pjw_version = "0.2.8";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -570,10 +570,10 @@ window.potatojw_intl = function() {
     academySelectgroup.splice(30, 0, [$$(`<option value="301">计算机科学与技术（人工智能方向）</option>`)[0], $$(`<option value="302">人工智能</option>`)[0]]);
 
     list.selectors = {
-      term: new PJWSelect("termList", "学期", list.heading.children(".pjw-classlist-selectors")),
-      grade: new PJWSelect("gradeList", "年级", list.heading.children(".pjw-classlist-selectors")),
-      institution: new PJWSelect("academySelect", "院系", list.heading.children(".pjw-classlist-selectors"), 0),
-      major: new PJWSelect("specialitySelect", "专业", list.heading.children(".pjw-classlist-selectors"))
+      term: new PJWSelect(list, "termList", "学期", list.heading.children(".pjw-classlist-selectors")),
+      grade: new PJWSelect(list, "gradeList", "年级", list.heading.children(".pjw-classlist-selectors")),
+      institution: new PJWSelect(list, "academySelect", "院系", list.heading.children(".pjw-classlist-selectors"), 0),
+      major: new PJWSelect(list, "specialitySelect", "专业", list.heading.children(".pjw-classlist-selectors"))
     };
 
     $$("table").remove();
@@ -900,7 +900,7 @@ window.potatojw_intl = function() {
       }
     }).done((data) => {
       list.selectors = {
-        type: new PJWSelect($$(data).filter("#readRenewType"), "书目类别", list.heading.children(".pjw-classlist-selectors"), 0, 6)
+        type: new PJWSelect(list, $$(data).filter("#readRenewType"), "书目类别", list.heading.children(".pjw-classlist-selectors"), 0, 6)
       };
       list.selectors.type.onchange( (e) => {
         list.refresh(true);
@@ -1025,7 +1025,7 @@ window.potatojw_intl = function() {
       }
     }).done((data) => {
       list.selectors = {
-        type: new PJWSelect($$(data).filter("#readType"), "书目类别", list.heading.children(".pjw-classlist-selectors"), 0, 6)
+        type: new PJWSelect(list, $$(data).filter("#readType"), "书目类别", list.heading.children(".pjw-classlist-selectors"), 0, 6)
       };
       list.selectors.type.onchange( (e) => {
         list.refresh(true);
@@ -1151,7 +1151,7 @@ window.potatojw_intl = function() {
     }
 
     list.selectors = {
-      class_kind: new PJWSelect("courseKindList", "课程类型", list.heading.children(".pjw-classlist-selectors"))
+      class_kind: new PJWSelect(list, "courseKindList", "课程类型", list.heading.children(".pjw-classlist-selectors"))
     };
     list.selectors.class_kind.onchange( (e) => {
       list.refresh(true);
@@ -1287,7 +1287,7 @@ window.potatojw_intl = function() {
     }
 
     list.selectors = {
-      campus: new PJWSelect("campusList", "校区", list.heading.children(".pjw-classlist-selectors"))
+      campus: new PJWSelect(list, "campusList", "校区", list.heading.children(".pjw-classlist-selectors"))
     };
     list.selectors.campus.onchange( (e) => {
       list.refresh(true);
@@ -1445,7 +1445,7 @@ window.potatojw_intl = function() {
       }
     }).done((data) => {
       list.selectors = {
-        campus: new PJWSelect($$(data).filter("#campusList"), "校区", list.heading.children(".pjw-classlist-selectors"))
+        campus: new PJWSelect(list, $$(data).filter("#campusList"), "校区", list.heading.children(".pjw-classlist-selectors"))
       };
       list.selectors.campus.onchange( (e) => {
         list.refresh(true);
@@ -1587,7 +1587,7 @@ window.potatojw_intl = function() {
     }
 
     list.selectors = {
-      academy: new PJWSelect("academyList", "院系", list.heading.children(".pjw-classlist-selectors"))
+      academy: new PJWSelect(list, "academyList", "院系", list.heading.children(".pjw-classlist-selectors"))
     };
     list.selectors.academy.onchange( (e) => {
       list.refresh(true);
@@ -1752,7 +1752,7 @@ window.potatojw_intl = function() {
       }
     }).done((data) => {
       list.selectors = {
-        academy: new PJWSelect($$(data).filter("#academyList"), "院系", list.heading.children(".pjw-classlist-selectors"))
+        academy: new PJWSelect(list, $$(data).filter("#academyList"), "院系", list.heading.children(".pjw-classlist-selectors"))
       };
       list.selectors.academy.onchange( (e) => {
         list.refresh(true);
