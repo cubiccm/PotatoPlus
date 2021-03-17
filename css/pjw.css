@@ -556,6 +556,15 @@ body * {
   transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
 }
 
+.pjw-login-submit-button {
+  margin: 10px 30px;
+}
+
+#Main {
+  display: block;
+  height: auto;
+}
+
 .click-to-show {
   font-size: 18px;
   opacity: .6;

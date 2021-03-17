@@ -820,8 +820,31 @@ window.potatojw_intl = function() {
       }
     });
 
+    $$("input[name=returnUrl]").val("/jiaowu/student/index.do")
+    $$("input[type=submit]").after("<br><span id=\"pjw-login-helper-label\"></span>");
+    $$("input[type=submit]").after(`
+      <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-submit-button" style="background-color: rgb(30, 50, 180);" onclick="this.parentNode.submit();">
+        <div class="mdc-button__ripple"></div>
+        <span class="material-icons-round">login</span>
+        <div class="mdc-button__label" style="margin-left: 8px;">登录</div>
+      </div>
+      <br>
+    `);
+    $$("input[type=submit]").remove();
+
+    $$("input[type=button]").after(`
+      <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-submit-button" style="background-color: #63065f; width: 300px;" onclick="casLogin();">
+        <div class="mdc-button__ripple"></div>
+        <span class="material-icons-round">login</span>
+        <div class="mdc-button__label" style="margin-left: 16px;">统一身份认证登录</div>
+      </div>
+    `);
+    $$("input[type=button]").remove();
+
     // CAPTCHA auto-fill
     CAPTCHAPlugin();
+
+    min_certainty = 18;
 
     function fillCAPTCHA() {
       login_settings = store.get("login_settings");
@@ -831,7 +854,15 @@ window.potatojw_intl = function() {
         $$("#ValidateCode").val("Please wait...");
         RefreshValidateImg('ValidateImg');
       } else {
-        $$("#ValidateCode").val(res);
+        $$("#ValidateCode").val(res["code"]);
+        if (res["certainty"] < min_certainty) {
+          $$("#pjw-login-helper-label").html("可能的低置信度识别，正在重试");
+          min_certainty *= 0.95;
+          RefreshValidateImg('ValidateImg');
+        } else {
+          min_certainty = 18;
+          $$("#pjw-login-helper-label").html("");
+        }
       }
     }
     if ($$("#ValidateImg")[0].complete) {
@@ -840,6 +871,7 @@ window.potatojw_intl = function() {
     $$("#ValidateImg").on("load", function() {
       fillCAPTCHA();
     });
+    window.mdc.autoInit();
   } else if (pjw_mode == "grade_info") {
     window.pconsole = new PJWConsole();
 

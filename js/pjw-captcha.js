@@ -537,8 +537,6 @@ function CAPTCHAPlugin() {
     return canvas6.getContext("2d");
   }
 
-  const min_overall_diff_required = 15;
-
   window.solveCAPTCHA = function(source_img) {
     numkeys.forEach(x => x[0] in trainlib_char_sum ? trainlib_char_sum[x[0]]++ : trainlib_char_sum[x[0]] = 1);
     // Remove image border
@@ -572,14 +570,12 @@ function CAPTCHAPlugin() {
       parts_array[c] = transformSingleChar(parts_array[c]);
       if (parts_array[c] === false) return false;
     }
+
     try {
       var res = getData();
       var certainty = res.min_diff * 4 + res.diff + reasonable_part_count * 1.5;
       console.log("Code: " + res.code + " Parts: " + reasonable_part_count + " Centainty: " + certainty);
-      if (certainty >= min_overall_diff_required)
-        return res.code;
-      else
-        return false;
+      return {"code": res.code, "certainty": certainty};
     } catch (e) {
       console.log(e);
       return false;
