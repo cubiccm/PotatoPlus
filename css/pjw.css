@@ -556,13 +556,22 @@ body * {
   transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
 }
 
-.pjw-login-submit-button {
-  margin: 10px 30px;
-}
-
 #Main {
   display: block;
   height: auto;
+}
+
+.pjw-login-field {
+  width: 100%;
+  margin: 12px 0;
+}
+
+.pjw-login-button {
+  margin: 8px;
+}
+
+#pjw-login-submit-button:not([disabled]) {
+  background-color: rgb(30, 50, 180);
 }
 
 .click-to-show {

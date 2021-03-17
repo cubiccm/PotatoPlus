@@ -765,6 +765,58 @@ window.potatojw_intl = function() {
       $$("#filter_switch").css("display", "none");
     });
   } else if (pjw_mode == "login_page") {
+    $$("body").prepend(`
+      <div id="pjw-login-mask" style="position: fixed; top: 0; left: 0; height: 100%; width: 100%; background-color: rgba(0, 0, 0, .2); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+      <div style="display: flex; flex-direction: column; align-items: center; border-radius: 30px; background-color: white; padding: 30px 20px;">
+        <form action="login.do" method="POST" style="display: flex; flex-direction: column; align-items: flex-start;">
+        <h1 style="margin-left: 10px;">欢迎回来</h1>
+
+        <div class="mdc-text-field mdc-text-field--filled pjw-login-field" data-mdc-auto-init="MDCTextField">
+          <span class="mdc-text-field__ripple"></span>
+          <span class="mdc-floating-label" id="pjw-login-username-label">用户名</span>
+          <input class="mdc-text-field__input" name="userName" type="text" aria-labelledby="pjw-login-username-label" placeholder=" ">
+          <span class="mdc-line-ripple"></span>
+        </div>
+
+        <div class="mdc-text-field mdc-text-field--filled pjw-login-field" data-mdc-auto-init="MDCTextField">
+          <span class="mdc-text-field__ripple"></span>
+          <span class="mdc-floating-label" id="pjw-login-password-label">密码</span>
+          <input class="mdc-text-field__input" name="password" type="password" aria-labelledby="pjw-login-password-label" placeholder=" ">
+          <span class="mdc-line-ripple"></span>
+        </div>
+
+        <div style="margin: 30px 0;">
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" id="pjw-login-submit-button" onclick="this.parentNode.parentNode.submit();" disabled="disabled">
+            <div class="mdc-button__ripple"></div>
+            <span class="material-icons-round">login</span>
+            <div class="mdc-button__label" style="margin-left: 8px;">登录</div>
+          </button>
+
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" style="background-color: #63065f;" onclick="casLogin();">
+            <div class="mdc-button__ripple"></div>
+            <span class="material-icons-round">open_in_new</span>
+            <div class="mdc-button__label" style="margin-left: 16px;">统一认证</div>
+          </button>
+        </div>
+
+        <input type="hidden" name="returnUrl" value="/jiaowu/student/index.do">
+        <input type="hidden" name="ValidateCode">
+
+        </form>
+        <button data-mdc-auto-init="MDCRipple" class="mdc-button" style="color: rgba(0, 0, 0, .5);" onclick="closeLoginMask();">
+          <div class="mdc-button__ripple"></div>
+          <div class="mdc-button__label">关闭</div>
+        </button>
+      </div>
+      </div>
+    `);
+    $$("#pjw-login-mask").append($$("#pjw-toolbar"));
+
+    window.closeLoginMask = function() {
+      $$("body").append($$("#pjw-toolbar"));
+      $$("#pjw-login-mask").remove();
+    }
+
     // Load login settings
     window.login_settings = {};
     function updateLoginSettings(write = false) {
@@ -798,19 +850,18 @@ window.potatojw_intl = function() {
     // Username & password auto-fill
     if (login_settings["store_login_info"] == true && store.get("login_info") != null) {
       var login_info = store.get("login_info");
-      if ($$("#userName").val().length == 0)
-        $$("#userName").val(login_info.username);
-      if ($$("#password").val().length == 0)
-        $$("#password").val(login_info.password);
+      if ($$("input[name=userName]").val().length == 0)
+        $$("input[name=userName]").val(login_info.username);
+      if ($$("input[name=password]").val().length == 0)
+        $$("input[name=password]").val(login_info.password);
     }
-    $$("form[action=\"login.do\"]").attr("onsubmit", "");
-    $$("form[action=\"login.do\"]").on("submit", function() {
+    var checkLogin = function() {
       login_settings = store.get("login_settings");
       if (CheckForm()) {
         if (login_settings["store_login_info"] == true) {
           var login_info = {
-            username: $$("#userName").val(),
-            password: $$("#password").val()
+            username: $$("input[name=userName]").val(),
+            password: $$("input[name=password]").val()
           }
           store.set("login_info", login_info);
         }
@@ -818,28 +869,12 @@ window.potatojw_intl = function() {
       } else {
         return false;
       }
-    });
+    }
+    $$("form[action=\"login.do\"]").attr("onsubmit", "");
+    $$("form[action=\"login.do\"]").on("submit", checkLogin);
 
-    $$("input[name=returnUrl]").val("/jiaowu/student/index.do")
+    $$("input[name=returnUrl]").val("/jiaowu/student/index.do");
     $$("input[type=submit]").after("<br><span id=\"pjw-login-helper-label\"></span>");
-    $$("input[type=submit]").after(`
-      <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-submit-button" style="background-color: rgb(30, 50, 180);" onclick="this.parentNode.submit();">
-        <div class="mdc-button__ripple"></div>
-        <span class="material-icons-round">login</span>
-        <div class="mdc-button__label" style="margin-left: 8px;">登录</div>
-      </div>
-      <br>
-    `);
-    $$("input[type=submit]").remove();
-
-    $$("input[type=button]").after(`
-      <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-submit-button" style="background-color: #63065f; width: 300px;" onclick="casLogin();">
-        <div class="mdc-button__ripple"></div>
-        <span class="material-icons-round">login</span>
-        <div class="mdc-button__label" style="margin-left: 16px;">统一身份认证登录</div>
-      </div>
-    `);
-    $$("input[type=button]").remove();
 
     // CAPTCHA auto-fill
     CAPTCHAPlugin();
@@ -854,7 +889,7 @@ window.potatojw_intl = function() {
         $$("#ValidateCode").val("Please wait...");
         RefreshValidateImg('ValidateImg');
       } else {
-        $$("#ValidateCode").val(res["code"]);
+        $$("input[name=ValidateCode]").val(res["code"]);
         if (res["certainty"] < min_certainty) {
           $$("#pjw-login-helper-label").html("可能的低置信度识别，正在重试");
           min_certainty *= 0.95;
@@ -862,6 +897,7 @@ window.potatojw_intl = function() {
         } else {
           min_certainty = 18;
           $$("#pjw-login-helper-label").html("");
+          $$("#pjw-login-submit-button").prop("disabled", false);
         }
       }
     }
