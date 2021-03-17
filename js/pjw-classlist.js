@@ -1382,33 +1382,44 @@ function ClassListPlugin() {
     constructor(parent_list, id, name, target, start = 1, select_index = 0, opt_data = "") {
       var list_html = "";
       this.count = 0;
-      if (pjw_mode == "union" || !id) {
+
+      function preload(l) {
         if (pjw_mode != "union")
           parent_list.console.info("没有获取到课程选择器，正在使用预加载的选择器", "preloader");
         // Load from pre-determined option data
         if (opt_data == "") opt_data = JSON.parse(options_data[pjw_select_mode]);
+        else opt_data = JSON.parse(opt_data);
         for (var item of opt_data) {
-          list_html += this.convert(item.value, item.text);
+          list_html += l.convert(item.value, item.text);
         }
         id = options_id[pjw_select_mode];
+      }
+
+      if (pjw_mode == "union" || !id) {
+        preload(this);
       } else {
         var list;
         if (typeof(id) == "string") {
-          list = $$(`#${id}`)[0].options;
-          $$(`#${id}`).hide();
+          if (!$$(`#${id}`).length) {
+            preload(this);
+          } else {
+            list = $$(`#${id}`)[0].options;
+            $$(`#${id}`).hide();
+          }
         } else {
-          id.hide();
-          list = id[0].options;
-          id = id.attr("id");
+          if (!id.length) {
+            preload(this);
+          } else {
+            id.hide();
+            list = id[0].options;
+            id = id.attr("id");
+          }
         }
-
-        // var opt_data = [], i = 0;
-        for (var item of list) {
-          if (start-- > 0) continue;
-          list_html += this.convert(item.value, item.innerHTML);
-          // opt_data[i++] = {"value": item.value, "text": item.innerHTML};
-        }
-        // console.log(JSON.stringify(opt_data));
+        if (list_html == "")
+          for (var item of list) {
+            if (start-- > 0) continue;
+            list_html += this.convert(item.value, item.innerHTML);
+          }
       }
 
       var html = `<div class="mdc-select mdc-select--outlined" id="pjw-select-${id}">

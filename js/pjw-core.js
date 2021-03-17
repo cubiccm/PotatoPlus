@@ -346,11 +346,11 @@ window.potatojw_intl = function() {
         <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]} <a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank">${calcCurrentWeek()}</a></subheading>
         <br>
         <br>
-        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(0, 60, 138, 1);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgb(30, 50, 180);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
           <div class="mdc-button__ripple"></div>
           <i class="material-icons-round">today</i>
           <div class="mdc-button__label">我的课程</div>
-          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(0, 60, 138);" data-link="/jiaowu/student/elective/index.do">
+          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(30, 50, 180);" data-link="/jiaowu/student/elective/index.do">
             <div class="mdc-button__ripple"></div>
             <i class="material-icons-round">add</i>
             <div class="mdc-button__label">选课</div>

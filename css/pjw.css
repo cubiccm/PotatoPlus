@@ -98,8 +98,7 @@
   font-weight: 400;
   src: 
     url("chrome-extension://__MSG_@@extension_id__/fonts/Material Icons Round.woff2") format('woff2'),
-    url("https://fonts.gstatic.com/s/materialicons/v81/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2") format('woff2'),
-    url("https://cubiccm.github.io/Material%20Icons%20Round.woff2") format('woff2');
+    url("https://fonts.gstatic.com/s/materialicons/v81/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2") format('woff2');
 }
 
 .material-icons-round {
@@ -126,6 +125,7 @@
   --white: rgba(255, 255, 255, .9);
   --black: rgba(0, 0, 0, .9);
   --gray: rgba(255, 255, 255, .5);
+  --card-background: #4b5e7b;
 }
 
 body {
@@ -342,7 +342,7 @@ body * {
 #pjw-welcome {
   width: 90%;
   max-width: 600px;
-  background: rgb(0, 60, 138);
+  background: var(--card-background);
 }
 
 #pjw-menu {
