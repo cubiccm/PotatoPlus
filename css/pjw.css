@@ -216,7 +216,7 @@ body * {
   position: relative;
   top: -8px;
   left: -5px;
-  font-style: italic;
+  font-style: bold;
 }
 
 #TopLink > a {
@@ -554,11 +554,6 @@ body * {
   border-radius: 50%;
   padding: 0;
   transition: transform .3s ease-out, left .2s ease-out, bottom .2s ease-out;
-}
-
-#Main {
-  display: block;
-  height: auto;
 }
 
 .pjw-login-field {

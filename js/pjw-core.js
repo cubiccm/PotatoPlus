@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.2.8";
+    window.pjw_version = "0.3";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -303,7 +303,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.2.8 新增了聚合选课的测试功能，现在您可以在选课菜单中试用；这一更新亦对课程列表进行了一些改进。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3 新增了聚合选课的测试功能，现在您可以在选课菜单中试用；这一更新亦对登录界面和课程列表进行了一些改进。</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -810,6 +810,10 @@ window.potatojw_intl = function() {
       </div>
       </div>
     `);
+    $$("body").on("keypress", (e) => {
+      if (e.which == 13 || e.keyCode == 13)
+        $$("form")[0].submit();
+    });
     $$("#pjw-login-mask").append($$("#pjw-toolbar"));
 
     window.closeLoginMask = function() {
@@ -835,6 +839,8 @@ window.potatojw_intl = function() {
         }
       });
       store.set("login_settings", login_settings);
+      if (login_settings["solve_captcha"] == false)
+        closeLoginMask();
       if (!write) return login_settings;
 
       if (login_settings["store_login_info"] == false)
