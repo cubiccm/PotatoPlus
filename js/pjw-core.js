@@ -561,7 +561,7 @@ window.potatojw_intl = function() {
 
     $$("table").remove();
 
-    window.reloadMajor = function(e) {
+    window.reloadMajor = function() {
       list.selectors.major.clear();  
       for (var item of academySelectgroup[parseInt(list.selectors.institution.obj.selectedIndex)]) {
         if (item.value != "")

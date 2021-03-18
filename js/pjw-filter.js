@@ -1,8 +1,9 @@
 var pjw_filter = {
-  /* switch module v1.0 */
+  /* switch module v1.1 */
   switch: {
     html: `
       <div id="pjw-switch-filter">
+      <heading><span class="material-icons-round">build_circle</span>控制</heading>
         <div class="pjw-switch-box">
           <div class="mdc-switch" id="pjw-switch-switch">
             <div class="mdc-switch__track"></div>
@@ -11,7 +12,7 @@ var pjw_filter = {
               <input type="checkbox" id="pjw-switch-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
             </div>
           </div>
-          <label id="pjw-switch-switch-label" for="pjw-switch-switch-input">过滤器：关闭</label>
+          <label id="pjw-switch-switch-label" for="pjw-switch-switch-input">课程筛选器未启用</label>
         </div>
       </div>
     `,
@@ -22,10 +23,10 @@ var pjw_filter = {
         list: list
       }, (e) => {
         if (e.data.space.switch.checked) {
-          $$("#pjw-switch-switch-label").html("过滤器：开启");
+          $$("#pjw-switch-switch-label").html("课程筛选器已启用");
           e.data.list.filter_panel.css("filter", "saturate(3)");
         } else {
-          $$("#pjw-switch-switch-label").html("过滤器：关闭");
+          $$("#pjw-switch-switch-label").html("课程筛选器未启用");
           e.data.list.filter_panel.css("filter", "");
         }
         e.data.list.filter_enabled = !e.data.list.filter_enabled;
@@ -103,7 +104,7 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.2 */
+  /* hours module v0.3 */
   hours: {
     html: `
       <div id="pjw-hours-filter">
@@ -148,8 +149,8 @@ var pjw_filter = {
             </div>
           </div>
           <div id="pjw-hours-filter-control">
-            <div id="clear-calendar" class="pjw-mini-button">清空</div>
-            <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
+            <div id="clear-calendar" class="pjw-mini-button">重置</div>
+            <div id="reset-calendar" class="pjw-mini-button">排除冲突课程</div>
           </div>
         </div>
       </div>
@@ -184,7 +185,7 @@ var pjw_filter = {
       space.loadMyClass = function(include_odd_even = true) {
         return new Promise((resolve, reject) => {
           $$.ajax({
-            url: "http://elite.nju.edu.cn/jiaowu/student/teachinginfo/courseList.do",
+            url: "/jiaowu/student/teachinginfo/courseList.do",
             data: {
               method: "currentTermCourse"
             },
@@ -243,7 +244,6 @@ var pjw_filter = {
         space: space
       }, (e) => {
         e.data.space.handleMouseUp();
-
       });
 
       space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
@@ -394,7 +394,7 @@ var pjw_filter = {
             </div>
             <label for="pjw-potatoes-continue-on-success-input">选课成功后继续</label>
           </div>
-          <p>*使用前请确认课程筛选正确并开启自动刷新开关和过滤器总开关。</p>
+          <p>*使用前请确认课程筛选正确并开启自动刷新开关和筛选器总开关。</p>
         </div>
       </div>
     `,

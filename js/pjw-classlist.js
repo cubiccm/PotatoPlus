@@ -1010,7 +1010,7 @@ function ClassListPlugin() {
     toggleAutoRefresh(status) {
       if (status) {
         // Start Autorefresh
-        this.console.debug("自动更新已打开。")
+        this.console.debug("自动刷新已打开。")
 
         function randomNormalDistribution() {
           var u=0.0, v=0.0, w=0.0, c=0.0;
@@ -1051,14 +1051,14 @@ function ClassListPlugin() {
             target.refresh(false).then(() => {
               if ($$("#autorefresh-switch").hasClass("on"))
                 $$("#autoreload-control-section").css("filter", "drop-shadow(2px 4px 6px rgb(16, 141, 255))");
-              target.console.debug("自动更新计数：" + auto_refresh_count++, "auto-refresh-count");
+              target.console.debug("自动刷新计数：" + auto_refresh_count++, "auto-refresh-count");
             }).catch((e) => {
               target.console.error(e);
             });
           }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 30, random_interval * 0.8), target);
         }, random_interval, this);
       } else {
-        this.console.debug("自动更新已关闭。")
+        this.console.debug("自动刷新已关闭。")
         $$("#autoreload-control-section").css("filter", "");
         window.clearInterval(this.auto_refresh_interval_id);
       }
@@ -1070,7 +1070,7 @@ function ClassListPlugin() {
       if (id == "autorefresh-switch") {
         if (!status) {
           $$("#autorefresh-icon").html("autorenew");
-          $$("#autorefresh-label").html("更新");
+          $$("#autorefresh-label").html("刷新");
           if (typeof(this.refresh_button_interval_id) != "undefined")
             clearInterval(this.refresh_button_interval_id);
           if (typeof(this.show_refresh_level_timeout_id) != "undefined")
@@ -1153,7 +1153,7 @@ function ClassListPlugin() {
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button" style="border-radius: 30px;">
                 <div class="mdc-button__ripple" style="border-radius: 30px;"></div>
                 <div class="material-icons-round">filter_alt</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">筛选器面板</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="filter-control-label">筛选器面板</div>
               </button>
             </section>
 
@@ -1161,7 +1161,7 @@ function ClassListPlugin() {
               <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
                 <div class="mdc-button__ripple"></div>
                 <div class="material-icons-round" id="autorefresh-icon">autorenew</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">更新</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">刷新</div>
               </button>
 
               <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
@@ -1366,11 +1366,11 @@ function ClassListPlugin() {
     }
 
     convert(val, text) {
-      return `<li data-value="${val}" data-text="${text}" data-index="${this.count++}" class="mdc-list-item"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
+      return `<li class="mdc-list-item" data-value="${val}" data-text="${text}" data-index="${this.count++}" aria-selected="false" role="option"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
     }
 
     addItem(item) {
-      this.list.append(this.convert(item));
+      this.list.append(this.convert(item.value, item.innerHTML));
     }
 
     clear() {
@@ -1422,7 +1422,8 @@ function ClassListPlugin() {
           }
       }
 
-      var html = `<div class="mdc-select mdc-select--outlined" id="pjw-select-${id}">
+      var html = `
+      <div class="mdc-select mdc-select--outlined" id="pjw-select-${id}">
         <div class="mdc-select__anchor" aria-labelledby="pjw-select-${id}-outlined-label">
           <span id="pjw-select-${id}-selected-text" class="mdc-select__selected-text"></span>
           <span class="mdc-select__dropdown-icon">
@@ -1451,10 +1452,12 @@ function ClassListPlugin() {
             <div class="mdc-notched-outline__trailing"></div>
           </div>
         </div>
-        <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth" role="listbox">
-          <ul class="mdc-list pjw-select-list" role="option">${list_html}</ul>
+
+        <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+          <ul class="mdc-list pjw-select-list" role="listbox">${list_html}</ul>
         </div>
-      </div>`;
+      </div>
+      `;
 
       this.id = id;
       this.dom = $$(html).appendTo(target);
