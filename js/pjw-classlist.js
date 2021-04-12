@@ -6,6 +6,8 @@ function ClassListPlugin() {
     "鼓楼校区": 1
   };
 
+  if (window.proto_backup) Array.prototype.reduce = window.proto_backup.reduce;
+
   /* 
     Class data format:
     data = {

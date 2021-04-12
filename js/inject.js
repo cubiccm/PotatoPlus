@@ -1,9 +1,11 @@
+if (!window.browser) window.browser = window.chrome;
+
 function injectScript(path, module = false, defer = false) {
   var script = document.createElement('script');
   if (defer) script.setAttribute('defer', '');
   if (module) script.setAttribute('type', 'module');
   else script.setAttribute('type', 'text/javascript');
-  script.src = chrome.extension.getURL(path);
+  script.src = browser.extension.getURL(path);
   document.documentElement.appendChild(script);
 }
 
@@ -11,7 +13,7 @@ function injectStyle(path) {
   var stylesheet = document.createElement('link');
   stylesheet.setAttribute('type', 'text/css');
   stylesheet.setAttribute('rel', 'stylesheet');
-  stylesheet.setAttribute('href', chrome.extension.getURL(path));
+  stylesheet.setAttribute('href', browser.extension.getURL(path));
   document.documentElement.appendChild(stylesheet);
 }
 
@@ -67,6 +69,11 @@ function injectStyleFromString(str) {
   // injectStyle("css/pjw-filter.css");
   // injectStyle("css/pjw-console.css");
   /* DO NOT REMOVE */
+
+  /* Let's backup the builtin JS prototype so that the FAAAAACING prototype.js won't FAACING RUIN MY CODE AND MY LIFE IN THIS PROJECT */
+  injectScriptFromString(`window.proto_backup = {
+    reduce: Array.prototype.reduce
+  };`);
 
   injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");
