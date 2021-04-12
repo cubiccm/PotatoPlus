@@ -567,6 +567,7 @@ window.potatojw_intl = function() {
         if (item.value != "")
           list.selectors.major.addItem(item);
       }
+      list.selectors.major.obj.layoutOptions();
     };
 
     // 自动获取年级及专业
