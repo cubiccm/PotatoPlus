@@ -320,21 +320,32 @@ window.potatojw_intl = function() {
     const cn_days_name = ["日", "一", "二", "三", "四", "五", "六"];
 
     var calcCurrentWeek = () => {
-      const semester_begin = new Date(new Date("2021-03-01").getTime() - 8 * 3600000);
-      const exam_begin = new Date(new Date("2021-06-21").getTime() - 8 * 3600000);
-      const summer_school_begin = new Date(new Date("2021-07-05").getTime() - 8 * 3600000);
-      const holiday_begin = new Date(new Date("2021-08-02").getTime() - 8 * 3600000);
-      const next_sem_begin = new Date(new Date("2021-08-30").getTime() - 8 * 3600000); // Undetermined
+      const fall_sem = new Date(new Date("2021-08-30").getTime() - 8 * 3600000);
+      const fall_exam = new Date(new Date("2021-12-27").getTime() - 8 * 3600000);
+      const winter_holiday = new Date(new Date("2022-01-10").getTime() - 8 * 3600000);
+      const spring_sem = new Date(new Date("2022-02-14").getTime() - 8 * 3600000);
+      const spring_exam = new Date(new Date("2022-06-13").getTime() - 8 * 3600000);
+      const summer_school = new Date(new Date("2022-06-27").getTime() - 8 * 3600000);
+      const summer_holiday = new Date(new Date("2022-07-25").getTime() - 8 * 3600000);
+      const next_sem = new Date(new Date("2022-08-29").getTime() - 8 * 3600000); // Undetermined
       const today = new Date();
-      if (today < semester_begin)
-        return `学期将开始于 ${semester_begin.toDateString()}`;
-      else if (today < exam_begin)
-        return `学期第<num>${Math.ceil((today - semester_begin + 1) / (7 * 24 * 60 * 60 * 1000))}</num>周`;
-      else if (today < summer_school_begin)
+      if (today < fall_sem)
+        return `秋季学期将开始于 ${fall_sem.toDateString()}`;
+      else if (today < fall_exam)
+        return `秋季学期第<num>${Math.ceil((today - fall_sem + 1) / (7 * 24 * 60 * 60 * 1000))}</num>周`;
+      else if (today < winter_holiday)
         return "考试周";
-      else if (today < holiday_begin)
-        return "暑期学校";
-      else if (today < next_sem_begin)
+      else if (today < spring_sem - 7 * 24 * 3600000)
+        return "寒假";
+      if (today < spring_sem)
+        return `春季学期将开始于 ${spring_sem.toDateString()}`;
+      else if (today < spring_exam)
+        return `春季学期第<num>${Math.ceil((today - spring_sem + 1) / (7 * 24 * 60 * 60 * 1000))}</num>周`;
+      else if (today < summer_school)
+        return "考试周";
+      else if (today < summer_holiday)
+        return "考试周";
+      else if (today < next_sem)
         return "暑假";
       else
         return "查看教学周历";
@@ -449,11 +460,13 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    // if ($$("#termList > option:eq(1)").html() != "2020-2021学年第二学期")
-    //   $$("#termList > option:eq(1)").before('<option value="20202">*2020-2021学年第二学期</option>');
+    if ($$("#termList > option:eq(1)").html() != "2021-2022学年第一学期")
+      $$("#termList > option:eq(1)").before('<option value="20211">*2021-2022学年第一学期</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
     total_weeks_history = {
+      "20212": 17,
+      "20211": 17,
       "20202": 16,
       "20201": 17,
       "20192": 17,
@@ -503,10 +516,6 @@ window.potatojw_intl = function() {
               class_weeknum: res.class_weeknum,
               select_button: {
                 status: false
-              },
-              comment_button: {
-                status: true,
-                // text: (Math.random() * 10).toFixed(1)
               }
             };
             list.add(data);
@@ -657,7 +666,7 @@ window.potatojw_intl = function() {
       </div>
       <div id="pjw-union-listcontainer"></div>
     `;
-    $$("#Header").after(union_panel_html);
+    $$("#Function").after(union_panel_html);
     last_selected_mode = null;
     $$(".pjw-mode-switcher-button").on("click", function() {
       if (!window.list) {
@@ -769,25 +778,25 @@ window.potatojw_intl = function() {
     $$("body").prepend(`
       <div id="pjw-login-mask" style="position: fixed; top: 0; left: 0; height: 100%; width: 100%; background-color: rgba(0, 0, 0, .2); display: flex; align-items: center; justify-content: center; z-index: 1000;">
       <div style="display: flex; flex-direction: column; align-items: center; border-radius: 30px; background-color: white; padding: 30px 20px;">
-        <form action="login.do" method="POST" style="display: flex; flex-direction: column; align-items: flex-start;">
+        <form action="login.do" method="POST" style="display: flex; flex-direction: column; align-items: flex-start;" id="pjw-login-form">
         <h1 style="margin-left: 10px;">欢迎回来</h1>
 
         <div class="mdc-text-field mdc-text-field--filled pjw-login-field" data-mdc-auto-init="MDCTextField">
           <span class="mdc-text-field__ripple"></span>
           <span class="mdc-floating-label" id="pjw-login-username-label">用户名</span>
-          <input class="mdc-text-field__input" name="userName" type="text" aria-labelledby="pjw-login-username-label" placeholder=" ">
+          <input class="mdc-text-field__input" name="userName" type="text" aria-labelledby="pjw-login-username-label" placeholder=" " required="required">
           <span class="mdc-line-ripple"></span>
         </div>
 
         <div class="mdc-text-field mdc-text-field--filled pjw-login-field" data-mdc-auto-init="MDCTextField">
           <span class="mdc-text-field__ripple"></span>
           <span class="mdc-floating-label" id="pjw-login-password-label">密码</span>
-          <input class="mdc-text-field__input" name="password" type="password" aria-labelledby="pjw-login-password-label" placeholder=" ">
+          <input class="mdc-text-field__input" name="password" type="password" aria-labelledby="pjw-login-password-label" placeholder=" " required="required">
           <span class="mdc-line-ripple"></span>
         </div>
 
         <div style="margin: 30px 0;">
-          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" id="pjw-login-submit-button" onclick="this.parentNode.parentNode.submit();" disabled="disabled">
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" id="pjw-login-submit-button" onclick="submitLoginForm();" disabled="disabled">
             <div class="mdc-button__ripple"></div>
             <span class="material-icons-round">login</span>
             <div class="mdc-button__label" style="margin-left: 8px;">登录</div>
@@ -804,6 +813,13 @@ window.potatojw_intl = function() {
         <input type="hidden" name="ValidateCode">
 
         </form>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-direction: row; margin-bottom: 10px;">
+          <canvas id="pjw-login-mask-canvas" width="80", height="20">Canvas is not supported in your browser.</canvas>
+          <button data-mdc-auto-init="MDCRipple" id="pjw-login-mask-refresh-captcha" class="mdc-button" style="color: rgba(0, 0, 0, .5); margin-left: 20px;" onclick="RefreshValidateImg('ValidateImg');" disabled="disabled">
+            <div class="mdc-button__ripple"></div>
+            <div class="mdc-button__label" id="pjw-captcha-result">刷新验证码</div>
+          </button>
+        </div>
         <button data-mdc-auto-init="MDCRipple" class="mdc-button" style="color: rgba(0, 0, 0, .5);" onclick="closeLoginMask();">
           <div class="mdc-button__ripple"></div>
           <div class="mdc-button__label">关闭</div>
@@ -812,14 +828,30 @@ window.potatojw_intl = function() {
       </div>
     `);
     $$("body").on("keypress", (e) => {
-      if (e.which == 13 || e.keyCode == 13)
-        $$("form")[0].submit();
+      if (!window.login_mask_closed)
+        if (e.which == 13 || e.keyCode == 13)
+          submitLoginForm();
     });
     $$("#pjw-login-mask").append($$("#pjw-toolbar"));
+
+    window.submitLoginForm = function() {
+      var username = $$("#pjw-login-form").find("input[name=userName]").val();
+      var password = $$("#pjw-login-form").find("input[name=password]").val();
+      if (!username || !password) return;
+      if (login_settings["store_login_info"]) {
+        var login_info = {
+          username: username,
+          password: password
+        }
+        store.set("login_info", login_info);
+      }
+      $$("#pjw-login-form").submit();
+    }
 
     window.closeLoginMask = function() {
       $$("body").append($$("#pjw-toolbar"));
       $$("#pjw-login-mask").remove();
+      window.login_mask_closed = true;
     }
 
     // Load login settings
@@ -877,8 +909,8 @@ window.potatojw_intl = function() {
         return false;
       }
     }
-    $$("form[action=\"login.do\"]").attr("onsubmit", "");
-    $$("form[action=\"login.do\"]").on("submit", checkLogin);
+    $$("#Wrapper").find("form[action=\"login.do\"]").attr("onsubmit", "");
+    $$("#Wrapper").find("form[action=\"login.do\"]").on("submit", checkLogin);
 
     $$("input[name=returnUrl]").val("/jiaowu/student/index.do");
     $$("input[type=submit]").after("<br><span id=\"pjw-login-helper-label\"></span>");
@@ -891,6 +923,8 @@ window.potatojw_intl = function() {
     function fillCAPTCHA() {
       login_settings = store.get("login_settings");
       if (login_settings["solve_captcha"] == false) return;
+      $$("#pjw-captcha-result").html("正在识别验证码...");
+      $$("#pjw-login-mask-refresh-captcha").prop("disabled", true);
       var res = solveCAPTCHA($$("#ValidateImg")[0]);
       if (res === false) {
         $$("#ValidateCode").val("Please wait...");
@@ -898,11 +932,14 @@ window.potatojw_intl = function() {
       } else {
         $$("input[name=ValidateCode]").val(res["code"]);
         if (res["certainty"] < min_certainty) {
+          $$("#pjw-captcha-result").html(res["code"] + " ...");
           $$("#pjw-login-helper-label").html("可能的低置信度识别，正在重试");
           min_certainty *= 0.95;
           RefreshValidateImg('ValidateImg');
         } else {
           min_certainty = 18;
+          $$("#pjw-captcha-result").html(res["code"]);
+          $$("#pjw-login-mask-refresh-captcha").prop("disabled", false);
           $$("#pjw-login-helper-label").html("");
           $$("#pjw-login-submit-button").prop("disabled", false);
         }

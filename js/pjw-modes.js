@@ -114,10 +114,6 @@ function() {
                   });
                 });
               }
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
             }
           };
 
@@ -233,10 +229,6 @@ function () {
                   });
                 });
               }
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
             }
           };
 
@@ -363,10 +355,6 @@ function () {
                   });
                 });
               }
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
             }
           };
 
@@ -505,10 +493,6 @@ function() {
                   });
                 });
               }
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
             }
           };
           list.add(data);
@@ -637,10 +621,6 @@ function() {
                     });
                   });
                 }
-              },
-              comment_button: {
-                status: true,
-                // text: (Math.random() * 10).toFixed(1)
               }
             };
             this.add(data);
@@ -792,10 +772,6 @@ function() {
                     });
                   });
                 }
-              },
-              comment_button: {
-                status: true,
-                // text: (Math.random() * 10).toFixed(1)
               }
             };
             this.add(data);
@@ -942,10 +918,6 @@ function() {
                   }); 
                 });
               }
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
             }
           };
 
@@ -1103,10 +1075,6 @@ function() {
                   resolve();
                 });
               }
-            },
-            comment_button: {
-              status: true,
-              // text: (Math.random() * 10).toFixed(1)
             }
           };
 

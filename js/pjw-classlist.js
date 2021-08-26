@@ -1,5 +1,5 @@
 function ClassListPlugin() {
-  total_weeks = 16;
+  total_weeks = 17;
   const campus_id_map = {
     "仙林校区": 3,
     "浦口校区": 2,
@@ -11,6 +11,7 @@ function ClassListPlugin() {
   /* 
     Class data format:
     data = {
+      classID: <Integer>,
       title: <String>,
       teachers: [<String>, ...],
       info: [{
@@ -28,17 +29,13 @@ function ClassListPlugin() {
         type: <String>, // "normal", "odd", "even"
         weekday: <Integer>
       }, ...],
+      time_detail: <String>,
       class_weeknum: [{
         start: <Integer>,
         end: <Integer>
       }, ...],
       select_button: {
         status: <String>, // "Select", "Deselect", "Full", "Selected", false
-        text: <String>,
-        action: <Function>
-      }
-      comment_button: {
-        status: <Boolean>, // true, false
         text: <String>,
         action: <Function>
       }
@@ -88,7 +85,7 @@ function ClassListPlugin() {
       }
 
       function getClassInfo(content, classID) {
-        if (!classID || classID[0] == "#") classID = "0";
+        if (!classID || classID < 0) classID = "0";
         var appear_html = [], hidden_html = "";
         for (var item of content) {
           if ("key" in item) {
@@ -226,7 +223,7 @@ function ClassListPlugin() {
             extra_classes = "deselect";
             break;
           case "Full":
-            label_text = "满员";
+            label_text = "满额";
             disabled = "disabled";
             icon_text = "block";
             break;
@@ -251,27 +248,8 @@ function ClassListPlugin() {
         return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>`;
       }
 
-      function getCommentButton(data, ID) {
-        var text = ID;
-        if (data.text) text = data.text;
-        if (!data.status) return "";
-        else return `
-          <div class="pjw-class-comment-button alter">
-            <div class="pjw-class-comment-button__container">
-              <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
-              <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
-            </div>
-          </div>`;
-        
-        // else return `
-        //   <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-class-comment-button">
-        //     <div class="mdc-button__ripple"></div>
-        //     <div class="pjw-class-comment-button__container">
-        //       <div class="material-icons-round pjw-class-comment-icon">fingerprint</div>
-        //       <div class="mdc-button__label pjw-class-comment-button__status">${text}</div>
-        //     </div>
-        //   </button>`;
-        
+      function getMenuButtons(index) {
+        return `<span class="pjw-class-id-label">#${index}</span>`;
       }
 
       switch(attr) {
@@ -287,7 +265,7 @@ function ClassListPlugin() {
 
         case "info":
           if ("info" in data)
-            return getClassInfo(data.info, data.classID || "0");
+            return getClassInfo(data.info, data.classID);
           else return "";
 
         case "numinfo":
@@ -327,10 +305,8 @@ function ClassListPlugin() {
             return getSelectButton(data.select_button, options);
           else return "";
 
-        case "commentbutton":
-          if ("comment_button" in data)
-            return getCommentButton(data.comment_button, data.classID);
-          else return "";
+        case "menubuttons":
+          return getMenuButtons(this.index);
       }
     }
 
@@ -359,7 +335,7 @@ function ClassListPlugin() {
         </div>
         <div class="pjw-class-operation">
           ${this.getHTML(data, "selectbutton")}
-          ${this.getHTML(data, "commentbutton")}
+          ${this.getHTML(data, "menubuttons")}
         </div>
       `;
       this.dom.html(class_html);
@@ -383,10 +359,11 @@ function ClassListPlugin() {
         this.sideinfo.children(".pjw-class-num-info").html(this.getHTML(data, "numinfo"));
     }
 
-    constructor(DOMparent, data, listparent) {
+    constructor(DOMparent, data, index, listparent) {
       var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;"></div>`;
       this.dom = $$(class_html).appendTo(DOMparent);
       this.data = data;
+      this.index = index;
       this.list = listparent;
       this.initialized = false;
     }
@@ -405,7 +382,7 @@ function ClassListPlugin() {
       this.sideinfo = this.sub.children(".pjw-class-sideinfo");
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
-      this.comment_button = this.operation.children(".pjw-class-comment-button");
+      this.menu_buttons = this.operation.children(".pjw-class-menu-buttons");
 
       // Draw weekday lesson time rings
       var deg_list = [
@@ -479,7 +456,7 @@ function ClassListPlugin() {
         target: this
       }, (e) => {
         if (window.getSelection().toString() != "") return;
-        if ($$(e.target).parent().hasClass("mdc-button") || $$(e.target).parent().hasClass("pjw-class-comment-button__container")) return;
+        if ($$(e.target).parent().hasClass("mdc-button")) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
         else
@@ -547,8 +524,10 @@ function ClassListPlugin() {
       if (this.soft_refresh && this.auto_inc < this.class_data.length)
         data_compare_res = compareData(data, this.class_data[this.auto_inc].data);
 
-      if (!("classID" in data) || data.classID == "")
-        data.classID = "#" + this.auto_inc;
+      if (!data.classID)
+        data.classID = -1;
+      else
+        data.classID = parseInt(data.classID);
 
       if (data_compare_res) {
         // Conduct soft refresh
@@ -566,7 +545,7 @@ function ClassListPlugin() {
 
         var item = {
           data: data,
-          obj: new PJWClass(this.body, data, this),
+          obj: new PJWClass(this.body, data, this.auto_inc, this),
           id: this.auto_inc
         };
         if (this.auto_inc < this.class_data.length) {
@@ -1174,7 +1153,7 @@ function ClassListPlugin() {
 
             <section id="search-section">
               <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon" id="pjw-classlist-search-field">
-                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-classlist-search-input__label" id="pjw-classlist-search-input">
+                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-classlist-search-input__label" id="pjw-classlist-search-input" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <i aria-hidden="true" class="material-icons-round mdc-text-field__icon mdc-text-field__icon--trailing pjw-classlist-search-clear" role="button" tabindex="0">clear</i>
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
@@ -1191,7 +1170,7 @@ function ClassListPlugin() {
           <div class="pjw-filter-panel">  
             ${filter_modules}
             <div class="pjw-mini-brand" style="order: 10;">
-              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">hourglass_top</span><p>More filters coming soon...</p>
+              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">dashboard</span><p>PotatoPlus Filter Panel</p>
             </div>
           </div>
           <div class="pjw-classlist-body__container">
@@ -1217,14 +1196,18 @@ function ClassListPlugin() {
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-classlist-search-input");
       this.filter_panel = this.main.children(".pjw-filter-panel");
+      this.class_load_size = 30;
+
+      /* Initializes filters */
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
+        this.dom = $$(`#pjw-${name}-filter`);
+        if (this.dom.attr("data-switch"))
+          this.enabled = new mdc.switchControl.MDCSwitch(document.getElementById(this.dom.attr("data-switch")));
         if (typeof(this.filters[name]["intl"]) == "function")
           this.filters[name].intl(this.filters[name], this);
       }
-
-      this.class_load_size = 30;
 
       /* Initializes search field */
       this.search_obj = new mdc.textField.MDCTextField(this.controls.find(".mdc-text-field")[0]);
@@ -1386,8 +1369,12 @@ function ClassListPlugin() {
       this.count = 0;
 
       function preload(l) {
-        if (pjw_mode != "union")
+        if (!(pjw_select_mode in options_data)) {
+          return;
+        }
+        if (pjw_mode != "union") {
           parent_list.console.info("没有获取到课程选择器，正在使用预加载的选择器", "preloader");
+        }
         // Load from pre-determined option data
         if (opt_data == "") opt_data = JSON.parse(options_data[pjw_select_mode]);
         else opt_data = JSON.parse(opt_data);
@@ -1427,7 +1414,9 @@ function ClassListPlugin() {
       var html = `
       <div class="mdc-select mdc-select--outlined" id="pjw-select-${id}">
         <div class="mdc-select__anchor" aria-labelledby="pjw-select-${id}-outlined-label">
-          <span id="pjw-select-${id}-selected-text" class="mdc-select__selected-text"></span>
+          <span class="mdc-select__selected-text-container">
+            <span id="pjw-select-${id}-selected-text" class="mdc-select__selected-text"></span>
+          </span>
           <span class="mdc-select__dropdown-icon">
             <svg
                 class="mdc-select__dropdown-icon-graphic"

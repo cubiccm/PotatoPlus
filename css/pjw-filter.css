@@ -20,10 +20,10 @@
   margin: 10px 0;
 }
 
-.pjw-filter-panel heading {
+.pjw-filter-panel .pjw-filter-module-title {
   display: block;
   color: rgba(0, 0, 0, .7);
-  margin: 6px 0;
+  margin: 2px 0;
   font-size: 15px;
   display: flex;
   align-items: center;
@@ -33,14 +33,29 @@
   margin: 10px 16px;
 }
 
-.pjw-filter-panel heading > .material-icons-round {
-  font-size: 26px;
-  margin: 0 5px;
+.pjw-filter-panel .pjw-filter-module-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pjw-filter-panel .pjw-filter-module-icon {
+  font-size: 24px;
+  margin: 5px;
   color: rgba(0, 0, 0, .7);
 }
 
-.pjw-filter-panel__content {
-  margin: 20px 24px;
+.pjw-filter-module-title__container {
+  margin: 0 5px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pjw-filter-module-info {
+  font-size: 10px;
 }
 
 .pjw-filter-panel .mdc-switch {

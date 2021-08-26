@@ -202,24 +202,16 @@
   width: 100%;
 }
 
-#pjw-select-academyList {
-  min-width: 300px;
+#pjw-select-academySelect, #pjw-select-academyList {
+  min-width: 250px;
 }
 
-#pjw-select-academySelect {
-  min-width: 350px;
-}
-
-#pjw-select-gradeList {
-  min-width: 120px;
-  max-width: 120px;
-}
 
 #pjw-select-specialitySelect {
-  min-width: 300px;
+  min-width: 250px;
 }
 
-#pjw-select-termList {
+#pjw-select-readRenewType {
   min-width: 250px;
 }
 
@@ -758,16 +750,8 @@
   background: rgba(0, 0, 0, .3);
 }
 
-.pjw-class-comment-button {
-  width: 50px;
-  min-width: 50px;
-  max-width: 50px;
-  background: linear-gradient(-45deg, rgba(215, 10, 132, .9), rgba(248, 111, 100, .9));
-  padding: 0;
-}
-
-.pjw-class-comment-icon {
-  font-size: 24px;
+.pjw-class-filtermenu-icon {
+  font-size: 18px;
 }
 
 .pjw-class-operation > button {
@@ -798,26 +782,8 @@
   font-size: 10px;
 }
 
-.pjw-class-comment-button.alter {
-  color: rgb(215, 10, 132);
-  background: transparent;
-  user-select: none;
-  transition: color .1s ease-out;
-}
-
-.pjw-class-comment-button.alter:hover {
-  color: rgb(215, 10, 132, .5);
-}
-
-.pjw-class-comment-button__container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.pjw-class-comment-button__status {
-  font-size: 9px;
-  letter-spacing: 0;
+.pjw-class-id-label {
+  color: rgba(0, 0, 0, .6);
 }
 
 /* Fit Screen Size */

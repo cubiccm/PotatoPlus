@@ -543,6 +543,8 @@ function CAPTCHAPlugin() {
     img_width = source_img.clientWidth - 2;
     img_height = source_img.clientHeight - 2;
     ctx_original = newCanvas(); ctx_binary = newCanvas(); ctx_color = newCanvas();
+    if ($$("#pjw-login-mask-canvas"))
+      drawThis($$("#pjw-login-mask-canvas")[0].getContext("2d"), source_img);
     drawThis(ctx_original, source_img); // Paint original image
 
     var imgData = ctx_original.getImageData(0, 0, img_width, img_height);//读取图像数据

@@ -1,37 +1,13 @@
 var pjw_filter = {
-  /* switch module v1.1 */
+  /* switch module v2.0 */
   switch: {
     html: `
       <div id="pjw-switch-filter">
-      <heading><span class="material-icons-round">build_circle</span>控制</heading>
-        <div class="pjw-switch-box">
-          <div class="mdc-switch" id="pjw-switch-switch">
-            <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" id="pjw-switch-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
-            </div>
-          </div>
-          <label id="pjw-switch-switch-label" for="pjw-switch-switch-input">课程筛选器未启用</label>
-        </div>
+        
       </div>
     `,
     intl: (space, list) => {
-      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-switch-switch")[0]);
-      $$("#pjw-switch-filter").find("#pjw-switch-switch-input").on("change", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        if (e.data.space.switch.checked) {
-          $$("#pjw-switch-switch-label").html("课程筛选器已启用");
-          e.data.list.filter_panel.css("filter", "saturate(3)");
-        } else {
-          $$("#pjw-switch-switch-label").html("课程筛选器未启用");
-          e.data.list.filter_panel.css("filter", "");
-        }
-        e.data.list.filter_enabled = !e.data.list.filter_enabled;
-        e.data.list.update();
-      });
+      
     },
     check: (space, data) => {
       return 0;
@@ -41,8 +17,22 @@ var pjw_filter = {
   /* avail module v1.2 */
   avail: {
     html: `
-      <div id="pjw-avail-filter">
-        <heading><span class="material-icons-round">add_task</span>空余课程</heading>
+      <div id="pjw-avail-filter" class="pjw-filter-module" data-switch="pjw-filter-avail-switch">
+        <div class="pjw-filter-module-header">
+          <span class="material-icons-round pjw-filter-module-icon">add_task</span>
+          <div class="pjw-filter-module-title__container">
+            <span class="pjw-filter-module-title">满额课程</span>
+            <span class="pjw-filter-module-info">过滤满额课程，保留已选课程</span>
+          </div>
+          <div class="mdc-switch" id="pjw-filter-avail-switch" >
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+        </div>
+
         <div class="content">
           <div class="pjw-switch-box">
             <div class="mdc-switch" id="pjw-avail-switch">
@@ -107,7 +97,7 @@ var pjw_filter = {
   /* hours module v0.3 */
   hours: {
     html: `
-      <div id="pjw-hours-filter">
+      <div id="pjw-hours-filter" class="pjw-filter-module">
         <heading><span class="material-icons-round">schedule</span>课程时间</heading>
         <div class="content">
           <div class="pjw-class-weekcal">
@@ -149,8 +139,8 @@ var pjw_filter = {
             </div>
           </div>
           <div id="pjw-hours-filter-control">
-            <div id="clear-calendar" class="pjw-mini-button">重置</div>
-            <div id="reset-calendar" class="pjw-mini-button">排除冲突课程</div>
+            <div id="clear-calendar" class="pjw-mini-button">清空</div>
+            <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
           </div>
         </div>
       </div>
@@ -361,7 +351,7 @@ var pjw_filter = {
   /* potatoes module v0.2 */
   potatoes: {
     html: `
-      <div id="pjw-potatoes-filter">
+      <div id="pjw-potatoes-filter" class="pjw-filter-module">
         <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
         <div class="content">
           <div class="pjw-switch-box">
