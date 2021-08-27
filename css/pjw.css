@@ -429,7 +429,7 @@ body * {
   border-radius: 8px;
   padding: 20px 6px;
   margin: 5px 3px;
-  transition: all .4s cubic-bezier(0, 1, 1, 1);
+  transition: all .4s cubic-bezier(0, 1, 1, 1) .1s;
   background: var(--black);
   user-select: none;
 }

@@ -90,7 +90,7 @@ function ClassListPlugin() {
         for (var item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              item.val = `<span class="pjw-class-course-number" onclick="window.open('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');event.stopPropagation();">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+              item.val = `<span class="pjw-class-course-number pjw-no-expand" onclick="openLinkInFrame('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
             }
             if (item.val == "") continue;
             if (!item.hidden)
@@ -507,7 +507,9 @@ function ClassListPlugin() {
         target: this
       }, (e) => {
         if (window.getSelection().toString() != "") return;
+        if ($$(e.target).is("button")) return;
         if ($$(e.target).parents("button").length) return;
+        if ($$(e.target).is(".pjw-no-expand")) return;
         if ($$(e.target).parents(".pjw-no-expand").length) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
@@ -1626,5 +1628,19 @@ function ClassListPlugin() {
         }
       });
     });
+
+    window.openLinkInFrame = (link) => {
+      if (!$$("#pjw-inner-frame").length) {
+        $$("body").append(`<iframe id="pjw-inner-frame"></iframe><div id="pjw-frame-mask"></div>`);
+        $$("#pjw-frame-mask").on("click", () => {
+          $$("#pjw-frame-mask").css("display", "none");
+          $$("#pjw-inner-frame").css("display", "none");
+          $$("#pjw-inner-frame").attr("src", "");
+        });
+      }
+      $$("#pjw-frame-mask").css("display", "block");
+      $$("#pjw-inner-frame").css("display", "block");
+      $$("#pjw-inner-frame").attr("src", link);
+    };
   })();
 }

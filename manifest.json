@@ -15,7 +15,8 @@
       "matches": ["*://*.nju.edu.cn/jiaowu*"],
       "css": ["css/material-components-web.min.css", "css/pjw.css", "css/pjw-classlist.css", "css/pjw-filter.css", "css/pjw-console.css"],
       "js": ["js/inject.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
   "web_accessible_resources": [

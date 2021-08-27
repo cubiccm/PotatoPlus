@@ -189,7 +189,7 @@ window.potatojw_intl = function() {
     $$("body").append(filter_setting_html);
   }
 
-  if (pjw_mode != "" && !(pjw_mode in pjw_classlist_mode_list) && pjw_mode != "main_page") {
+  if (pjw_mode != "" && !(pjw_mode in pjw_classlist_mode_list) && pjw_mode != "main_page" && pjw_mode != "course_info") {
     $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` +
         custom_toolbar_html[(pjw_mode in filter_mode_list ? "filter" : (pjw_mode in custom_toolbar_html ? pjw_mode : "default"))]
     + `<div class="about-proj"></div></div></div>`);
@@ -1106,7 +1106,11 @@ window.potatojw_intl = function() {
       $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList&termCode=all';">加载所有学期成绩</div>`);
     }
     
-  } else return;
+  } else if (pjw_mode == "course_info") {
+    $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
+  } else {
+    return;
+  }
 
   if (pjw_mode in filter_mode_list) {
     window.select_class_button_index = {

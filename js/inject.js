@@ -50,6 +50,7 @@ function injectStyleFromString(str) {
 
     all_course_list: /teachinginfo\/allCourseList.do\?method=getTermAcademy/i, // 全校课程
     grade_info: /student\/studentinfo\/achievementinfo.do\?method=searchTermList/i, // 成绩查看
+    course_info: /courseList.do\?method=getCourseInfoM/i, // 课程详细信息
 
     main_page: /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i, // 主页
     login_page: /(\/jiaowu\/exit.do|\/jiaowu$|\/jiaowu\/$|\/jiaowu\/index.jsp)/i // 登录页
