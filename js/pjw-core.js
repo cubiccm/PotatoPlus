@@ -303,7 +303,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3 新增了聚合选课的测试功能，现在您可以在选课菜单中试用；这一更新亦对登录界面和课程列表进行了一些改进。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3 对登录界面和课程列表进行了一些改进，并新增了聚合选课的测试功能，您可以在选课菜单中试用。此外，还有部分筛选器功能（可能）将会在未来版本实现。</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -460,10 +460,10 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    if ($$("#termList > option:eq(1)").html() != "2021-2022学年第一学期")
-      $$("#termList > option:eq(1)").before('<option value="20211">*2021-2022学年第一学期</option>');
+    // if ($$("#termList > option:eq(1)").html() != "2021-2022学年第一学期")
+      // $$("#termList > option:eq(1)").before('<option value="20211">*2021-2022学年第一学期</option>');
 
-    window.list = new PJWClassList($$("body"), ["acl_major_switch", "switch", "hours", "frozen"]);
+    window.list = new PJWClassList($$("body"), ["acl_major_switch", "hours", "frozen"]);
     total_weeks_history = {
       "20212": 17,
       "20211": 17,

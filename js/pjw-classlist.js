@@ -249,7 +249,8 @@ function ClassListPlugin() {
         <div class="pjw-class-splitter"></div>`;
       }
 
-      function getMenuButtons(index) {
+      function getMenuButtons(index, classID, class_name, teachers) {
+        var teacher_str = teachers.length ? `（${teachers.join("，")}）`: "";
         return `<div style="margin: 1px 3px; display: flex; flex-direction: row;">
         <div class="mdc-menu-surface--anchor">
           <button class="mdc-fab pjw-class-menu-button pjw-class-filter-button" style="background-color: rgba(0, 0, 0, .7);" data-mdc-auto-init="MDCRipple">
@@ -258,38 +259,46 @@ function ClassListPlugin() {
           </button>
           <div class="mdc-menu mdc-menu-surface pjw-class-filter-menu">
             <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   filter_alt
                   <span class="material-icons-round" style="font-size: 14px;">add</span>
                 </span>
-                <span class="mdc-list-item__text">在筛选器中包含此课程</span>
+                <span class="mdc-list-item__text">筛选器：包含此课程</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   filter_alt
                   <span class="material-icons-round" style="font-size: 14px;">remove</span>
                 </span>
-                <span class="mdc-list-item__text">在筛选器中排除此课程</span>
+                <span class="mdc-list-item__text">筛选器：隐藏此课程</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-search-similar" data-mdc-auto-init="MDCRipple" role="menuitem">
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   search
                 </span>
-                <span class="mdc-list-item__text">搜索类似课程</span>
+                <span class="mdc-list-item__text">搜索相似课程</span>
               </li>
               <li class="mdc-list-divider" role="separator"></li>
-              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
                 <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__text">Class Index: ${index}</span>
+                <span class="mdc-list-item__text">${class_name}${teacher_str}</span>
+              </li>
+              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">选课号：${classID > 0 ? classID : "无法选择"}</span>
+              </li>
+              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">列表排序：${index}</span>
               </li>
             </ul>
           </div>
         </div>
-        <button class="mdc-fab pjw-class-menu-button" style="background-color: #ec407a;" data-mdc-auto-init="MDCRipple">
+        <button class="mdc-fab pjw-class-menu-button" style="background-color: #ec407a;" onclick="window.list.console.love('未实现的收藏列表功能，（或许会）即将到来');" data-mdc-auto-init="MDCRipple">
           <div class="mdc-fab__ripple"></div>
           <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">favorite</span>
         </button></div>`;
@@ -349,7 +358,7 @@ function ClassListPlugin() {
           else return "";
 
         case "menubuttons":
-          return getMenuButtons(this.index);
+          return getMenuButtons(this.index, data.classID, data.title, data.teachers);
       }
     }
 
@@ -427,6 +436,11 @@ function ClassListPlugin() {
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.filter_button = this.operation.find(".pjw-class-filter-button");
       this.filter_menu = new mdc.menuSurface.MDCMenuSurface(this.operation.find(".pjw-class-filter-menu")[0]);
+      this.operation.find(".pjw-class-filter-menu").click({
+        target: this.filter_menu
+      }, (e) => {
+        e.data.target.close();
+      });
 
       // Draw weekday lesson time rings
       var deg_list = [
@@ -488,6 +502,20 @@ function ClassListPlugin() {
         target: this
       }, (e) => {
         e.data.target.filter_menu.open();
+      });
+
+      this.filter_menu.setAnchorCorner(mdc.menu.Corner.TOP_RIGHT);
+      
+      // Set filter menu click event
+      this.operation.find(".pjw-class-menu-search-similar").click({
+        target: this
+      }, (e) => {
+        if (e.data.target.data.teachers.length)
+          e.data.target.list.search_field.value = e.data.target.data.title + " " + e.data.target.data.teachers.join(" ");
+        else
+          e.data.target.list.search_field.value = e.data.target.data.title;
+        e.data.target.list.search_input.trigger("input");
+        document.documentElement.scrollTop = 0;
       });
 
       // Initialize DOM trace variables
@@ -726,6 +754,8 @@ function ClassListPlugin() {
       var priority = 0.0;
 
       /* Search module */
+      if (this.filters.advanced)
+        this.filters.advanced.updateSearch(this.search_string);
       var search_priority = this.search(data, this.search_string);
       if (search_priority === false) {
         data.priority = -1;
@@ -734,16 +764,15 @@ function ClassListPlugin() {
       priority += search_priority;
 
       /* Filter modules */
-      if (this.filter_enabled == true) {
-        for (var name in this.filters) {
-          if (typeof(this.filters[name]["check"]) != "function") continue;
-          var res = this.filters[name].check(this.filters[name], data, class_obj);
-          if (res === false) {
-            data.priority = -1;
-            return false;
-          }
-          priority += res;
+      for (var name in this.filters) {
+        if (typeof(this.filters[name]["check"]) != "function") continue;
+        if (this.filters[name].enabled == false) continue;
+        var res = this.filters[name].check(this.filters[name], data, class_obj);
+        if (res === false) {
+          data.priority = -1;
+          return false;
         }
+        priority += res;
       }
 
       data.priority = priority;
@@ -981,16 +1010,6 @@ function ClassListPlugin() {
           this.filters[filter][name](this.filters[filter], this);
     }
 
-    // Loads a filter module by name
-    loadModule(name) {
-      if (this.filter_modules.include(name)) return false;
-      this.filter_modules.push(name);
-      this.filter_panel.find(".pjw-mini-brand").before(pjw_filter[name].html);
-      this.filters[name] = pjw_filter[name];
-      this.filters[name].intl(this.filters[name], this);
-      return this.filters[name];
-    }
-
     // Increases refresh speed when pressing speed adjustment button
     speedUp() {
       if (!this.max_frequency)
@@ -1170,7 +1189,8 @@ function ClassListPlugin() {
       return false;
     }
 
-    constructor(parent, modules = ["switch", "avail", "hours", "frozen"]) {
+    constructor(parent, modules = ["avail", "hours", "advanced", "frozen"]) {
+      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {modules[modules.length] = "potatoes"; this.max_frequency = 15.0;}
       this.filter_modules = modules;
 
       // Deploy filter DOM
@@ -1249,6 +1269,7 @@ function ClassListPlugin() {
       this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-classlist-search-input");
+      this.search_field = new mdc.textField.MDCTextField(document.getElementById("pjw-classlist-search-field"));
       this.filter_panel = this.main.children(".pjw-filter-panel");
       this.class_load_size = 30;
 
@@ -1256,11 +1277,34 @@ function ClassListPlugin() {
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
-        this.filters[name].dom = $$(`#pjw-${name}-filter`);
-        if (this.dom.attr("data-switch"))
-          this.enabled = new mdc.switchControl.MDCSwitch(document.getElementById(this.dom.attr("data-switch")));
-        if (typeof(this.filters[name]["intl"]) == "function")
-          this.filters[name].intl(this.filters[name], this);
+        var cur_filter = this.filters[name];
+        cur_filter.dom = $$(`#pjw-${name}-filter`);
+        if (cur_filter.dom.attr("data-switch")) {
+          cur_filter.enabled = false;
+          var switch_dom = document.getElementById(cur_filter.dom.attr("data-switch"));
+          cur_filter.enabled_switch = new mdc.switchControl.MDCSwitch(switch_dom);
+          cur_filter.dom.find(".content").hide();
+          $$(switch_dom).on("change", null, {
+            space: cur_filter,
+            list: this
+          }, (e) => {
+            e.data.space.enabled = e.data.space.enabled_switch.checked;
+            if (typeof(e.data.space["onswitch"]) == "function")
+              e.data.space.onswitch(e.data.space, e.data.list);
+            if (e.data.space.dom.find(".content").length) {
+              if (e.data.space.enabled == true) {
+                e.data.space.dom.find(".content").show();
+              } else {
+                e.data.space.dom.find(".content").hide();
+              }
+            }
+            e.data.list.update();
+          });
+        } else {
+          this.enabled = true;
+        }
+        if (typeof(cur_filter["intl"]) == "function")
+          cur_filter.intl(cur_filter, this);
       }
 
       /* Initializes search field */
@@ -1288,7 +1332,6 @@ function ClassListPlugin() {
           }, 150, e);
         }
       });
-      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {this.loadModule("potatoes"); this.max_frequency = 15.0;}
 
       this.controls.find(".pjw-classlist-search-clear").hide().on("click", null, {
         target: this

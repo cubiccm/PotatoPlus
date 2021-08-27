@@ -1,20 +1,5 @@
 var pjw_filter = {
-  /* switch module v2.0 */
-  switch: {
-    html: `
-      <div id="pjw-switch-filter">
-        
-      </div>
-    `,
-    intl: (space, list) => {
-      
-    },
-    check: (space, data) => {
-      return 0;
-    }
-  },
-
-  /* avail module v1.2 */
+  /* avail module v1.e */
   avail: {
     html: `
       <div id="pjw-avail-filter" class="pjw-filter-module" data-switch="pjw-filter-avail-switch">
@@ -22,9 +7,9 @@ var pjw_filter = {
           <span class="material-icons-round pjw-filter-module-icon">add_task</span>
           <div class="pjw-filter-module-title__container">
             <span class="pjw-filter-module-title">满额课程</span>
-            <span class="pjw-filter-module-info">过滤满额课程，保留已选课程</span>
+            <span class="pjw-filter-module-info">过滤人数已满课程</span>
           </div>
-          <div class="mdc-switch" id="pjw-filter-avail-switch" >
+          <div class="mdc-switch" id="pjw-filter-avail-switch">
             <div class="mdc-switch__track"></div>
             <div class="mdc-switch__thumb-underlay">
               <div class="mdc-switch__thumb"></div>
@@ -34,16 +19,6 @@ var pjw_filter = {
         </div>
 
         <div class="content">
-          <div class="pjw-switch-box">
-            <div class="mdc-switch" id="pjw-avail-switch">
-              <div class="mdc-switch__track"></div>
-              <div class="mdc-switch__thumb-underlay">
-                <div class="mdc-switch__thumb"></div>
-                <input type="checkbox" id="pjw-avail-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
-              </div>
-            </div>
-            <label for="pjw-avail-switch-input">过滤不可选课程</label>
-          </div>
           <div class="pjw-switch-box" id="pjw-deselect-switch-box">
             <div class="mdc-switch" id="pjw-deselect-switch">
               <div class="mdc-switch__track"></div>
@@ -52,38 +27,24 @@ var pjw_filter = {
                 <input type="checkbox" id="pjw-deselect-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
               </div>
             </div>
-            <label for="pjw-deselect-switch-input">保留可退选课程</label>
+            <label for="pjw-deselect-switch-input">隐藏已选课程</label>
           </div>
         </div>
       </div>
     `,
     intl: (space, list) => {
       space.dom = $$("#pjw-avail-filter");
-      space.switch = new mdc.switchControl.MDCSwitch($$("#pjw-avail-switch")[0]);
       space.deselect_switch = new mdc.switchControl.MDCSwitch($$("#pjw-deselect-switch")[0]);
 
-      space.switch.checked = true;
-      space.status = true;
-
-      space.dom.find("#pjw-avail-switch-input").on("change", null, {
+      space.dom.find("#pjw-deselect-switch").on("change", null, {
         space: space,
         list: list
       }, (e) => {
-        e.data.space.status = e.data.space.switch.checked;
-        e.data.space.status ? $$("#pjw-deselect-switch-box").show() : $$("#pjw-deselect-switch-box").hide();
-        e.data.list.update();
-      });
-
-      space.dom.find("#pjw-deselect-switch-input").on("change", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.space.keep_deselect = e.data.space.deselect_switch.checked;
+        e.data.space.keep_deselect = !e.data.space.deselect_switch.checked;
         e.data.list.update();
       });
     },
     check: (space, data) => {
-      if (!space.status) return 0;
       if ("select_button" in data && data.select_button.status !== false) {
         if (data.select_button.status == "Deselect" && space.keep_deselect)
           return 0;
@@ -94,11 +55,24 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.3 */
+  /* hours module v0.4 */
   hours: {
     html: `
-      <div id="pjw-hours-filter" class="pjw-filter-module">
-        <heading><span class="material-icons-round">schedule</span>课程时间</heading>
+      <div id="pjw-hours-filter" class="pjw-filter-module" data-switch="pjw-filter-hours-switch">
+        <div class="pjw-filter-module-header">
+          <span class="material-icons-round pjw-filter-module-icon">schedule</span>
+          <div class="pjw-filter-module-title__container">
+            <span class="pjw-filter-module-title">课程时间</span>
+            <span class="pjw-filter-module-info">按上课时间筛选课程</span>
+          </div>
+          <div class="mdc-switch" id="pjw-filter-hours-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+        </div>
         <div class="content">
           <div class="pjw-class-weekcal">
             <div class="pjw-class-weekcal-heading">
@@ -156,12 +130,13 @@ var pjw_filter = {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       ];
-      space.dom = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
+      space.dom = $$("#pjw-hours-filter");
+      space.cal = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
 
       // Value: 0, false
       space.setValue = function(day, lesson, val) {
         this.data[day][lesson] = val;
-        var target_lesson = this.dom.find(`div.pjw-class-weekcal-calendar-day:eq(${day})`).children(`span:eq(${lesson - 1})`);
+        var target_lesson = this.cal.find(`div.pjw-class-weekcal-calendar-day:eq(${day})`).children(`span:eq(${lesson - 1})`);
         if (val === false) target_lesson.addClass("selected");
         else target_lesson.removeClass("selected");
       };
@@ -224,19 +199,19 @@ var pjw_filter = {
         }
       };
 
-      space.dom.on("mousedown", null, {
+      space.cal.on("mousedown", null, {
         space: space
       }, (e) => {
         e.data.space.mouse_select = true;
       });
 
-      space.dom.on("mouseup", null, {
+      space.cal.on("mouseup", null, {
         space: space
       }, (e) => {
         e.data.space.handleMouseUp();
       });
 
-      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
+      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
         space: space,
         list: list
       }, (e) => {
@@ -253,7 +228,7 @@ var pjw_filter = {
         e.data.space.setValue(day, lesson, val);
       });
 
-      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousedown", null, {
+      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousedown", null, {
         space: space,
         list: list
       }, (e) => {
@@ -269,14 +244,14 @@ var pjw_filter = {
         e.data.space.setValue(day, lesson, val);
       });
 
-      space.dom.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mouseup", null, {
+      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mouseup", null, {
         space: space,
         list: list
       }, (e) => {
         e.data.list.update();
       });
 
-      space.dom.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("span").on("click", null, {
+      space.cal.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("span").on("click", null, {
         space: space,
         list: list
       }, (e) => {
@@ -293,7 +268,7 @@ var pjw_filter = {
         e.data.list.update();
       });
 
-      space.dom.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
+      space.cal.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
         space: space,
         list: list
       }, (e) => {
@@ -310,7 +285,7 @@ var pjw_filter = {
         e.data.list.update();
       });
 
-      space.dom.find("div.pjw-class-weekcal-heading-day.select-all").on("click", null, {
+      space.cal.find("div.pjw-class-weekcal-heading-day.select-all").on("click", null, {
         space: space,
         list: list
       }, (e) => {
@@ -348,11 +323,63 @@ var pjw_filter = {
     }
   },
 
-  /* potatoes module v0.2 */
+  advanced: {
+    html: `
+      <div id="pjw-advanced-filter" class="pjw-filter-module" data-switch="pjw-filter-advanced-switch">
+        <div class="pjw-filter-module-header">
+          <span class="material-icons-round pjw-filter-module-icon">settings_input_component</span>
+          <div class="pjw-filter-module-title__container">
+            <span class="pjw-filter-module-title">更多规则</span>
+            <span class="pjw-filter-module-info">来自搜索框和自定义的筛选规则</span>
+          </div>
+          <div class="mdc-switch" id="pjw-filter-advanced-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+        </div>
+    
+        <div class="content">
+          <ul>
+            <li id="pjw-advanced-filter-search-item"></li>
+            <li>更多功能（也许会）即将到来...</li>
+          </ul>
+        </div>
+      </div>
+    `,
+    intl: (space, list) => {
+
+    },
+    onswitch: (space, list) => {
+      space.updateSearch(list.search_string);
+    },
+    updateSearch: (str) => {
+      if (!str || str == "") $$("#pjw-advanced-filter-search-item").hide();
+      else $$("#pjw-advanced-filter-search-item").show();
+      $$("#pjw-advanced-filter-search-item").text(`搜索关键词：${str}`);
+    }
+  },
+
+  /* potatoes module v0.3 */
   potatoes: {
     html: `
-      <div id="pjw-potatoes-filter" class="pjw-filter-module">
-        <heading><span class="material-icons-round">flight_takeoff</span>自动选课</heading>
+      <div id="pjw-potatoes-filter" class="pjw-filter-module" data-switch="pjw-filter-potatoes-switch">
+        <div class="pjw-filter-module-header">
+          <span class="material-icons-round pjw-filter-module-icon">flight_takeoff</span>
+          <div class="pjw-filter-module-title__container">
+            <span class="pjw-filter-module-title">自动选课</span>
+            <span class="pjw-filter-module-info">Take care & Good luck!</span>
+          </div>
+          <div class="mdc-switch" id="pjw-filter-potatoes-switch">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__thumb-underlay">
+              <div class="mdc-switch__thumb"></div>
+              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            </div>
+          </div>
+        </div>
         <div class="content">
           <div class="pjw-switch-box">
             <div class="mdc-switch" id="pjw-potatoes-switch">
@@ -384,7 +411,7 @@ var pjw_filter = {
             </div>
             <label for="pjw-potatoes-continue-on-success-input">选课成功后继续</label>
           </div>
-          <p>*使用前请确认课程筛选正确并开启自动刷新开关和筛选器总开关。</p>
+          <p>*使用前请确认课程筛选正确并开启自动刷新开关。</p>
         </div>
       </div>
     `,
@@ -461,17 +488,28 @@ var pjw_filter = {
     }
   },
 
-  /* frozen module v1.2 */
+  /* frozen module v1.3 */
   frozen: {
     html: `
       <div id="pjw-frozen-filter" style="order: 3;">
-        <heading><span class="material-icons-round" id="frozen-icon" style="cursor: pointer;">ac_unit</span><span id="frozen-quotes">Frozen Quote</span></heading>
+        <div class="pjw-filter-module-header">  
+          <span class="material-icons-round pjw-filter-module-icon" id="frozen-icon" title="Frozen Quote">ac_unit</span>
+          <div class="pjw-filter-module-title__container">
+            <span id="frozen-quotes">Frozen Quote</span>
+          </div>
+        </div>
       </div>
     `,
     intl: (space, list) => {
       $$("#frozen-icon").on("click", null, {
         space: space
       }, (e) => {
+        $$("#frozen-icon").css("transition", "transform .4s ease-out");
+        $$("#frozen-icon").css("transform", "rotate(180deg)");
+        window.setTimeout(() => {
+          $$("#frozen-icon").css("transition", "");
+          $$("#frozen-icon").css("transform", "rotate(0deg)");
+        }, 450);
         e.data.space.target.html(e.data.space.getRandomQuotes());
       });
       space.target = $$("#frozen-quotes");

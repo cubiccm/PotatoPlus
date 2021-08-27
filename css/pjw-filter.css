@@ -12,8 +12,11 @@
 
   height: fit-content;
   height: -moz-fit-content;
+  min-width: 320px;
+}
 
-  transition: filter .3s ease-out;
+.view-single-column .pjw-filter-panel {
+  min-width: none;
 }
 
 .pjw-filter-panel > div {
@@ -30,7 +33,7 @@
 }
 
 .pjw-filter-panel .content {
-  margin: 10px 16px;
+  margin: 10px 20px;
 }
 
 .pjw-filter-panel .pjw-filter-module-header {
@@ -125,6 +128,10 @@
 
 #pjw-hours-filter-control > .pjw-mini-button:hover {
   color: rgb(208, 196, 16);
+}
+
+#frozen-icon {
+  cursor: pointer;
 }
 
 #frozen-quotes {
