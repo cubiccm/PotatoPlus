@@ -245,11 +245,20 @@ function ClassListPlugin() {
             disabled: (disabled == "disabled"),
             extra_classes: extra_classes
           };
-        return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>`;
+        return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>
+        <div class="pjw-class-splitter"></div>`;
       }
 
       function getMenuButtons(index) {
-        return `<span class="pjw-class-id-label">#${index}</span>`;
+        return `<div style="margin: 1px 3px;">
+        <button class="mdc-fab pjw-class-menu-button" style="background-color: rgba(0, 0, 0, .7);" data-mdc-auto-init="MDCRipple">
+          <div class="mdc-fab__ripple"></div>
+          <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">filter_alt</span>
+        </button>
+        <button class="mdc-fab pjw-class-menu-button" style="background-color: #ec407a;" data-mdc-auto-init="MDCRipple">
+          <div class="mdc-fab__ripple"></div>
+          <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">favorite</span>
+        </button></div>`;
       }
 
       switch(attr) {
@@ -456,7 +465,7 @@ function ClassListPlugin() {
         target: this
       }, (e) => {
         if (window.getSelection().toString() != "") return;
-        if ($$(e.target).parent().hasClass("mdc-button")) return;
+        if ($$(e.target).parents("button").length) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
         else
@@ -1202,7 +1211,7 @@ function ClassListPlugin() {
       this.filters = {};
       for (var name of this.filter_modules) {
         this.filters[name] = pjw_filter[name];
-        this.dom = $$(`#pjw-${name}-filter`);
+        this.filters[name].dom = $$(`#pjw-${name}-filter`);
         if (this.dom.attr("data-switch"))
           this.enabled = new mdc.switchControl.MDCSwitch(document.getElementById(this.dom.attr("data-switch")));
         if (typeof(this.filters[name]["intl"]) == "function")

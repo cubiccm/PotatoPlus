@@ -202,7 +202,7 @@
   width: 100%;
 }
 
-#pjw-select-academySelect, #pjw-select-academyList {
+#pjw-select-academySelect, #pjw-select-academyList, #pjw-select-courseKindList {
   min-width: 250px;
 }
 
@@ -312,6 +312,7 @@
   flex-direction: column;
   align-items: center;
   flex-grow: 1;
+  width: 100%;
 }
 
 .pjw-class-container {
@@ -725,7 +726,7 @@
 
 .pjw-class-operation {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   padding: 0 10px;
   justify-content: space-around;
   align-items: center;
@@ -739,6 +740,14 @@
 .pjw-class-select-button {
   min-width: 120px;
   background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
+  border-radius: 25px;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+  min-height: 50px;
+  margin: 8px 5px;
+}
+
+.pjw-class-select-button > .mdc-button__ripple {
+  border-radius: 25px;
 }
 
 .pjw-class-select-button.deselect {
@@ -748,21 +757,6 @@
 .pjw-class-select-button:disabled {
   color: rgba(0, 0, 0, .5);
   background: rgba(0, 0, 0, .3);
-}
-
-.pjw-class-filtermenu-icon {
-  font-size: 18px;
-}
-
-.pjw-class-operation > button {
-  border-radius: 25px;
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
-  min-height: 50px;
-  margin: 8px 5px;
-}
-
-.pjw-class-operation > button > .mdc-button__ripple {
-  border-radius: 25px;
 }
 
 .pjw-class-select-button__container {
@@ -782,8 +776,34 @@
   font-size: 10px;
 }
 
-.pjw-class-id-label {
-  color: rgba(0, 0, 0, .6);
+.pjw-class-splitter {
+  background-color:rgba(0, 0, 0, .3);
+  margin: 6px;
+  border-radius: 2px;
+  width: 4px;
+  height: 4px;
+  display: none;
+}
+
+.pjw-class-container--compressed .pjw-class-splitter {
+  display: block;
+}
+
+.pjw-class-menu-button {
+  width: 40px;
+  height: 40px;
+  margin: 5px;
+  transition: margin .15s ease-out;
+}
+
+.pjw-class-container--compressed .pjw-class-menu-button {
+  width: 28px;
+  height: 28px;
+  margin: 2px;
+}
+
+.pjw-class-menu-icon {
+  font-size: 18px !important;
 }
 
 /* Fit Screen Size */
