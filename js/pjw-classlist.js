@@ -250,11 +250,45 @@ function ClassListPlugin() {
       }
 
       function getMenuButtons(index) {
-        return `<div style="margin: 1px 3px;">
-        <button class="mdc-fab pjw-class-menu-button" style="background-color: rgba(0, 0, 0, .7);" data-mdc-auto-init="MDCRipple">
-          <div class="mdc-fab__ripple"></div>
-          <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">filter_alt</span>
-        </button>
+        return `<div style="margin: 1px 3px; display: flex; flex-direction: row;">
+        <div class="mdc-menu-surface--anchor">
+          <button class="mdc-fab pjw-class-menu-button pjw-class-filter-button" style="background-color: rgba(0, 0, 0, .7);" data-mdc-auto-init="MDCRipple">
+            <div class="mdc-fab__ripple"></div>
+            <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">filter_alt</span>
+          </button>
+          <div class="mdc-menu mdc-menu-surface pjw-class-filter-menu">
+            <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__graphic material-icons-round">
+                  filter_alt
+                  <span class="material-icons-round" style="font-size: 14px;">add</span>
+                </span>
+                <span class="mdc-list-item__text">在筛选器中包含此课程</span>
+              </li>
+              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__graphic material-icons-round">
+                  filter_alt
+                  <span class="material-icons-round" style="font-size: 14px;">remove</span>
+                </span>
+                <span class="mdc-list-item__text">在筛选器中排除此课程</span>
+              </li>
+              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__graphic material-icons-round">
+                  search
+                </span>
+                <span class="mdc-list-item__text">搜索类似课程</span>
+              </li>
+              <li class="mdc-list-divider" role="separator"></li>
+              <li class="mdc-list-item mdc-ripple-upgraded" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__text">Class Index: ${index}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
         <button class="mdc-fab pjw-class-menu-button" style="background-color: #ec407a;" data-mdc-auto-init="MDCRipple">
           <div class="mdc-fab__ripple"></div>
           <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">favorite</span>
@@ -342,7 +376,7 @@ function ClassListPlugin() {
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
         </div>
-        <div class="pjw-class-operation">
+        <div class="pjw-class-operation pjw-no-expand">
           ${this.getHTML(data, "selectbutton")}
           ${this.getHTML(data, "menubuttons")}
         </div>
@@ -391,7 +425,8 @@ function ClassListPlugin() {
       this.sideinfo = this.sub.children(".pjw-class-sideinfo");
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
-      this.menu_buttons = this.operation.children(".pjw-class-menu-buttons");
+      this.filter_button = this.operation.find(".pjw-class-filter-button");
+      this.filter_menu = new mdc.menuSurface.MDCMenuSurface(this.operation.find(".pjw-class-filter-menu")[0]);
 
       // Draw weekday lesson time rings
       var deg_list = [
@@ -447,6 +482,13 @@ function ClassListPlugin() {
           e.data.target.list.refresh(false);
         });
       });
+      
+      // Set filter button click event
+      this.filter_button.click({
+        target: this
+      }, (e) => {
+        e.data.target.filter_menu.open();
+      });
 
       // Initialize DOM trace variables
       this.display = false;
@@ -466,6 +508,7 @@ function ClassListPlugin() {
       }, (e) => {
         if (window.getSelection().toString() != "") return;
         if ($$(e.target).parents("button").length) return;
+        if ($$(e.target).parents(".pjw-no-expand").length) return;
         if (!e.data.target.list.move_to_expand)
           e.data.target.list.move_to_expand = true;
         else

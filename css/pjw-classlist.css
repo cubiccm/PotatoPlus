@@ -806,6 +806,14 @@
   font-size: 18px !important;
 }
 
+.pjw-class-filter-button {
+  z-index: 30;
+}
+
+.pjw-class-filter-menu {
+  z-index: 32;
+}
+
 /* Fit Screen Size */
 .view-narrow-desktop .pjw-class-sub {
   flex-direction: column;
