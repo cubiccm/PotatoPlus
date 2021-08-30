@@ -90,7 +90,12 @@ function ClassListPlugin() {
         for (var item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              item.val = `<span class="pjw-class-course-number pjw-no-expand" onclick="openLinkInFrame('/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}');">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+              var link = "";
+              if (pjw_mode == "course")
+                link = `/xsxkapp/sys/xsxkapp/*default/courseInfoElective.do?number=${item.val}&teachingClassID=${classID}`;
+              else
+                link = `/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}`;
+              item.val = `<span class="pjw-class-course-number pjw-no-expand" onclick="openLinkInFrame('${link}');">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
             }
             if (item.val == "") continue;
             if (!item.hidden)
