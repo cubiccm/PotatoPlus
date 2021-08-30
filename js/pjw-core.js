@@ -796,13 +796,13 @@ window.potatojw_intl = function() {
         </div>
 
         <div style="margin: 30px 0;">
-          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" id="pjw-login-submit-button" onclick="submitLoginForm();" disabled="disabled">
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" id="pjw-login-submit-button" onclick="submitLoginForm();" type="button" disabled="disabled">
             <div class="mdc-button__ripple"></div>
             <span class="material-icons-round">login</span>
             <div class="mdc-button__label" style="margin-left: 8px;">登录</div>
           </button>
 
-          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" style="background-color: #63065f;" onclick="casLogin();">
+          <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-login-button" style="background-color: #63065f;" type="button" onclick="casLogin();">
             <div class="mdc-button__ripple"></div>
             <span class="material-icons-round">open_in_new</span>
             <div class="mdc-button__label" style="margin-left: 16px;">统一认证</div>
