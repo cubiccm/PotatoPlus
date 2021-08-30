@@ -792,9 +792,6 @@ function ClassListPlugin() {
     // Rearranges classes
     // Call this function when class_data is updated
     update() {
-      if (this.prepared_to_add == false) {
-        this.auto_inc = 0;
-      }
       if (this.auto_inc < this.class_data.length) {
         for (var item of this.class_data.slice(this.auto_inc))
           item.obj.remove();
@@ -992,6 +989,7 @@ function ClassListPlugin() {
         this.body.css("opacity", "0");
       }
       $$("#pjw-classlist-count").html("正在加载...");
+      this.auto_inc = 0;
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
