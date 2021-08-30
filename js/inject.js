@@ -32,6 +32,8 @@ function injectStyleFromString(str) {
 
 (function() {
   var modes_reg = {
+    course: /grablessons.do/i, // 新选课系统 xk.nju.edu.cn
+
     major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
     union: /student\/elective\/index.do/i, // 选课
     gym: /gymClassList.do/i, // 体育补选

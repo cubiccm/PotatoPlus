@@ -15,6 +15,11 @@ var collapseSidebarIntoFilter = function() {
 
 var class_select_funcs = {
 
+"course":
+function() {
+  
+},
+
 "gym": 
 function() {
   if (pjw_mode != "union") {

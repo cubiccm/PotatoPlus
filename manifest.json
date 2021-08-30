@@ -12,7 +12,7 @@
   "author": "Limos",
   "content_scripts": [
     {
-      "matches": ["*://*.nju.edu.cn/jiaowu*"],
+      "matches": ["*://*.nju.edu.cn/jiaowu*", "*://xk.nju.edu.cn"],
       "css": ["css/material-components-web.min.css", "css/pjw.css", "css/pjw-classlist.css", "css/pjw-filter.css", "css/pjw-console.css"],
       "js": ["js/inject.js"],
       "run_at": "document_start",

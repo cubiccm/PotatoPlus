@@ -98,7 +98,7 @@ window.potatojw_intl = function() {
   }
 
   var filter_mode_list = {"major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true, "course": true};
 
   const custom_toolbar_html = {
     course_eval: `
@@ -1108,6 +1108,8 @@ window.potatojw_intl = function() {
     
   } else if (pjw_mode == "course_info") {
     $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
+  } else if (pjw_mode == "course") {
+    enterMode("course");
   } else {
     return;
   }
