@@ -202,7 +202,9 @@ function() {
     list.refresh(true);
     CVParams.canTurnPage = true;
     CVParams.stopChangeMenu = false;
-    return new Promise(() => {});
+    return {
+      "done": (e) => {}
+    };
   }
 
   function buildAddParam(tcId, operationType = "1") {
@@ -329,7 +331,7 @@ function() {
     return new Promise((resolve, reject) => {
       try {
         for (var item of data) {
-          var select_status = sessionStorage["teachingClassType"] == "QB" ? false : (item.isChoose == "1" ? "Selected" : (item.isFull == "1" ? "Full" : "Select"));
+          var select_status = sessionStorage["teachingClassType"] == "QB" ? false : (item.isChoose == "1" ? "Deselect" : (item.isFull == "1" ? "Full" : "Select"));
           var class_data = {
             classID: item.teachingClassID,
             title: item.courseName,

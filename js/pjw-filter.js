@@ -1,5 +1,5 @@
 var pjw_filter = {
-  /* avail module v1.e */
+  /* avail module v1.3 */
   avail: {
     html: `
       <div id="pjw-avail-filter" class="pjw-filter-module" data-switch="pjw-filter-avail-switch">
@@ -36,6 +36,7 @@ var pjw_filter = {
       space.dom = $$("#pjw-avail-filter");
       space.deselect_switch = new mdc.switchControl.MDCSwitch($$("#pjw-deselect-switch")[0]);
 
+      space.keep_deselect = true;
       space.dom.find("#pjw-deselect-switch").on("change", null, {
         space: space,
         list: list
