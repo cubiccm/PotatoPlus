@@ -1,5 +1,5 @@
 var pjw_filter = {
-  /* avail module v1.e */
+  /* avail module v1.3 */
   avail: {
     html: `
       <div id="pjw-avail-filter" class="pjw-filter-module" data-switch="pjw-filter-avail-switch">
