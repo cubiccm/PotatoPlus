@@ -492,7 +492,7 @@ function ClassListPlugin() {
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
         e.data.target.select_button.prop("disabled", true);
-        e.data.action(e).then(() => {
+        e.data.action(e).finally(() => {
           e.data.target.select_button.prop("disabled", false);
           e.data.target.list.refresh(false);
         });
@@ -593,9 +593,9 @@ function ClassListPlugin() {
       function compareData(data1, data2) {
         if ("title" in data2 && data1.title == data2.title)
           if ("teachers" in data2 && data1.teachers.join() == data2.teachers.join()) {
-            if (!("select_button" in data2) || data2.select_button.text == data1.select_button.text)
-              return 2;
-            return 1;
+            if (data1.places == data2.places && data1.lesson_time == data2.lesson_time) {
+              return true;
+            }
           }
         return false;
       }
@@ -673,9 +673,10 @@ function ClassListPlugin() {
 
     // Checks match of the search string ($pattern) in target string ($str)
     matchDegree(pattern, str) {
-      if (typeof(pattern) == "undefined" || pattern == "") return 0;
+      if (!pattern || !str) return 0;
 
       function testString(keyword, str) {
+        if (!str) return 0;
         if (keyword.length != 1 && keyword[0] == "-") {
           if (testString(keyword.slice(1), str) !== 0)
             return false;
@@ -1306,7 +1307,7 @@ function ClassListPlugin() {
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
                   <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label"><span style="font-family:Material Icons Round;">search</span>搜索</span>
+                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label"><span style="font-family:Material Icons Round;">search</span>${pjw_mode == "course" ? "本地搜索" : "搜索"}</span>
                   </span>
                   <span class="mdc-notched-outline__trailing"></span>
                 </span>
