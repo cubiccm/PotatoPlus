@@ -17,7 +17,445 @@ var class_select_funcs = {
 
 "course":
 function() {
+  window.getListParam = function(page) {
+    function getOrderString() {
+      var order = '';
+      var $orderDomArr = $('.result-container .course-order[data-order="order"]');
+      if ($orderDomArr.length == 0) {
+        $orderDomArr = $('.result-container .course-order[data-order="desc"]');
+      }
+      if ($orderDomArr.length > 0) {
+        var orderField = $orderDomArr.eq(0).attr('data-type');
+        switch (orderField) {
+          case 'KCH':
+            order += 'courseNumber';
+            break;
+          case 'KCMC':
+            order += 'courseName';
+            break;
+          case 'XF':
+            order += 'credit';
+            break;
+          case 'JSMC':
+            order += 'teacherName';
+            break;
+          case 'SJDD':
+            order += 'teachingPlace';
+            break;
+          case 'YXRS':
+            order += 'classCapacity';
+            break;
+          case 'XQ':
+            order += 'campusName';
+            break;
+          case 'XKFS':
+            order += 'typeName';
+            break;
+          case 'BJS':
+            order += 'number';
+            break;
+          case 'BZ':
+            order += 'extInfo';
+            break;
+          case 'KCXZ':
+            order += 'courseNatureName';
+            break;
+          case 'KCLB':
+            order += 'courseSection';
+            break;
+          case 'KKDW':
+            order += 'departmentName';
+            break;
+          case 'TXSJ':
+            order += 'deleteOperateTime';
+            break;
+          case 'NJ':
+            order += 'recommendGrade';
+            break;
+          default:
+            break;
+        }
+        if ($orderDomArr.eq(0).attr('data-order') == 'desc') {
+          order += ' -';
+        } else {
+          order += ' +';
+        }
+      }
+      return order;
+    }
+    var content = $('.search-input').val();
+    content = content == null ? '' : content;
+    if (content) {
+      content = content.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+    }
+    var studentInfo = JSON.parse(sessionStorage.getItem('studentInfo')); //学生信息
+    var studentCode = studentInfo.code; // 学号
+    // 选课批次
+    var electiveBatch = studentInfo.electiveBatch;
+    var electiveBatchCode = electiveBatch.code;
+    // 当前校区
+    var currentCampus = JSON.parse(sessionStorage.getItem('currentCampus'));
+    var campus = currentCampus.code; // 校区
+    var teachingClassType = sessionStorage.getItem("teachingClassTypeSecond"); // 教学班类型
+    if (!teachingClassType) {
+      teachingClassType = sessionStorage.getItem("teachingClassType"); // 教学班类型
+    }
+    var queryData = '{"studentCode":"' + studentCode + '","electiveBatchCode":"' + electiveBatchCode + '","teachingClassType":"' + teachingClassType + '"';
+    if (campus) {
+      queryData += ',"campus":"' + campus + '"';
+    }
+    var type = null;
+    var value = null;
+    $.each($('.search-container .search-item .search-value'), function(index, dom) {
+      //平铺按钮类型
+      type = $(dom).attr('data-search');
+      if ($(dom).hasClass('cv-active')) {
+        value = '0';
+      } else {
+        value = '2';
+      }
+      switch (type) {
+        case 'SFCT':
+          queryData += ',"checkConflict":"' + value + '"';
+          break;
+        case 'SFYM':
+          queryData += ',"checkCapacity":"' + value + '"';
+          break;
+        default:
+          break;
+      }
+    });
+    $.each($('.search-container .search-item .cv-search-dropdown'), function(index, dom) {
+      //下拉按钮类型
+      type = $(dom).attr('data-search');
+      value = $(dom).attr('data-code');
+      if (value) {
+        switch (type) {
+          case 'KCXZ':
+            content = 'KCXZ:' + value + ',' + content;
+            break;
+          case 'KCLB':
+            content = 'YDKCLB:' + value + ',' + content;
+            break;
+          case 'NJ':
+            content = 'FXNJ:' + value + ',' + content;
+            break;
+          case 'YX':
+            content = 'FXYX:' + value + ',' + content;
+            break;
+          case 'ZY':
+            content = 'FXZY:' + value + ',' + content;
+            break;
+          case 'SKNJ':
+            content = 'ZXNJ:' + value + ',' + content;
+            break;
+          case 'SKYX':
+            content = 'ZXYX:' + value + ',' + content;
+            break;
+          case 'SKZY':
+            content = 'ZXZY:' + value + ',' + content;
+            break;
+          case 'XGXKLB':
+            content = 'XGXKLBDM:' + value + ',' + content;
+            break;
+          case 'XKLX':
+            content = 'CXCKLX:' + value + ',' + content;
+            break;
+          case 'KKDW':
+            content = 'KKDWDM:' + value + ',' + content;
+            break;
+          case 'SKXQ':
+            content = 'SKXQ:' + value + ',' + content;
+            break;
+          case 'KSJC':
+            content = 'KSJC:' + value + ',' + content;
+            break;
+          case 'JSJC':
+            content = 'JSJC:' + value + ',' + content;
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    queryData += ',"queryContent":"' + content + '"';
+    queryData += '}';
+    if (CVParams.pageNumber == null || CVParams.pageNumber < 0) {
+      CVParams.pageNumber = 0;
+    }
+    var order = getOrderString();
+    if (teachingClassType != 'QB') {
+      if (order) {
+        order = 'isChoose -,' + order;
+      } else {
+        order = 'isChoose -';
+      }
+    }
+    var queryStr = '{"data":' + queryData + ',"pageSize":"' + CVParams.pageSize * 1000 + '","pageNumber":"' + (page || CVParams.pageNumber) + '","order":"' + order + '"}';
+    var queryParam = {
+      'querySetting': queryStr
+    };
+    return queryParam;
+  }
   
+  window.queryPublicCourse = window.queryCourseData = window.queryfavoriteResults = function(queryParam) {
+    list.refresh(true);
+    CVParams.canTurnPage = true;
+    CVParams.stopChangeMenu = false;
+    return new Promise(() => {});
+  }
+
+  function buildAddParam(tcId, operationType = "1") {
+    //操作类型：1添加、2删除
+    // if (!operationType) {
+      // operationType = '1';
+    // }
+  
+    // var tcId = $this.attr('data-tcid');
+  
+    // 教学班类型
+    // var tcType = '';
+    // if ($this.hasClass('sc-add')) {
+    //   tcType = $this.attr('data-teachingClassType');
+    // } else {
+    //   tcType = sessionStorage.getItem("teachingClassTypeSecond");
+    //   if (!tcType) {
+    //     tcType = sessionStorage.getItem("teachingClassType");
+    //   }
+    // }
+    var tcType = sessionStorage.getItem("teachingClassType")
+  
+    //学生信息
+    var studentInfo = JSON.parse(sessionStorage.getItem('studentInfo'));
+    // 选课批次
+    var electiveBatch = studentInfo.electiveBatch;
+    // courseKind
+    var courseKind = '';
+    $.each(electiveBatch.limitMenuList, function(index, obj) {
+      if (obj.menuCode == tcType) {
+        courseKind = obj.courseKind ? obj.courseKind : '';
+        return false;
+      }
+    });
+    var addData = null;
+    addData = '{"operationType":"' + operationType + '","studentCode":"' + studentInfo.code + '","electiveBatchCode":"' + electiveBatch.code +
+      '","teachingClassId":"' + tcId + '","courseKind":"' + courseKind +
+      '","teachingClassType":"' + tcType + '"}';
+  
+    var addStr = '{"data":' + addData + '}';
+    var appParam = {
+      'addParam': addStr
+    };
+    return appParam;
+  }
+
+  window.list = new PJWClassList($(".content-container"));
+  $(".search-container").css("display", "none");
+  $(".result-container").css("display", "none");
+  $(".content-container").css("height", "100%");
+  $("body").css("overflow-y", "auto");
+
+  list.favorite = function(classID, class_data) {
+    return new Promise((resolve, reject) => {
+      var target = this;
+      var remove_fav = class_data.fav_button.type;
+      $$.ajax({
+        url: "/xsxkapp/sys/xsxkapp/elective/favorite.do",
+        type: "POST",
+        headers: {
+          "token": sessionStorage.token
+        },
+        data: buildAddParam(classID, remove_fav ? "2" : "1")
+      }).done((res) => {
+        if (res.code == "1") {
+          this.console.success(`${remove_fav ? "取消" : ""}收藏${target.getClassInfoForAlert(class_data)}成功`);
+          class_data.fav_button.type = !class_data.fav_button.type;
+          resolve();
+        } else {
+          this.console.warn(`${remove_fav ? "取消" : ""}收藏${target.getClassInfoForAlert(class_data)}失败` + res.msg);
+          reject();
+        }
+      }).fail((res) => {
+        this.console.warn(`${remove_fav ? "取消" : ""}收藏${target.getClassInfoForAlert(class_data)}失败`);
+      });
+    });
+  }
+  
+  list.select = function(classID, class_data) {
+    return new Promise((resolve, reject) => {
+      var target = this;
+      var tryRequestResult = (list) => {
+        $$.ajax({
+          url: "/xsxkapp/sys/xsxkapp/elective/studentstatus.do",
+          type: "POST",
+          data: {
+            "studentCode": JSON.parse(sessionStorage.getItem('studentInfo')).code,
+            "type": "1"
+          }
+        }).done((res) => {
+          if (res.code == "0") {
+            window.setTimeout(() => {tryRequestResult(list);}, 500);
+          } else if (res.code == "1") {
+            list.console.success("选课成功");
+          } else if (res.code == "-1") {
+            list.console.warn("选课失败：" + res.msg);
+          } else {
+            list.console.log("未知返回代码：" + res.code);
+          }
+        });
+      };
+      $$.ajax({
+        url: "/xsxkapp/sys/xsxkapp/elective/volunteer.do",
+        type: "POST",
+        headers: {
+          "token": sessionStorage.token
+        },
+        data: buildAddParam(classID)
+      }).done((res) => {
+        if (res.code == "1") {
+          tryRequestResult(this);
+          resolve();
+        } else {
+          this.console.warn(`提交选课${target.getClassInfoForAlert(class_data)}失败：` + res.msg);
+          reject();
+        }
+      }).fail((res) => {
+        this.console.warn(`提交选课${target.getClassInfoForAlert(class_data)}失败`);
+      });
+    });
+  }
+
+  list.parse = function(data) {
+    return new Promise((resolve, reject) => {
+      try {
+        for (var item of data) {
+          var select_status = sessionStorage["teachingClassType"] == "QB" ? false : (item.isChoose == "1" ? "Selected" : (item.isFull == "1" ? "Full" : "Select"));
+          var class_data = {
+            classID: item.teachingClassID,
+            title: item.courseName,
+            teachers: this.parseTeacherNames(item.teacherName),
+            info: [{
+              key: "课程编号",
+              val: item.courseNumber
+            }, {
+              key: "备注",
+              val: item.extInfo ? item.extInfo : "",
+              hidden: true
+            }, {
+              key: "开课院系",
+              val: item.departmentName,
+              hidden: true
+            }, {
+              key: "年级",
+              val: item.recommendGrade,
+              hidden: true
+            }],
+            num_info: [{
+              num: parseInt(item.credit),
+              label: "学分"
+            }, {
+              num: parseInt(item.hours),
+              label: "学时"
+            }],
+            lesson_time: this.parseLessonTime(item.teachingTimeList),
+            time_detail: (item.teachingPlace || "").replace(/;/g, "<br>"),
+            places: this.parsePlaces(item.teachingPlace),
+            class_weeknum: this.parseWeekNum(item.teachingTimeList),
+            select_button: {
+              status: select_status,
+              text: `${item.numberOfSelected || item.numberOfFirstVolunteer}/${item.classCapacity}`,
+              action: (e) => {
+                return new Promise((resolve, reject) => {
+                  e.data.target.list.select(e.data.target.data.classID, e.data.target.data).then(() => {
+                    resolve();
+                  });
+                });
+              }
+            },
+            fav_button: {
+              type: sessionStorage.getItem("teachingClassType") == "SC" ? true : (item.favorite == "1" ? true : false),
+              action: (e) => {
+                return new Promise((resolve, reject) => {
+                  e.data.target.list.favorite(e.data.target.data.classID, e.data.target.data).then(() => {
+                    resolve();
+                  });
+                });
+              }
+            }
+          };
+          this.add(class_data);
+        }
+        this.update(data.totalCount);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+  
+  list.load = function() {
+    $(".content-container").css("height", "100%");
+    $("body").css("overflow-y", "auto");
+    var target_page = "";
+    switch(sessionStorage["teachingClassType"]) {
+      case "QB":
+        target_page = "queryCourse.do";
+        break;
+      case "SC":
+        target_page = "queryfavorite.do";
+        break;
+      case "ZY":
+        target_page = "programCourse.do";
+        break;
+      default:
+        target_page = "publicCourse.do";
+    }
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        type: "POST",
+        url: BaseUrl + "/sys/xsxkapp/elective/" + target_page,
+        data: getListParam(),
+        headers: {
+          "token": sessionStorage.token
+        }
+      }).done((data) => {
+        if (data.totalCount > 50) {
+          var total_list = data.dataList;
+          var remaining_count = parseInt(data.totalCount / 50);
+          for (var page = 1; page <= parseInt((data.totalCount - 1) / 50); page++) {
+            $.ajax({
+              type: "POST",
+              url: BaseUrl + "/sys/xsxkapp/elective/" + target_page,
+              data: getListParam(page),
+              headers: {
+                "token": sessionStorage.token
+              }
+            }).done((ndata) => {
+              total_list = total_list.concat(ndata.dataList);
+              remaining_count--;
+              if (remaining_count == 0) {
+                this.parse(total_list);
+                resolve();
+              }
+            }).fail((ndata) => {
+              remaining_count--;
+              if (remaining_count == 0) {
+                this.parse(total_list);
+                resolve();
+              }
+            });
+          }
+        } else {
+          this.parse(data.dataList);
+          resolve();
+        }
+        
+      }).fail((data) => {
+        reject("无法获取数据：" + data);
+      });
+    });
+  }
+  
+  list.refresh();
 },
 
 "gym": 

@@ -78,7 +78,8 @@ function injectStyleFromString(str) {
     reduce: Array.prototype.reduce
   };`);
 
-  injectScript("js/jquery.min.js");
+  if (window.pjw_mode != "course")
+    injectScript("js/jquery.min.js");
   injectScript("js/store.min.js");
   injectScript("js/material-components-web.min.js");
 

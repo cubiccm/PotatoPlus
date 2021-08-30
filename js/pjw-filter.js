@@ -149,6 +149,8 @@ var pjw_filter = {
 
       space.loadMyClass = function(include_odd_even = true) {
         return new Promise((resolve, reject) => {
+          resolve();
+          return;
           $$.ajax({
             url: "/jiaowu/student/teachinginfo/courseList.do",
             data: {

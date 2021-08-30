@@ -298,7 +298,7 @@ function ClassListPlugin() {
             </ul>
           </div>
         </div>
-        <button class="mdc-fab pjw-class-menu-button" style="background-color: #ec407a;" onclick="window.list.console.love('未实现的收藏列表功能，（或许会）即将到来');" data-mdc-auto-init="MDCRipple">
+        <button class="mdc-fab pjw-class-menu-button pjw-class-fav-button" style="background-color: #ec407a; data-mdc-auto-init="MDCRipple">
           <div class="mdc-fab__ripple"></div>
           <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">favorite</span>
         </button></div>`;
@@ -435,6 +435,7 @@ function ClassListPlugin() {
       this.operation = this.dom.children(".pjw-class-operation");
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.filter_button = this.operation.find(".pjw-class-filter-button");
+      this.favorite_button = this.operation.find(".pjw-class-fav-button");
       this.filter_menu = new mdc.menuSurface.MDCMenuSurface(this.operation.find(".pjw-class-filter-menu")[0]);
       this.operation.find(".pjw-class-filter-menu").click({
         target: this.filter_menu
@@ -491,9 +492,21 @@ function ClassListPlugin() {
         action: ("action" in data.select_button ? data.select_button.action : () => {})
       }, (e) => {
         e.data.target.select_button.prop("disabled", true);
-        e.data.action(e).then(() => {}).catch(() => {}).finally(() => {
+        e.data.action(e).then(() => {
           e.data.target.select_button.prop("disabled", false);
           e.data.target.list.refresh(false);
+        });
+      });
+
+      this.favorite_button.click({
+        target: this,
+        action: (data.fav_button && "action" in data.fav_button ? data.fav_button.action : () => {window.list.console.love("收藏功能即将到来...");})
+      }, (e) => {
+        e.data.target.favorite_button.prop("disabled", true);
+        e.data.action(e).then(() => {
+          e.data.target.favorite_button.prop("disabled", false);
+        }).catch(() => {
+          e.data.target.favorite_button.prop("disabled", false);
         });
       });
       
@@ -792,6 +805,9 @@ function ClassListPlugin() {
     // Rearranges classes
     // Call this function when class_data is updated
     update() {
+      if (this.prepared_to_add == false) {
+        this.auto_inc = 0;
+      }
       if (this.auto_inc < this.class_data.length) {
         for (var item of this.class_data.slice(this.auto_inc))
           item.obj.remove();
@@ -832,9 +848,69 @@ function ClassListPlugin() {
     }
 
     parseTeacherNames(text) {
-      if (text == "") return [];
+      if (!text || text == "") return [];
       return text.split(/[,，]\s/g);
     }
+
+    parsePlaces(text) {
+      if (!text || text == "") return "";
+      var split_res = text.split(" ");
+      return split_res[split_res.length - 1];
+    }
+
+    parseWeekNum(weeks_list) {
+      if (!weeks_list) return [];
+      var weeks = "000000000000000000".split("");
+      for (var item of weeks_list) {
+        for (var index in item.week) {
+          weeks[index] = ((weeks[index] == "1" || item.week[index] == "1") ? "1" : "0");
+        }
+      }
+      weeks = weeks.join("");
+      weeks = "0" + weeks;
+      var ans_weeks = [];
+      for (var i = 1; i <= total_weeks + 1; i++) {
+        if (weeks[i] == 1 && weeks[i-1] == 0) {
+          ans_weeks.push({
+            start: i,
+            end: i
+          });
+        } else if (weeks[i] == 0 && weeks[i-1] == 1) {
+          ans_weeks[ans_weeks.length - 1].end = i-1;
+        }
+      }
+      return ans_weeks;
+    }
+    
+    // "normal", "odd", "even"
+    parseWeekType(weeks) {
+      if (!weeks) return "normal";
+      var odd_flag = false, even_flag = false;
+      for (var i = 0; i < total_weeks; i++) {
+        if (weeks[i] == "1" && i % 2 == 0) odd_flag = true;
+        if (weeks[i] == "1" && i % 2) even_flag = true;
+      }
+      if (odd_flag && even_flag)
+        return "normal";
+      if (odd_flag)
+        return "odd";
+      return "even";
+    }
+    
+    parseLessonTime(data) {
+      var lesson_time = [];
+      if (!data) return [];
+      for (var item of data) {
+        lesson_time.push({
+          start: parseInt(item.beginSection),
+          end: parseInt(item.endSection),
+          type: this.parseWeekType(item.week),
+          weekday: parseInt(item.dayOfWeek)
+        });
+      }
+      return lesson_time;
+    }
+    
 
     parseClassNumber(obj) {
       return obj.children("a").children("u").html();
