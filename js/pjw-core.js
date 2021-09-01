@@ -537,7 +537,7 @@ window.potatojw_intl = function() {
           major_code = "";
         else
           major_code = sel.major.val();
-        $$.ajax({
+        this.ajax_request = $$.ajax({
           type: "GET",
           url: "/jiaowu/student/teachinginfo/allCourseList.do",
           data: {
@@ -547,6 +547,7 @@ window.potatojw_intl = function() {
             curSpeciality: major_code
           }
         }).done((data) => {
+          this.ajax_request = null;
           this.setTotalWeeks(total_weeks_history[sel.term.val()] || 18);
           this.parse(data);
           resolve();
@@ -837,6 +838,10 @@ window.potatojw_intl = function() {
     window.submitLoginForm = function() {
       var username = $$("#pjw-login-form").find("input[name=userName]").val();
       var password = $$("#pjw-login-form").find("input[name=password]").val();
+      if (!username && !password) {
+        casLogin();
+        return;
+      }
       if (!username || !password) return;
       if (login_settings["store_login_info"]) {
         var login_info = {

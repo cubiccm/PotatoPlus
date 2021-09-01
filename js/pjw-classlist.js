@@ -179,7 +179,7 @@ function ClassListPlugin() {
           class_class[item.weekday][item.end] += " sel-end";
         }
 
-        const weekday_display_name = ["", "MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+        const weekday_display_name = ["", "M", "TU", "W", "TH", "F", "SA", "SU"];
 
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
@@ -243,7 +243,7 @@ function ClassListPlugin() {
         if (data.text)
           info_text = `<div class="pjw-class-select-button__status">${data.text}</div>`;
 
-        var inner_html = `<div class="mdc-button__ripple"></div><div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label" style="letter-spacing: 2px">${label_text}</div>${info_text}</div>`;
+        var inner_html = `<div class="mdc-button__ripple"></div><div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label">${label_text}</div>${info_text}</div>`;
         if (get_inner === true)
           return {
             html: inner_html,
@@ -350,7 +350,7 @@ function ClassListPlugin() {
         case "lessontime":
           if ("lesson_time" in data && data.lesson_time.length > 0)
             return getLessonTime(data.lesson_time);
-          else return `<div class="pjw-class-weekcal-heading">自由时间</div>`;
+          else return `<div class="pjw-class-weekcal-heading" style="padding: 0 9px;">自由时间</div>`;
 
         case "timedetail":
           if ("time_detail" in data && data.time_detail.length > 0)
@@ -541,15 +541,15 @@ function ClassListPlugin() {
       this.priority = 0;
 
       // Set expand / collapse event of class container
-      this.dom.on("mouseenter", null, {
-        target: this
-      }, (e) => {
-        if (!e.data.target.list.move_to_expand) return;
-        var t = jQuery(e.delegateTarget);
-        t.removeClass("pjw-class-container--compressed");
-      });
+      // this.dom.on("mouseenter", null, {
+      //   target: this
+      // }, (e) => {
+      //   if (!e.data.target.list.move_to_expand) return;
+      //   var t = jQuery(e.delegateTarget);
+      //   t.removeClass("pjw-class-container--compressed");
+      // });
 
-      this.dom.on("click", null, {
+      this.dom.on("mousedown", null, {
         target: this
       }, (e) => {
         if (window.getSelection().toString() != "") return;
@@ -557,10 +557,10 @@ function ClassListPlugin() {
         if ($$(e.target).parents("button").length) return;
         if ($$(e.target).is(".pjw-no-expand")) return;
         if ($$(e.target).parents(".pjw-no-expand").length) return;
-        if (!e.data.target.list.move_to_expand)
-          e.data.target.list.move_to_expand = true;
-        else
-          e.data.target.list.move_to_expand = false;
+        // if (!e.data.target.list.move_to_expand)
+        //   e.data.target.list.move_to_expand = true;
+        // else
+        //   e.data.target.list.move_to_expand = false;
         var t = jQuery(e.delegateTarget);
         if (t.hasClass("pjw-class-container--compressed"))
           t.removeClass("pjw-class-container--compressed");
@@ -571,18 +571,18 @@ function ClassListPlugin() {
       this.dom.on("mouseleave", (e) => {
         var t = jQuery(e.delegateTarget);
         if (t.hasClass("pjw-class-container--compressed")) return;
-        var comp_height = t.height();
-        t.css("opacity", "0");
+        // var comp_height = t.height();
+        // t.css("opacity", "0");
         t.addClass("pjw-class-container--compressed");
 
-        window.setTimeout( () => {
-          comp_height = (comp_height - t.height()) / 2;
-          t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
-          t.animate({ "margin-top": "2px", "margin-bottom": "2px" }, 100, (x) => {
-            return 1 - Math.cos(x * Math.PI / 2);
-          });
-          t.css("opacity", "1");
-        }, 5);
+        // window.setTimeout( () => {
+        //   comp_height = (comp_height - t.height()) / 2;
+        //   t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
+        //   t.animate({ "margin-top": "2px", "margin-bottom": "2px" }, 100, (x) => {
+        //     return 1 - Math.cos(x * Math.PI / 2);
+        //   });
+        //   t.css("opacity", "1");
+        // }, 5);
       });
     }
   };
@@ -705,9 +705,9 @@ function ClassListPlugin() {
         }
 
         if (pos == 0) {
-          return 0.5 + (keyword.length / str.length) / 2;
+          return 0.6 + (keyword.length / str.length) * 0.4;
         } else if (pos != -1) {
-          return 0.4 + (keyword.length / str.length) / 2;
+          return 0.3 + (keyword.length / str.length) * 0.5;
         } else if (keyword.length == 2) {
           if (str.indexOf(keyword[1]) > str.indexOf(keyword[0]) 
             && str.indexOf(keyword[0]) != -1) {
@@ -736,7 +736,6 @@ function ClassListPlugin() {
             if (t !== false) matched_num += t;
             else return false;
           }
-          if (str.length) matched_num /= str.length;
         }
         total_matched_num += matched_num;
       }
@@ -919,7 +918,7 @@ function ClassListPlugin() {
       return obj.children("a").children("u").html();
     }
 
-    // Converts class time string to friendly array
+    // Converts the class time string to a friendly array
     /* Returns object {
       lesson_time: [{
         weekday: Integer,
@@ -1062,6 +1061,10 @@ function ClassListPlugin() {
     }
 
     refresh(hard_load = false) {
+      if (this.ajax_request) {
+        this.ajax_request.abort();
+        this.ajax_request = null;
+      }
       if (hard_load) {
         this.clear();
         this.body.css("transition", "");
@@ -1079,6 +1082,7 @@ function ClassListPlugin() {
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
+        if (e && e.statusText == "abort") return;
         $$("#pjw-classlist-count").html("加载失败 : (");
         this.console.error("无法加载课程列表：" + e);
       });
@@ -1233,7 +1237,7 @@ function ClassListPlugin() {
       if (width < 500) {
         this.dom.addClass("view-mobile");
         this.dom.addClass("view-narrow-desktop");
-      } else if (width < 1200) {
+      } else if (width < 1150) {
         this.dom.removeClass("view-mobile");
         this.dom.addClass("view-narrow-desktop");
       } else {
@@ -1400,7 +1404,7 @@ function ClassListPlugin() {
         } else {
           this.controls.find(".pjw-classlist-search-clear").hide();
         }
-        if (e.data.target.class_data.length <= 200) {
+        if (e.data.target.class_data.length <= 100) {
           e.data.target.search_string = this.search_input.val();
           e.data.target.max_classes_loaded = this.class_load_size;
           e.data.target.update();
