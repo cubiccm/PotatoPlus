@@ -447,7 +447,7 @@ function() {
         target_page = "publicCourse.do";
     }
     return new Promise((resolve, reject) => {
-      $.ajax({
+      this.ajax_request = $.ajax({
         type: "POST",
         url: BaseUrl + "/sys/xsxkapp/elective/" + target_page,
         data: getListParam(),
@@ -455,6 +455,7 @@ function() {
           "token": sessionStorage.token
         }
       }).done((data) => {
+        this.ajax_request = null;
         if (data.totalCount > 50) {
           var total_list = data.dataList;
           var remaining_count = parseInt(data.totalCount / 50);
