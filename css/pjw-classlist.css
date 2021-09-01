@@ -338,7 +338,7 @@
 }
 
 .pjw-class-sub > div {
-  margin: 0 10px;
+  margin: 0 4px;
 }
 
 .pjw-class-container--compressed .pjw-class-sub {
@@ -680,7 +680,7 @@
 }
 
 .pjw-class-container--compressed .pjw-class-bignum {
-  margin: 0 10px;
+  margin: 0 5px;
   flex-direction: row;
   align-items: flex-end;
   padding: 0;
@@ -707,7 +707,7 @@
 }
 
 .pjw-class-container--compressed .pjw-class-bignum > .label {
-  font-size: 12px;
+  font-size: 11px;
   max-width: 60px;
   overflow: hidden;
   text-overflow: ellipsis;
