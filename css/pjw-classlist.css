@@ -202,16 +202,7 @@
   width: 100%;
 }
 
-#pjw-select-academySelect, #pjw-select-academyList, #pjw-select-courseKindList {
-  min-width: 250px;
-}
-
-
-#pjw-select-specialitySelect {
-  min-width: 250px;
-}
-
-#pjw-select-readRenewType {
+#pjw-select-academySelect, #pjw-select-academyList, #pjw-select-courseKindList, #pjw-select-campusList, #pjw-select-specialitySelect, #pjw-select-readRenewType {
   min-width: 250px;
 }
 
@@ -316,7 +307,7 @@
 }
 
 .pjw-class-container {
-  padding: 10px 30px;
+  padding: 10px 18px;
   border-radius: 20px;
   margin: 2px 4px;
   width: 100%;
@@ -332,7 +323,7 @@
 }
 
 .pjw-class-container--compressed {
-  padding: 8px 24px;
+  padding: 8px 18px;
   background: rgba(255, 255, 255, .2);
 }
 
@@ -404,24 +395,27 @@
 }
 
 .pjw-class-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
   color: rgba(0, 0, 0, .9);
-  margin-right: 4px;
+  margin-right: 6px;
 }
 
 .pjw-class-teacher {
-  font-size: 14px;
+  font-size: 13.5px;
   color: rgba(0, 0, 0, .75);
 }
 
 .pjw-class-info-top {
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
 }
 
 .pjw-class-name-initial {
-  font-size: 15.5px;
+  font-size: 15px;
 }
 
 /* Weekly Calendar */
@@ -443,10 +437,9 @@
 
 .pjw-class-weekcal-heading {
   margin: 2px;
-  border: 2px solid rgba(0, 0, 0, .3);
+  border: 2px solid rgba(0, 0, 0, .5);
   border-radius: 18px;
-  height: 34px;
-  padding: 0 5px;
+  height: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -473,7 +466,6 @@
 .pjw-class-weekcal-heading-day.selected {
   color: white;
   background-color: var(--pjw-dark-background);
-  margin: 0 2px;
 }
 
 .pjw-class-weekcal-heading-day.selected > canvas.pjw-class-weekcal-arc {
@@ -507,7 +499,6 @@
 .pjw-class-weekcal-calendar {
   display: flex;
   flex-direction: row;
-  padding: 0 7px;
   margin-bottom: 4px;
 }
 
@@ -519,20 +510,20 @@
   display: flex;
   flex-direction: column;
   margin: 0;
+  border-radius: 4px;
 }
 
 .pjw-class-weekcal-calendar-day.selected {
-  display: flex;
-  margin: 0 2px;
+  background-color: rgba(0, 0, 0, .1);
 }
 
 .pjw-class-weekcal-calendar-day > span {
   color: rgba(0, 0, 0, .6);
-  font-size: 11px;
+  font-size: 10px;
   font-family: 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
-  width: 17px;
-  height: 17px;
-  line-height: 17px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
   text-align: center;
   vertical-align: middle;
   border: 1px solid rgba(0, 0, 0, .2);
@@ -546,22 +537,22 @@
   color: white;
   font-weight: bold;
   background-color: var(--pjw-dark-background);
-  height: 23px;
-  margin: 0 7px;
+  height: 22px;
+  margin: 0 6px;
   white-space: nowrap;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-start {
   border-top-left-radius: 9px;
   border-top-right-radius: 9px;
-  height: 21px;
+  height: 20px;
   margin-top: 2px;
 }
 
 .pjw-class-weekcal-calendar-day > span.selected.sel-end {
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
-  height: 21px;
+  height: 20px;
   margin-bottom: 2px;
 }
 
@@ -673,7 +664,7 @@
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  margin: 6px 2px 2px 2px;
+  margin: 4px 2px 2px 2px;
 }
 
 .pjw-class-container--compressed .pjw-class-num-info {
@@ -699,14 +690,15 @@
 
 .pjw-class-bignum > .num {
   white-space: nowrap;
-  font-size: 32px;
+  font-size: 27px;
   font-weight: bold;
   color: black;
+  transition: font-size .2s ease-out;
 }
 
 .pjw-class-container--compressed .pjw-class-bignum > .num {
-  font-size: 22px;
-  line-height: 22px;
+  font-size: 19px;
+  line-height: 19px;
   margin: 0 2px;
 }
 
@@ -738,16 +730,20 @@
 }
 
 .pjw-class-select-button {
-  min-width: 120px;
+  min-width: 100px;
   background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
-  border-radius: 25px;
+  border-radius: 20px;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
-  min-height: 50px;
-  margin: 8px 5px;
+  min-height: 40px;
+  margin: 4px;
 }
 
 .pjw-class-select-button > .mdc-button__ripple {
-  border-radius: 25px;
+  border-radius: 20px;
+}
+
+.pjw-class-select-button > .material-icons-round {
+  font-size: 20px;
 }
 
 .pjw-class-select-button.deselect {
@@ -760,7 +756,7 @@
 }
 
 .pjw-class-select-button__container {
-  margin-left: 20px;
+  margin-left: 15px;
 }
 
 .pjw-class-select-button__container > div {
@@ -768,7 +764,8 @@
 }
 
 .pjw-class-select-button__label {
-  font-size: 16px;
+  font-size: 14px;
+  letter-spacing: 1px;
   font-weight: bold;
 }
 
@@ -826,6 +823,11 @@
 }
 .view-narrow-desktop .pjw-class-places > span {
   display: none;
+}
+.view-narrow-desktop .pjw-class-info-top {
+  flex-direction: column;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 .view-single-column .pjw-classlist-main {
   flex-direction: column;

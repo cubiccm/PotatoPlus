@@ -131,13 +131,14 @@ function() {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "POST",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
           method: "gymCourseList"
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -246,7 +247,7 @@ function () {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "POST",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
@@ -254,6 +255,7 @@ function () {
           type: this.selectors.type.val()
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -372,7 +374,7 @@ function () {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "POST",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
@@ -380,6 +382,7 @@ function () {
           type: this.selectors.type.val()
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -507,7 +510,7 @@ function() {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "GET",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
@@ -515,6 +518,7 @@ function() {
           courseKind: this.selectors.class_kind.val()
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -636,7 +640,7 @@ function() {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "GET",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
@@ -644,6 +648,7 @@ function() {
           campus: this.selectors.campus.val()
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -787,13 +792,14 @@ function() {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "POST",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
           method: pjw_select_mode == "dis_view" ? "discussGeneralCourse" : "publicCourseList"
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -935,7 +941,7 @@ function() {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "GET",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
@@ -944,6 +950,7 @@ function() {
           academy: this.selectors.academy.val()
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {
@@ -1092,7 +1099,7 @@ function() {
 
   list.load = function() {
     return new Promise((resolve, reject) => {
-      $$.ajax({
+      this.ajax_request = $$.ajax({
         type: "POST",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
@@ -1101,6 +1108,7 @@ function() {
           academy: this.selectors.academy.val()
         }
       }).done((data) => {
+        this.ajax_request = null;
         this.parse(data);
         resolve();
       }).fail((data) => {

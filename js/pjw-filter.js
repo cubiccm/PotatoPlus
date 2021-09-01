@@ -36,7 +36,7 @@ var pjw_filter = {
       space.dom = $$("#pjw-avail-filter");
       space.deselect_switch = new mdc.switchControl.MDCSwitch($$("#pjw-deselect-switch")[0]);
       
-      e.data.space.keep_deselect = true;
+      space.keep_deselect = true;
       space.dom.find("#pjw-deselect-switch").on("change", null, {
         space: space,
         list: list
