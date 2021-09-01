@@ -398,7 +398,7 @@ function() {
             class_weeknum: this.parseWeekNum(item.teachingTimeList),
             select_button: {
               status: select_status,
-              text: item.classCapacity ? `${item.numberOfSelected || item.numberOfFirstVolunteer}/${item.classCapacity}` : "",
+              text: item.classCapacity ? `${(item.numberOfSelected == "已满" ? item.classCapacity : item.numberOfSelected) || item.numberOfFirstVolunteer}/${item.classCapacity}` : "",
               action: (e) => {
                 return new Promise((resolve, reject) => {
                   e.data.target.list.select(e.data.target.data.classID, e.data.target.data).then(() => {
