@@ -189,7 +189,7 @@ window.potatojw_intl = function() {
     $$("body").append(filter_setting_html);
   }
 
-  if (pjw_mode != "" && !(pjw_mode in pjw_classlist_mode_list) && pjw_mode != "main_page" && pjw_mode != "course_info") {
+  if (pjw_mode != "" && !(pjw_mode in pjw_classlist_mode_list) && pjw_mode != "main_page" && pjw_mode != "course_info" && pjw_mode != "xk_system") {
     $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` +
         custom_toolbar_html[(pjw_mode in filter_mode_list ? "filter" : (pjw_mode in custom_toolbar_html ? pjw_mode : "default"))]
     + `<div class="about-proj"></div></div></div>`);

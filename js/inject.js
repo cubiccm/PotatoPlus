@@ -32,7 +32,8 @@ function injectStyleFromString(str) {
 
 (function() {
   var modes_reg = {
-    course: /grablessons.do/i, // 新选课系统 xk.nju.edu.cn
+    course: /grablessons.do/i, // 选课系统列表
+    xk_system: /\/\/xk.nju.edu.cn/i, // 选课系统 xk.nju.edu.cn 界面
 
     major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
     union: /student\/elective\/index.do/i, // 选课
@@ -78,7 +79,7 @@ function injectStyleFromString(str) {
     reduce: Array.prototype.reduce
   };`);
 
-  if (window.pjw_mode != "course") {
+  if (window.pjw_mode != "course" && window.pjw_mode != "xk_system") {
     injectScript("js/jquery.min.js");
   }
   injectScript("js/store.min.js");
