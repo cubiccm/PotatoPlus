@@ -6,6 +6,8 @@ import sys
 version = "beta"
 if len(sys.argv) >= 2:
   version = sys.argv[1]
+else:
+  print("[Warning] No version specified, using \"beta\" as version.")
 
 prefix = '''// ==UserScript==
 // @name         PotatoPlus

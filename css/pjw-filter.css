@@ -146,6 +146,10 @@
   color: rgba(0, 0, 0, 0.72) !important;
 }
 
+.acl-major-switch-button {
+  cursor: pointer;
+}
+
 #frozen-icon {
   cursor: pointer;
 }

@@ -303,7 +303,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3 对登录界面和课程列表进行了一些改进，并新增了聚合选课的测试功能，您可以在选课菜单中试用。此外，还有部分筛选器功能（可能）将会在未来版本实现。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3.1 是一次补充更新，完善了筛选器的部分功能、调整了列表布局，并支持在<a href="https://xk.nju.edu.cn" target="blank">新选课系统</a>中启用测试版本。</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -594,7 +594,7 @@ window.potatojw_intl = function() {
       list.refresh();
       fillCompleted();
       $$("#acl-major-switch-label").html(`${stu_dept} > ${stu_major}`);
-      $$("#acl-major-switch-button").on("click", null, {
+      $$(".acl-major-switch-button").on("click", null, {
         dept: stu_dept,
         major: stu_major
       }, (e) => {

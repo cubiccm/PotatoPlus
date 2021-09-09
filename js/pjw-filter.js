@@ -585,9 +585,13 @@ var pjw_filter = {
   acl_major_switch: {
     html: `
       <div>
-        <div class="pjw-mini-button" id="acl-major-switch-button" style="display: none;">转至我的专业</div>
-        <br>
-        <span id="acl-major-switch-label" style="margin-left: 6px;"></span>
+        <div class="pjw-filter-module-header">  
+          <span class="material-icons-round pjw-filter-module-icon acl-major-switch-button">arrow_forward</span>
+          <div class="pjw-filter-module-title__container">
+            <span class="pjw-filter-module-title acl-major-switch-button">转至我的专业</span>
+            <span id="acl-major-switch-label" class="pjw-filter-module-info"></span>
+          </div>
+        </div>
       </div>
     `,
     intl: (space, list) => {
