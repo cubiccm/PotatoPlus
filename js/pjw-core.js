@@ -463,7 +463,7 @@ window.potatojw_intl = function() {
     // if ($$("#termList > option:eq(1)").html() != "2021-2022学年第一学期")
       // $$("#termList > option:eq(1)").before('<option value="20211">*2021-2022学年第一学期</option>');
 
-    window.list = new PJWClassList($$("body"), ["acl_major_switch", "hours", "frozen"]);
+    window.list = new PJWClassList($$("body"), ["acl_major_switch", "hours", "advanced", "frozen"]);
     total_weeks_history = {
       "20212": 17,
       "20211": 17,
@@ -923,7 +923,7 @@ window.potatojw_intl = function() {
     // CAPTCHA auto-fill
     CAPTCHAPlugin();
 
-    min_certainty = 18;
+    min_certainty = 14;
 
     function fillCAPTCHA() {
       login_settings = store.get("login_settings");
@@ -939,10 +939,10 @@ window.potatojw_intl = function() {
         if (res["certainty"] < min_certainty) {
           $$("#pjw-captcha-result").html(res["code"] + " ...");
           $$("#pjw-login-helper-label").html("可能的低置信度识别，正在重试");
-          min_certainty *= 0.95;
+          min_certainty *= 0.9;
           RefreshValidateImg('ValidateImg');
         } else {
-          min_certainty = 18;
+          min_certainty = 14;
           $$("#pjw-captcha-result").html(res["code"]);
           $$("#pjw-login-mask-refresh-captcha").prop("disabled", false);
           $$("#pjw-login-helper-label").html("");
@@ -1114,7 +1114,19 @@ window.potatojw_intl = function() {
   } else if (pjw_mode == "course_info") {
     $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
   } else if (pjw_mode == "course") {
-    enterMode("course");
+    $$(".cv-btn.yxkc-window-btn").after(`<button class="cv-btn yxkc-window-btn" onclick="window.switch_pjw();">${store.has("enable_on_newsystem") ? "禁用" : "启用"} PotatoPlus</button>`);
+    if (store.has("enable_on_newsystem")) {
+      window.switch_pjw = () => {
+        store.remove("enable_on_newsystem");
+        window.location.reload();
+      };
+      enterMode("course");
+    } else {
+      window.switch_pjw = () => {
+        window.confirm("要在新系统中启用 PotatoPlus 吗？现在 PotatoPlus 正处于测试阶段，还存在诸多问题及体验不足之处，仅供测试之用。例如，加载较长列表（如课表查询）时可能会出现卡顿。启用后，可以随时再次禁用。") && (store.set("enable_on_newsystem", true) || window.location.reload());
+      };
+      return;
+    }
   } else {
     return;
   }

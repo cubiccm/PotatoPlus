@@ -31,7 +31,7 @@ NJU土豆改善工程
 
 #### Safari (macOS)
 
-安装较为复杂，如有需要请联系 illimosity@gmail.com
+可通过 Xcode 对插件进行转换和签名后在 Safari 中使用，可参考 [官方文档](https://developer.apple.com/documentation/safariservices/safari_web_extensions/converting_a_web_extension_for_safari)。
 
 ### 通过Userscript安装
 

@@ -97,7 +97,7 @@ function ClassListPlugin() {
                 link = `/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}`;
               item.val = `<span class="pjw-class-course-number pjw-no-expand" onclick="openLinkInFrame('${link}');">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
             }
-            if (item.val == "") continue;
+            if (!item.val) continue;
             if (!item.hidden)
               appear_html.push(`${item.val}`);
             hidden_html += `<p>${item.key}：${item.val}</p>`;
@@ -256,7 +256,7 @@ function ClassListPlugin() {
 
       function getMenuButtons(index, classID, class_name, teachers) {
         var teacher_str = teachers.length ? `（${teachers.join("，")}）`: "";
-        return `<div style="margin: 1px 3px; display: flex; flex-direction: row;">
+        var html = `<div style="margin: 1px 3px; display: flex; flex-direction: row;">
         <div class="mdc-menu-surface--anchor">
           <button class="mdc-fab pjw-class-menu-button pjw-class-filter-button" style="background-color: rgba(0, 0, 0, .7);" data-mdc-auto-init="MDCRipple">
             <div class="mdc-fab__ripple"></div>
@@ -264,7 +264,7 @@ function ClassListPlugin() {
           </button>
           <div class="mdc-menu mdc-menu-surface pjw-class-filter-menu">
             <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
+              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-filter-include" data-mdc-auto-init="MDCRipple" role="menuitem">
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   filter_alt
@@ -272,7 +272,7 @@ function ClassListPlugin() {
                 </span>
                 <span class="mdc-list-item__text">筛选器：包含此课程</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
+              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-filter-exclude" data-mdc-auto-init="MDCRipple" role="menuitem">
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   filter_alt
@@ -302,11 +302,14 @@ function ClassListPlugin() {
               </li>
             </ul>
           </div>
-        </div>
-        <button class="mdc-fab pjw-class-menu-button pjw-class-fav-button" style="background-color: #ec407a; data-mdc-auto-init="MDCRipple">
-          <div class="mdc-fab__ripple"></div>
-          <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">favorite</span>
-        </button></div>`;
+        </div>`;
+        if (data.fav_button) {
+          html += `<button class="mdc-fab pjw-class-menu-button pjw-class-fav-button" style="background-color: #ec407a; data-mdc-auto-init="MDCRipple">
+            <div class="mdc-fab__ripple"></div>
+            <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">${data.fav_button.type ? "remove_circle" : "favorite"}</span>
+          </button></div>`;
+        }
+        return html;
       }
 
       switch(attr) {
@@ -505,11 +508,12 @@ function ClassListPlugin() {
 
       this.favorite_button.click({
         target: this,
-        action: (data.fav_button && "action" in data.fav_button ? data.fav_button.action : () => {window.list.console.love("收藏功能即将到来...");})
+        action: (data.fav_button && "action" in data.fav_button ? data.fav_button.action : () => {})
       }, (e) => {
         e.data.target.favorite_button.prop("disabled", true);
         e.data.action(e).then(() => {
           e.data.target.favorite_button.prop("disabled", false);
+          e.data.target.favorite_button.find("span").text(e.data.target.data.fav_button.type ? "remove_circle" : "favorite");
         }).catch(() => {
           e.data.target.favorite_button.prop("disabled", false);
         });
@@ -534,6 +538,38 @@ function ClassListPlugin() {
           e.data.target.list.search_field.value = e.data.target.data.title;
         e.data.target.list.search_input.trigger("input");
         document.documentElement.scrollTop = 0;
+      });
+      
+      function addAdvancedRule(class_data, adv_filter, type) {
+        if (class_data.classID && class_data.classID > 0) {
+          adv_filter.addRule(adv_filter, {
+            "classID": class_data.classID
+          }, `选课编号：${class_data.classID}（${class_data.title} ${class_data.teachers.join("/")}）`, type);
+        } else {
+          adv_filter.addRule(adv_filter, {
+            "title": class_data.title,
+            "teachers": class_data.teachers,
+            "time_detail": class_data.time_detail
+          }, `${class_data.title} ${class_data.teachers.join("/")} ${class_data.time_detail}`, type);
+        }
+      }
+
+      this.operation.find(".pjw-class-menu-filter-include").click({
+        target: this
+      }, (e) => {
+        var class_data = e.data.target.data;
+        var adv_filter = e.data.target.list.filters.advanced;
+        addAdvancedRule(class_data, adv_filter, "include");
+        e.data.target.list.update();
+      });
+
+      this.operation.find(".pjw-class-menu-filter-exclude").click({
+        target: this
+      }, (e) => {
+        var class_data = e.data.target.data;
+        var adv_filter = e.data.target.list.filters.advanced;
+        addAdvancedRule(class_data, adv_filter, "exclude");
+        e.data.target.list.update();
       });
 
       // Initialize DOM trace variables
@@ -776,25 +812,28 @@ function ClassListPlugin() {
         this.filters.advanced.updateSearch(this.search_string);
       var search_priority = this.search(data, this.search_string);
       if (search_priority === false) {
-        data.priority = -1;
-        return false;
+        priority = -1;
+      } else {
+        priority += search_priority;
       }
-      priority += search_priority;
 
       /* Filter modules */
       for (var name in this.filters) {
         if (typeof(this.filters[name]["check"]) != "function") continue;
-        if (this.filters[name].enabled == false) continue;
+        if (priority < 0 && name != "advanced") continue;
+        if ("enabled" in this.filters[name] && this.filters[name].enabled == false) continue;
         var res = this.filters[name].check(this.filters[name], data, class_obj);
         if (res === false) {
-          data.priority = -1;
-          return false;
+          priority = -1;
+        } else if (res === true) {
+          if (priority < 0) priority = 0;
+          return data.priority = priority;
+        } else {
+          priority += res;
         }
-        priority += res;
       }
-
-      data.priority = priority;
-      return priority;
+      
+      return data.priority = priority;
     }
 
     // Initializes class data before adding first class
@@ -817,7 +856,7 @@ function ClassListPlugin() {
       }
 
       for (var item of this.class_data)
-        if (this.checkFilter(item.data, item.obj) === false)
+        if (this.checkFilter(item.data, item.obj) < 0)
           item.obj.hide();
 
       this.class_data.sort(function(a, b) {
@@ -1274,7 +1313,7 @@ function ClassListPlugin() {
     }
 
     constructor(parent, modules = ["avail", "hours", "advanced", "frozen"]) {
-      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {modules[modules.length] = "potatoes"; this.max_frequency = 15.0;}
+      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {modules.push("potatoes"); this.max_frequency = 15.0;}
       this.filter_modules = modules;
 
       // Deploy filter DOM

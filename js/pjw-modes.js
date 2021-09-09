@@ -198,7 +198,7 @@ function() {
     return queryParam;
   }
   
-  window.queryPublicCourse = window.queryCourseData = window.queryfavoriteResults = window.queryPublicCourse = function(queryParam) {
+  window.queryPublicCourse = window.queryCourseData = window.queryfavoriteResults = window.queryProgramCourse = function(queryParam) {
     list.refresh(true);
     CVParams.canTurnPage = true;
     CVParams.stopChangeMenu = false;
@@ -267,7 +267,7 @@ function() {
   $("body").css("overflow-y", "auto");
   var checkPrivilege = () => {store.has("privilege") ? (store.remove("privilege") || $(".user-top .username").text($(".user-top .username").attr("title"))) : (store.set("privilege", "root") || $(".user-top .username").text("root"));};
   store.has("privilege") && $(".user-top .username").text("root");
-  $("#change_electiveBatch").click(checkPrivilege);
+  $("#change_electiveBatch").dblclick(checkPrivilege);
 
   list.favorite = function(classID, class_data) {
     return new Promise((resolve, reject) => {

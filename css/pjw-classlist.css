@@ -279,10 +279,6 @@
 }
 
 .pjw-classlist-search-clear:hover {
-  color: rgba(0, 0, 0, 0.36) !important;
-}
-
-.pjw-classlist-search-clear:active {
   color: rgba(0, 0, 0, 0.72) !important;
 }
 

@@ -150,8 +150,10 @@ var pjw_filter = {
 
       space.loadMyClass = function(include_odd_even = true) {
         return new Promise((resolve, reject) => {
-          resolve();
-          return;
+          if (pjw_mode == "course") {
+            resolve();
+            return;
+          }
           $$.ajax({
             url: "/jiaowu/student/teachinginfo/courseList.do",
             data: {
@@ -326,42 +328,96 @@ var pjw_filter = {
     }
   },
 
+  /* advanced module v1.1 */
   advanced: {
     html: `
-      <div id="pjw-advanced-filter" class="pjw-filter-module" data-switch="pjw-filter-advanced-switch">
+      <div id="pjw-advanced-filter" class="pjw-filter-module">
         <div class="pjw-filter-module-header">
           <span class="material-icons-round pjw-filter-module-icon">settings_input_component</span>
           <div class="pjw-filter-module-title__container">
             <span class="pjw-filter-module-title">更多规则</span>
             <span class="pjw-filter-module-info">来自搜索框和自定义的筛选规则</span>
           </div>
-          <div class="mdc-switch" id="pjw-filter-advanced-switch">
-            <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
-            </div>
-          </div>
         </div>
     
         <div class="content">
-          <ul>
-            <li id="pjw-advanced-filter-search-item"></li>
-            <li>更多功能（也许会）即将到来...</li>
+          <ul id="pjw-filter-advanced-list">
+            <li id="pjw-filter-advanced-search-item"></li>
           </ul>
         </div>
       </div>
     `,
     intl: (space, list) => {
-
+      space.enabled = true;
+      space.rules = [];
+      space.list_dom = $$("#pjw-filter-advanced-list");
+      space.rid = 0;
+      space.list_dom.on("click", ".pjw-filter-advanced-list-delete", {
+        space: space,
+        list: list
+      }, (e) => {
+        e.data.space.removeRule(e.data.space, e.data.list, $$(e.currentTarget).parents("li").attr("data-ruleid"));
+      });
+      space.addRule(space, {}, "所有课程", "include", 0);
     },
     onswitch: (space, list) => {
       space.updateSearch(list.search_string);
     },
     updateSearch: (str) => {
-      if (!str || str == "") $$("#pjw-advanced-filter-search-item").hide();
-      else $$("#pjw-advanced-filter-search-item").show();
-      $$("#pjw-advanced-filter-search-item").text(`搜索关键词：${str}`);
+      if (!str || str == "") $$("#pjw-filter-advanced-search-item").hide();
+      else $$("#pjw-filter-advanced-search-item").show();
+      $$("#pjw-filter-advanced-search-item").text(`搜索关键词：${str}`);
+    },
+    addRule: (space, data, name, type = "include", priority = true) => {
+      space.rules.unshift({
+        "id": space.rid,
+        "data": data,
+        "type": type,
+        "priority": priority
+      });
+      space.list_dom.append(`<li class="pjw-filter-advanced-list-item" data-ruleid="${space.rid}"><span class="pjw-filter-advanced-list-delete material-icons-round">close</span> <span>${type == "include" ? "包含" : "隐藏"} ${name}</span></li>`);
+      return space.rid++;
+    },
+    removeRule: (space, list, rid) => {
+      if (rid == "0") {
+        var target = space.list_dom.children(`li[data-ruleid="0"]`).children(".pjw-filter-advanced-list-delete");
+        if (target.text() == "add") {
+          target.text("close");
+          space.rules[0].type = "include";
+        } else {
+          target.text("add");
+          space.rules[0].type = "exclude";
+        }
+      } else {
+        space.list_dom.children(`li[data-ruleid=${rid}]`).remove();
+        space.rules.forEach((data, index) => {
+          if (!data) return;
+          if (String(data.id) == rid) {
+            space.rules.splice(index, 1);
+          }
+        });
+      }
+      list.update();
+    },
+    matchRule(rule, data) {
+      var flag = true;
+      for (let key in rule) {
+        if (!(key in data && rule[key] == data[key])) {
+          flag = false;
+          return false;
+        }
+      }
+      return flag;
+    },
+    check: (space, data) => {
+      for (let rule of space.rules) {
+        if (rule.type == "include") {
+          if (space.matchRule(rule.data, data)) return rule.priority;
+        } else if (rule.type == "exclude") {
+          if (space.matchRule(rule.data, data)) return false;
+        }
+      }
+      return false;
     }
   },
 

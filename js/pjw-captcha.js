@@ -575,7 +575,7 @@ function CAPTCHAPlugin() {
 
     try {
       var res = getData();
-      var certainty = res.min_diff * 4 + res.diff + reasonable_part_count * 1.5;
+      var certainty = res.min_diff * 4 + res.diff + reasonable_part_count;
       console.log("Code: " + res.code + " Parts: " + reasonable_part_count + " Centainty: " + certainty);
       return {"code": res.code, "certainty": certainty};
     } catch (e) {
