@@ -381,12 +381,13 @@ var pjw_filter = {
     removeRule: (space, list, rid) => {
       if (rid == "0") {
         var target = space.list_dom.children(`li[data-ruleid="0"]`).children(".pjw-filter-advanced-list-delete");
+        target_rule = space.rules[space.rules.length - 1];
         if (target.text() == "add") {
           target.text("close");
-          space.rules[0].type = "include";
+          target_rule.type = "include";
         } else {
           target.text("add");
-          space.rules[0].type = "exclude";
+          target_rule.type = "exclude";
         }
       } else {
         space.list_dom.children(`li[data-ruleid=${rid}]`).remove();
