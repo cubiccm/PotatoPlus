@@ -25,8 +25,8 @@ prefix = '''// ==UserScript==
 
 '''
 
-with open("js/inject.js", "r") as fin:
-  with open("potatoplus.user.js", "w") as fout:
+with open("js/inject.js", "r", encoding="utf-8") as fin:
+  with open("potatoplus.user.js", "w", encoding="utf-8") as fout:
     fout.write(prefix);
     lines = fin.readlines()
     for line in lines:
@@ -39,7 +39,7 @@ with open("js/inject.js", "r") as fin:
         fout.write("\n/* " + filename + " */\n")
         if line.find("injectStyle(\"") != -1:
           fout.write("injectStyleFromString(`")
-        with open(filename, "r") as lib:
+        with open(filename, "r", encoding="utf-8") as lib:
           lines2 = lib.readlines()
           for line2 in lines2:
             if line2.find("@platform@") != -1:
