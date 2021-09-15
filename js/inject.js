@@ -46,6 +46,7 @@ function injectStyleFromString(str) {
 
     read_view: /elective\/readCourseList.do/i, // 经典导读读书班初选
     dis_view: /elective\/freshman_discuss.do/i, // 导学、研讨、通识课初选
+    art_view: /elective\/artList.do/i, // 美育课程初选
     public_view: /elective\/publicCourseList.do/i, // 公选课初选
     open_view: /elective\/open.do/i, // 跨专业初选
 
