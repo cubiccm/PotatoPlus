@@ -98,7 +98,7 @@ window.potatojw_intl = function() {
   }
 
   var filter_mode_list = {"major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true, "course": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "art_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true, "course": true};
 
   const custom_toolbar_html = {
     course_eval: `
@@ -698,7 +698,7 @@ window.potatojw_intl = function() {
     enterMode("common");
   } else if (pjw_mode == "dis" || pjw_mode == "public") {
     enterMode("dis_public");
-  } else if (pjw_mode == "dis_view" || pjw_mode == "public_view") {
+  } else if (pjw_mode == "dis_view" || pjw_mode == "public_view" || pjw_mode == "art_view") {
     enterMode("dis_public_view");
   } else if (pjw_mode == "open") {
     enterMode("open");

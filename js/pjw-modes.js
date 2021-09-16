@@ -1277,7 +1277,18 @@ function() {
         type: "POST",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
-          method: pjw_select_mode == "dis_view" ? "discussGeneralCourse" : "publicCourseList"
+          method: () => {
+            switch (pjw_select_mode) {
+              case "dis_view":
+                return "discussGeneralCourse";
+              case "art_view":
+                return "artCourseList";
+              case "public_view":
+                return "publicCourseList";
+              default:
+                // WILL NOT BE EXECUTED
+            }
+          }
         }
       }).done((data) => {
         this.ajax_request = null;
@@ -1293,7 +1304,18 @@ function() {
     type: "POST",
     url: "/jiaowu/student/elective/courseList.do",
     data: {
-      method: pjw_select_mode == "dis_view" ? "discussGeneralCourse" : "publicCourseList"
+      method: () => {
+        switch (pjw_select_mode) {
+          case "dis_view":
+            return "discussGeneralCourse";
+          case "art_view":
+            return "artCourseList";
+          case "public_view":
+            return "publicCourseList";
+          default:
+            // WILL NOT BE EXECUTED
+        }
+      }
     }
   }).done((data) => {
     list.selectors = {
