@@ -509,6 +509,7 @@
 }
 
 .pjw-class-weekcal-calendar-day {
+  box-sizing: content-box;
   display: flex;
   flex-direction: column;
   margin: 0;

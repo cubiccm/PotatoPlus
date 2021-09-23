@@ -56,7 +56,7 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.4 */
+  /* hours module v0.5 */
   hours: {
     html: `
       <div id="pjw-hours-filter" class="pjw-filter-module" data-switch="pjw-filter-hours-switch">
@@ -117,6 +117,7 @@ var pjw_filter = {
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
             <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
           </div>
+          <span>可单击表头全选整行/整列。</span>
         </div>
       </div>
     `,
@@ -148,33 +149,74 @@ var pjw_filter = {
             space.setValue(i, j, 0);
       };
 
-      space.loadMyClass = function(include_odd_even = true) {
-        return new Promise((resolve, reject) => {
-          if (pjw_mode == "course") {
-            resolve();
-            return;
+      space.loadMyClass = function(force_reload = false, include_odd_even = true) {
+        var setLessonTime = (space, lesson_time, include_odd_even = true) => {
+          for (var item of lesson_time) {
+            if (include_odd_even || item.type == "normal") {
+              for (var i = item.start; i <= item.end; i++)
+                space.setValue(item.weekday, i, false);
+            }
           }
-          $$.ajax({
-            url: "/jiaowu/student/teachinginfo/courseList.do",
-            data: {
-              method: "currentTermCourse"
-            },
-            method: "GET"
-          }).done((res) => {
-            $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
-              var lesson_time = list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time;
-              for (var item of lesson_time) {
-                if (include_odd_even || item.type == "normal") {
-                  for (var i = item.start; i <= item.end; i++)
-                    space.setValue(item.weekday, i, false);
-                }
-              }
-            });
+        };
+        return new Promise((resolve, reject) => {
+          if (!force_reload && store.has("my_lesson_time") && store.has("my_lesson_time_update_timestamp") && 
+              new Date().getTime() - store.get("my_lesson_time_update_timestamp") < 300000) {
+            setLessonTime(space, store.get("my_lesson_time"));
             resolve();
-          }).catch((res) => {
-            list.console.error("课程时间筛选器无法加载已有课程：" + res);
-            reject();
-          });
+          } else {
+            if (pjw_mode == "course") {
+              var stu_info = JSON.parse(sessionStorage.studentInfo);
+              $$.ajax({
+                url: "/xsxkapp/sys/xsxkapp/elective/courseResult.do",
+                data: {
+                  querySetting: JSON.stringify({
+                    data: {
+                      "studentCode": stu_info.code,
+                      "electiveBatchCode": stu_info.electiveBatch.code,
+                    },
+                  })
+                },
+                headers: {
+                  "token": sessionStorage.token
+                },
+                method: "POST",
+                success: (res) => {
+                  var lesson_time = [];
+                  for (var item of res.dataList) {
+                    lesson_time = lesson_time.concat(list.parseClassTime(item.teachingPlace).lesson_time);
+                  }
+                  store.set("my_lesson_time", lesson_time);
+                  store.set("my_lesson_time_update_timestamp", new Date().getTime());
+                  setLessonTime(space, lesson_time);
+                  resolve();
+                },
+                fail: (res) => {
+                  list.console.error("课程时间筛选器无法加载已有课程：" + res);
+                  reject();
+                }
+              });
+            } else {
+              $$.ajax({
+                url: "/jiaowu/student/teachinginfo/courseList.do",
+                data: {
+                  method: "currentTermCourse"
+                },
+                method: "GET"
+              }).done((res) => {
+                var lesson_time = [];
+                $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
+                  lesson_time = lesson_time.concat(list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time);
+                });
+                store.set("my_lesson_time", lesson_time);
+                store.set("my_lesson_time_update_timestamp", new Date().getTime());
+                setLessonTime(space, lesson_time);
+                resolve();
+              }).catch((res) => {
+                list.console.error("课程时间筛选器无法加载已有课程：" + res);
+                reject();
+              });
+            }
+          }
         });
       };
 
@@ -193,7 +235,7 @@ var pjw_filter = {
         list: list
       }, (e) => {
         e.data.space.clear();
-        e.data.space.loadMyClass().then(() => {e.data.list.update();});
+        e.data.space.loadMyClass(force_reload = true).then(() => {e.data.list.update();});
       });
 
       space.mouse_select = false;

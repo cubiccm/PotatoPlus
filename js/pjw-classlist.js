@@ -361,7 +361,8 @@ function ClassListPlugin() {
         case "lessontime":
           if ("lesson_time" in data && data.lesson_time.length > 0)
             return getLessonTime(data.lesson_time);
-          else return `<div class="pjw-class-weekcal-heading" style="padding: 0 9px;">自由时间</div>`;
+          else return "";
+          // else return `<div class="pjw-class-weekcal-heading" style="padding: 0 9px;">自由时间</div>`;
 
         case "timedetail":
           if ("time_detail" in data && data.time_detail.length > 0)
@@ -960,6 +961,8 @@ function ClassListPlugin() {
       return "even";
     }
     
+    // Converts new system lesson time to potatoplus lesson time
+    // For new system
     parseLessonTime(data) {
       var lesson_time = [];
       if (!data) return [];
@@ -980,6 +983,7 @@ function ClassListPlugin() {
     }
 
     // Converts the class time string to a friendly array
+    // For old system
     /* Returns object {
       lesson_time: [{
         weekday: Integer,
