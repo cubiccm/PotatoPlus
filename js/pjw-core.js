@@ -98,7 +98,7 @@ window.potatojw_intl = function() {
   }
 
   var filter_mode_list = {"major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "art_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true, "course": true};
+  var pjw_classlist_mode_list = {"dis_view": true, "art_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true, "course": true, "art": true};
 
   const custom_toolbar_html = {
     course_eval: `
@@ -654,6 +654,7 @@ window.potatojw_intl = function() {
       // {"name": "通识课初选", "mode": "dis_view", "func": "dis_public_view"},
       // {"name": "公选课初选", "mode": "public_view", "func": "dis_public_view"},
       // {"name": "跨院系初选", "mode": "open_view"},
+      {"name": "美育补选", "mode": "art", "func": "dis_public"},
       {"name": "体育选课", "mode": "gym"},
     ];
     var options_html = "";
@@ -696,7 +697,7 @@ window.potatojw_intl = function() {
     enterMode("read_view");
   } else if (pjw_mode == "common") {
     enterMode("common");
-  } else if (pjw_mode == "dis" || pjw_mode == "public") {
+  } else if (pjw_mode == "dis" || pjw_mode == "public" || pjw_mode == "art") {
     enterMode("dis_public");
   } else if (pjw_mode == "dis_view" || pjw_mode == "public_view" || pjw_mode == "art_view") {
     enterMode("dis_public_view");
