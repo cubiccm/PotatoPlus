@@ -873,9 +873,12 @@ function ClassListPlugin() {
         this.class_data = this.class_data.slice(0, this.auto_inc);
       }
 
+      this.class_load_count = this.class_data.length;
       for (var item of this.class_data)
-        if (this.checkFilter(item.data, item.obj) < 0)
+        if (this.checkFilter(item.data, item.obj) < 0) {
           item.obj.hide();
+          this.class_load_count--;
+        }
 
       this.class_data.sort(function(a, b) {
         if (parseInt(b.data.priority) == parseInt(a.data.priority))
@@ -898,6 +901,7 @@ function ClassListPlugin() {
       this.handleResize();
       this.prepared_to_add = false;
       window.mdc.autoInit();
+      this.setStatus(true);
     }
 
     getClassInfoForAlert(data) {
@@ -1120,7 +1124,13 @@ function ClassListPlugin() {
     setStatus(text) {
       var target = $$("#pjw-classlist-status");
       if (text === true) {
-        target.text(`已加载 ${this.class_data.length} 门课程`);
+        if (this.class_data.length == 0) {
+          target.text("没有发现课程 : (");
+        } else if (this.class_data.length == this.class_load_count) {
+          target.text(`共计 ${this.class_data.length} 门课程 `);
+        } else {
+          target.text(`已展示 ${this.class_load_count} / ${this.class_data.length} 门课程`);
+        }
       } else {
         target.html(text);
       } 
@@ -1140,11 +1150,7 @@ function ClassListPlugin() {
       this.auto_inc = 0;
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
-
-        if (this.class_data.length == 0)
-          this.setStatus(`这里没有课程 : (`);
-        else
-          this.setStatus(true);
+        this.setStatus(true);
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
