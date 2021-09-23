@@ -75,7 +75,7 @@ function ClassListPlugin() {
       }
 
       function getTeachers(content) {
-        var is_first = true; var html = "";
+        var is_first = true; var html = `<span class="material-icons-round pjw-class-teacher-icon">school</span>`;
         for (var str of content) {
           if (!is_first) html += "，";
           is_first = false;
@@ -268,7 +268,7 @@ function ClassListPlugin() {
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   filter_alt
-                  <span class="material-icons-round" style="font-size: 14px;">add</span>
+                  <span class="material-icons-round" style="font-size: 13px;">add</span>
                 </span>
                 <span class="mdc-list-item__text">筛选器：包含此课程</span>
               </li>
@@ -276,7 +276,7 @@ function ClassListPlugin() {
                 <span class="mdc-list-item__ripple"></span>
                 <span class="mdc-list-item__graphic material-icons-round">
                   filter_alt
-                  <span class="material-icons-round" style="font-size: 14px;">remove</span>
+                  <span class="material-icons-round" style="font-size: 13px;">remove</span>
                 </span>
                 <span class="mdc-list-item__text">筛选器：隐藏此课程</span>
               </li>
@@ -286,6 +286,14 @@ function ClassListPlugin() {
                   search
                 </span>
                 <span class="mdc-list-item__text">搜索相似课程</span>
+              </li>
+              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-search-teacher${teachers.length ? "" : " mdc-list-item--disabled"}" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-list-item__ripple"></span>
+                <span class="mdc-list-item__graphic material-icons-round">
+                  search
+                  <span class="material-icons-round" style="font-size: 13px;">school</span>
+                </span>
+                <span class="mdc-list-item__text">搜索该教师</span>
               </li>
               <li class="mdc-list-divider" role="separator"></li>
               <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
@@ -319,7 +327,7 @@ function ClassListPlugin() {
           else return "";
 
         case "teachers":
-          if ("teachers" in data)
+          if ("teachers" in data && data.teachers.length > 0)
             return getTeachers(data.teachers);
           else return "";
 
@@ -539,6 +547,16 @@ function ClassListPlugin() {
         e.data.target.list.search_input.trigger("input");
         document.documentElement.scrollTop = 0;
       });
+
+      this.operation.find(".pjw-class-menu-search-teacher").click({
+        target: this
+      }, (e) => {
+        if (e.data.target.data.teachers.length) {
+          e.data.target.list.search_field.value = e.data.target.data.teachers.join(" ");
+          e.data.target.list.search_input.trigger("input");
+          document.documentElement.scrollTop = 0;
+        }
+      });
       
       function addAdvancedRule(class_data, adv_filter, type) {
         if (class_data.classID && class_data.classID > 0) {
@@ -585,7 +603,7 @@ function ClassListPlugin() {
       //   t.removeClass("pjw-class-container--compressed");
       // });
 
-      this.dom.on("mousedown", null, {
+      this.dom.on("click", null, {
         target: this
       }, (e) => {
         if (window.getSelection().toString() != "") return;
@@ -1099,6 +1117,15 @@ function ClassListPlugin() {
       }
     }
 
+    setStatus(text) {
+      var target = $$("#pjw-classlist-status");
+      if (text === true) {
+        target.text(`已加载 ${this.class_data.length} 门课程`);
+      } else {
+        target.html(text);
+      } 
+    }
+
     refresh(hard_load = false) {
       if (this.ajax_request) {
         this.ajax_request.abort();
@@ -1109,20 +1136,20 @@ function ClassListPlugin() {
         this.body.css("transition", "");
         this.body.css("opacity", "0");
       }
-      $$("#pjw-classlist-count").html("正在加载...");
+      this.setStatus("正在加载...");
       this.auto_inc = 0;
       return this.load().then(() => {
         this.addFilterHook("handleRefreshComplete");
 
         if (this.class_data.length == 0)
-          $$("#pjw-classlist-count").html(`这里没有课程 : (`);
+          this.setStatus(`这里没有课程 : (`);
         else
-          $$("#pjw-classlist-count").html(`已加载 ${this.class_data.length} 门课程`);
+          this.setStatus(true);
         this.body.css("transition", "opacity .8s cubic-bezier(0.5, 0.5, 0, 1)");
         this.body.css("opacity", "1");
       }).catch((e) => {
         if (e && e.statusText == "abort") return;
-        $$("#pjw-classlist-count").html("加载失败 : (");
+        this.setStatus("加载失败 : (");
         this.console.error("无法加载课程列表：" + e);
       });
     }
@@ -1373,7 +1400,7 @@ function ClassListPlugin() {
           <div class="pjw-classlist-body__container">
             <div class="pjw-classlist-body"></div>
             <div class="pjw-mini-brand">
-              <p id="pjw-classlist-count">列表尚未加载</p>
+              <p id="pjw-classlist-status">列表尚未加载</p>
             </div>
             <div class="pjw-mini-brand">
               <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>

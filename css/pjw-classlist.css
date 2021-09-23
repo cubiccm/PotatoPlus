@@ -402,6 +402,11 @@
   color: rgba(0, 0, 0, .75);
 }
 
+.pjw-class-teacher-icon {
+  font-size: 14px;
+  margin: 0 4px;
+}
+
 .pjw-class-info-top {
   flex-direction: row;
   align-items: flex-end;

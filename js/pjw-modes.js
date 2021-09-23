@@ -373,13 +373,11 @@ function() {
               key: "课程编号",
               val: item.courseNumber
             }, {
-              key: "备注",
-              val: item.extInfo ? item.extInfo : "",
-              hidden: true
-            }, {
               key: "开课院系",
-              val: item.departmentName,
-              hidden: true
+              val: item.departmentName
+            }, {
+              key: "备注",
+              val: item.extInfo ? item.extInfo : ""
             }, {
               key: "年级",
               val: item.recommendGrade,
@@ -954,8 +952,7 @@ function() {
               val: this.parseClassNumber(td(0))
             }, {
               key: "备注",
-              val: td(8).html(),
-              hidden: true
+              val: td(8).html()
             }],
             num_info: [{
               num: parseInt(td(3).html()),
@@ -1084,7 +1081,7 @@ function() {
               }, {
                 key: "备注",
                 val: td(8).html(),
-                hidden: true
+                hidden: pjw_mode != "art",
               }],
               num_info: [{
                 num: parseInt(td(3).html()),
