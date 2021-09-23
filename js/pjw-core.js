@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.3.1";
+    window.pjw_version = "0.3.2";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -303,7 +303,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3.1 是一次补充更新，完善了筛选器的部分功能、调整了列表布局，并支持在<a href="https://xk.nju.edu.cn" target="blank">新选课系统</a>中启用测试版本。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3.2 <a href="https://github.com/cubiccm/PotatoPlus/pull/14" target="_blank">新增了对新生美育选课的支持</a>，并包含一些改善体验的小更新。</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -312,7 +312,7 @@ window.potatojw_intl = function() {
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
           <a href="https://cubiccm.ddns.net/potato-mailing-list/" target="_blank">加入邮件列表</a>
           <a href="mailto:illimosity@gmail.com">发送反馈邮件</a>
-          <a href="https://cubiccm.ddns.net/about" target="_blank" onmousemove="pconsole.love('Some people are worth melting for. --Olaf', 'love');">@Limos</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank">@Limos</a>
         </note>
       </div>
     `;
