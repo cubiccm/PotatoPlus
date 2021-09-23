@@ -1134,7 +1134,7 @@ function() {
               case "public":
                 return "public";
               default:
-                // INGORE
+                // IGNORE
             }
           })() + "RenewCourseList",
           campus: pjw_select_mode == "art" ? "仙林校区" : this.selectors.campus.val() // 美育只在仙林校区开设
@@ -1149,12 +1149,14 @@ function() {
     });
   }
 
-  list.selectors = {
-    campus: new PJWSelect(list, "campusList", "校区", list.heading.children(".pjw-classlist-selectors"))
-  };
-  list.selectors.campus.onchange( (e) => {
-    list.refresh(true);
-  } );
+  if (pjw_select_mode != "art") {
+    list.selectors = {
+      campus: new PJWSelect(list, "campusList", "校区", list.heading.children(".pjw-classlist-selectors"))
+    };
+    list.selectors.campus.onchange( (e) => {
+      list.refresh(true);
+    } );
+  }
   list.refresh(true);
 
   $$("#campusList").parent().remove();
