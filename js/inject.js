@@ -42,6 +42,7 @@ function injectStyleFromString(str) {
     dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
     public: /publicRenewCourseList/i, // 公选课补选
     open: /openRenewCourse/i, // 跨专业补选
+    art: /artRenewCourseList/i, //美育补选
     common: /commonCourseRenewList|commonRenew.do/i, // 通修课补选
 
     read_view: /elective\/readCourseList.do/i, // 经典导读读书班初选

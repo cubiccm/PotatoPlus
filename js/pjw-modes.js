@@ -1125,8 +1125,19 @@ function() {
         type: "GET",
         url: "/jiaowu/student/elective/courseList.do",
         data: {
-          method: (pjw_select_mode == "dis" ? "discuss" : "public") + "RenewCourseList",
-          campus: this.selectors.campus.val()
+          method: (() => {
+            switch (pjw_select_mode) {
+              case "dis":
+                return "discuss";
+              case "art":
+                return "art";
+              case "public":
+                return "public";
+              default:
+                // INGORE
+            }
+          })() + "RenewCourseList",
+          campus: pjw_select_mode == "art" ? "仙林校区" : this.selectors.campus.val() // 美育只在仙林校区开设
         }
       }).done((data) => {
         this.ajax_request = null;

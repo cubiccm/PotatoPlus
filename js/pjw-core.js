@@ -655,6 +655,7 @@ window.potatojw_intl = function() {
       // {"name": "公选课初选", "mode": "public_view", "func": "dis_public_view"},
       // {"name": "跨院系初选", "mode": "open_view"},
       {"name": "体育选课", "mode": "gym"},
+      {"name": "美育补选", "mode": "art", "func": "dis_public"},
     ];
     var options_html = "";
     for (var item of modes_map) {
@@ -696,7 +697,7 @@ window.potatojw_intl = function() {
     enterMode("read_view");
   } else if (pjw_mode == "common") {
     enterMode("common");
-  } else if (pjw_mode == "dis" || pjw_mode == "public") {
+  } else if (pjw_mode == "dis" || pjw_mode == "public" || pjw_mode == "art") {
     enterMode("dis_public");
   } else if (pjw_mode == "dis_view" || pjw_mode == "public_view" || pjw_mode == "art_view") {
     enterMode("dis_public_view");
