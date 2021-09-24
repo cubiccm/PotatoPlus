@@ -1,7 +1,9 @@
 # PotatoPlus
 
-potato **overgrow**
-NJU土豆改善工程
+Potato **Overgrow** NJU土豆改善工程
+
+<a href='https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba'><img src='https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/iNEddTyWiMfLSwFD6qGq.png' alt='Chrome Web Store Badge' style='width: 255px; height: 72px;'/></a> <a href='https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib'><img src='https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png' alt='Microsoft Store' style='width: 196.62px; height: 72px;'/></a>
+
 
 ## 介绍 Introduction
 
@@ -19,11 +21,11 @@ NJU土豆改善工程
 
 #### Chrome
 
-[Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
+[Chrome 网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
 
 #### Edge
 
-[Microsoft Store](https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib) 或 [Chrome网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
+[Microsoft Store](https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib) 或 [Chrome 网上应用店](https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba)
 
 #### Firefox
 
