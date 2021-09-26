@@ -1091,10 +1091,10 @@ function ClassListPlugin() {
       return {
         lesson_time: ans,
         class_weeknum: ans_weeks,
-        places: places.map((x) => (x.trim().replaceAll("/", " ")))
+        places: places.map((x) => (x.trim().replace(new RegExp("/", 'g'), " ")))
             .filter((v, i, s) => (s.indexOf(v) === i && v))
             .join('/')
-            .replaceAll("Ⅱ", "II").replaceAll("Ⅰ", "I").replaceAll("、", " ")
+            .replace(new RegExp("Ⅱ", 'g'), "II").replace(new RegExp("Ⅰ", 'g'), "I").replace(new RegExp("、", 'g'), " ")
       };
     }
 
