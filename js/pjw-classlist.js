@@ -1615,6 +1615,27 @@ function ClassListPlugin() {
     }
 
     convert(val, text) {
+      if (val == "pjw_custom_term") {
+        if (typeof(this.current_custom_term) != "undefined")
+          this.current_custom_term = "20212";
+        window.setCustomTerm = function() {
+          var target = list.selectors.term;
+          if (!target) return;
+          var term = prompt("请输入学期编码，格式为[四位年份][1/2]：", target.current_custom_term);
+          if (term == null) return;
+          target.current_custom_term = term;
+          $$("#pjw-custom-term-option").attr("data-value", target.current_custom_term);
+          $$("#pjw-custom-term-option").attr("data-text", "*自定学期：" + target.current_custom_term);
+          $$("#pjw-custom-term-option").children("span.mdc-list-item__text").text("*自定学期：" + target.current_custom_term);
+          target.obj.menuItemValues[0] = target.current_custom_term;
+          if (target.obj.selectedIndex == 0) {
+            // The change event would not be triggered if the selectedIndex remains the same
+            // Trigger the change even manually
+            target.obj.foundation.handleChange();
+          }
+        };
+        return `<li class="mdc-list-item" data-value="20212" data-text="${text}" data-index="-2" aria-selected="false" role="option" id="pjw-custom-term-option" onclick="setCustomTerm();"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
+      }
       return `<li class="mdc-list-item" data-value="${val}" data-text="${text}" data-index="${this.count++}" aria-selected="false" role="option"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
     }
 

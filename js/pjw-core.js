@@ -460,8 +460,9 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    // if ($$("#termList > option:eq(1)").html() != "2021-2022学年第一学期")
-      // $$("#termList > option:eq(1)").before('<option value="20211">*2021-2022学年第一学期</option>');
+    if ($$("#termList > option:eq(1)").val() != "20212")
+      $$("#termList > option:eq(1)").before('<option value="20212">*2021-2022学年第二学期</option>');
+    $$("#termList > option:eq(1)").before('<option value="pjw_custom_term">*自定学期...</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "hours", "advanced", "frozen"]);
     total_weeks_history = {
@@ -563,7 +564,7 @@ window.potatojw_intl = function() {
     academySelectgroup.splice(30, 0, [$$(`<option value="301">计算机科学与技术（人工智能方向）</option>`)[0], $$(`<option value="302">人工智能</option>`)[0]]);
 
     list.selectors = {
-      term: new PJWSelect(list, "termList", "学期", list.heading.children(".pjw-classlist-selectors")),
+      term: new PJWSelect(list, "termList", "学期", list.heading.children(".pjw-classlist-selectors"), 1, 1),
       grade: new PJWSelect(list, "gradeList", "年级", list.heading.children(".pjw-classlist-selectors")),
       institution: new PJWSelect(list, "academySelect", "院系", list.heading.children(".pjw-classlist-selectors"), 0),
       major: new PJWSelect(list, "specialitySelect", "专业", list.heading.children(".pjw-classlist-selectors"))
