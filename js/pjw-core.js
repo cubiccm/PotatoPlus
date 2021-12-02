@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.3.2";
+    window.pjw_version = "0.3.3";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
