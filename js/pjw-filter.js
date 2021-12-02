@@ -590,12 +590,14 @@ var pjw_filter = {
     }
   },
 
-  /* frozen module v1.3 */
+  /* frozen module v1.4 */
   frozen: {
     html: `
       <div id="pjw-frozen-filter" style="order: 3;">
         <div class="pjw-filter-module-header">  
-          <span class="material-icons-round pjw-filter-module-icon" id="frozen-icon" title="Frozen Quote">ac_unit</span>
+          <span class="material-icons-round pjw-filter-module-icon" id="frozen-icon" title="Frozen Quote">
+            ac_unit
+          </span>
           <div class="pjw-filter-module-title__container">
             <span id="frozen-quotes">Frozen Quote</span>
           </div>
@@ -603,24 +605,41 @@ var pjw_filter = {
       </div>
     `,
     intl: (space, list) => {
+      space.mode = Math.random() > 0.5 ? "frozen" : "atw";
+      $$("#frozen-icon").text(((mode) => {
+        switch (mode) {
+          case "atw":
+            return "music_note";
+          case "frozen":
+            return "ac_unit";
+        }
+      })(space.mode));
+      $$("#frozen-icon").attr("title", ((mode) => {
+        switch (mode) {
+          case "atw":
+            return "Taylor Swift - All Too Well (10 Minute Version)";
+          case "frozen":
+            return "Frozen Quote";
+        }
+      })(space.mode));
       $$("#frozen-icon").on("click", null, {
         space: space
       }, (e) => {
         $$("#frozen-icon").css("transition", "transform .4s ease-out");
-        $$("#frozen-icon").css("transform", "rotate(180deg)");
+        $$("#frozen-icon").css("transform", "rotate(360deg)");
         window.setTimeout(() => {
           $$("#frozen-icon").css("transition", "");
           $$("#frozen-icon").css("transform", "rotate(0deg)");
         }, 450);
-        e.data.space.target.html(e.data.space.getRandomQuotes());
+        e.data.space.target.html(e.data.space.getRandomQuotes(space));
       });
       space.target = $$("#frozen-quotes");
     },
     handleParseComplete: (space, list) => {
-      space.target.html(space.getRandomQuotes());
+      space.target.html(space.getRandomQuotes(space));
     },
-    getRandomQuotes: () => {
-      var quotes_lib = frozen_quotes.split("\n");
+    getRandomQuotes: (space) => {
+      var quotes_lib = space.mode == "frozen" ? frozen_quotes.split("\n") : atw_lyrics.split("\n");
       return quotes_lib[Math.floor(Math.random() * quotes_lib.length)];
     }
   },
