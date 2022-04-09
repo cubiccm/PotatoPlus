@@ -1,3 +1,40 @@
+var modes_reg = {
+  course: /grablessons.do/i, // 选课系统列表
+  xk_system: /\/\/xk.nju.edu.cn/i, // 选课系统 xk.nju.edu.cn 界面
+
+  major_course: /student\/elective\/specialityCourseList.do/i, // 专业选课
+  union: /student\/elective\/index.do/i, // 选课
+  gym: /gymClassList.do/i, // 体育补选
+  read: /readRenewCourseList.do/i, // 经典导读读书班补选
+  dis: /discussRenewCourseList/i, // 导学、研讨、通识课补选
+  public: /publicRenewCourseList/i, // 公选课补选
+  open: /openRenewCourse/i, // 跨专业补选
+  art: /artRenewCourseList/i, // 美育补选
+  common: /commonCourseRenewList|commonRenew.do/i, // 通修课补选
+
+  read_view: /elective\/readCourseList.do/i, // 经典导读读书班初选
+  dis_view: /elective\/freshman_discuss.do/i, // 导学、研讨、通识课初选
+  art_view: /elective\/artList.do/i, // 美育初选
+  public_view: /elective\/publicCourseList.do/i, // 公选课初选
+  open_view: /elective\/open.do/i, // 跨专业初选
+
+  course_eval: /evalcourse\/courseEval.do\?method=currentEvalCourse/i, // 课程评估
+
+  all_course_list: /teachinginfo\/allCourseList.do\?method=getTermAcademy/i, // 全校课程
+  grade_info: /student\/studentinfo\/achievementinfo.do\?method=searchTermList/i, // 成绩查看
+  course_info: /courseList.do\?method=getCourseInfoM/i, // 课程详细信息
+
+  main_page: /(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i, // 主页
+  login_page: /(\/jiaowu\/exit.do|\/jiaowu$|\/jiaowu\/$|\/jiaowu\/index.jsp)/i // 登录页
+}
+window.pjw_mode = "";
+for (const mode_name in modes_reg) {
+  if (modes_reg[mode_name].test(window.location.href) == true) {
+    window.pjw_mode = mode_name;
+    break;
+  }
+}
+
 window.potatojw_intl = function() {
   if (typeof(window.pjw_version) == "string") return;
 
@@ -7,7 +44,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.3.3";
+    window.pjw_version = "0.3.4";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -303,7 +340,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3.2 <a href="https://github.com/cubiccm/PotatoPlus/pull/14" target="_blank">新增了对新生美育选课的支持</a>，并包含一些改善体验的小更新。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 已迁移至 Manifest v3。</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
