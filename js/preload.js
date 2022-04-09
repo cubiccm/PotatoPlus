@@ -40,7 +40,7 @@ var modes_reg = {
   login_page: /(\/jiaowu\/exit.do|\/jiaowu$|\/jiaowu\/$|\/jiaowu\/index.jsp)/i // 登录页
 }
 
-var pjw_mode = "";
+window.pjw_mode = "";
 for (const mode_name in modes_reg) {
   if (modes_reg[mode_name].test(window.location.href) == true) {
     window.pjw_mode = mode_name;
@@ -48,12 +48,10 @@ for (const mode_name in modes_reg) {
   }
 }
 
-window.pjw_mode = pjw_mode;
-
-if (pjw_mode == "grade_info") {
+if (window.pjw_mode == "grade_info") {
   injectStyleFromString(`table.TABLE_BODY{ display: none; }`);
 }
 
-if (pjw_mode == "main_page") {
+if (window.pjw_mode == "main_page") {
   alert = function(x) {window.alert_data = x;};
 }
