@@ -1,6 +1,15 @@
 /* Backup the builtin JS prototype so that the FAAAAACING prototype.js won't FAACING RUIN MY CODE AND MY LIFE IN THIS PROJECT */
+
 window.proto_backup = {
-  reduce: Array.prototype.reduce
+  reduce: function (callback, initialVal) {
+    // Source: https://stackoverflow.com/questions/55699861/implementing-reduce-from-scratch-not-sure-how-js-knows-what-array-is
+    var accumulator = (initialVal === undefined) ? this[0] : initialVal;
+    var start = (initialVal === undefined) ? 1 : 0;
+    for (var i = start; i < this.length; i++) {
+      accumulator = callback(accumulator, this[i])
+    }
+    return accumulator;
+  }
 };
 
 function injectStyleFromString(str) {
