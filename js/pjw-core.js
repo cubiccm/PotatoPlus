@@ -7,7 +7,7 @@ window.potatojw_intl = function() {
 
   window.pjw_version = "@version@";
   if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.3.5";
+    window.pjw_version = "0.3.6";
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
@@ -303,7 +303,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 已迁移至 Manifest v3。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3.6 包含界面小更新与错误修复。</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -460,12 +460,14 @@ window.potatojw_intl = function() {
       }
     };
   } else if (pjw_mode == "all_course_list") {
-    if ($$("#termList > option:eq(1)").val() != "20212")
-      $$("#termList > option:eq(1)").before('<option value="20212">*2021-2022学年第二学期</option>');
+    // if ($$("#termList > option:eq(1)").val() != "20222")
+    //   $$("#termList > option:eq(1)").before('<option value="20222">*2022-2023学年第二学期</option>');
     $$("#termList > option:eq(1)").before('<option value="pjw_custom_term">*自定学期...</option>');
 
     window.list = new PJWClassList($$("body"), ["acl_major_switch", "hours", "advanced", "frozen"]);
     total_weeks_history = {
+      "20222": 17,
+      "20221": 16,
       "20212": 17,
       "20211": 17,
       "20202": 16,
@@ -1125,7 +1127,7 @@ window.potatojw_intl = function() {
       enterMode("course");
     } else {
       window.switch_pjw = () => {
-        window.confirm("要在新系统中启用 PotatoPlus 吗？现在 PotatoPlus 正处于测试阶段，还存在诸多问题及体验不足之处，仅供测试之用。例如，加载较长列表（如课表查询）时可能会出现卡顿。启用后，可以随时再次禁用。") && (store.set("enable_on_newsystem", true) || window.location.reload());
+        window.confirm("新选课系统中的 PotatoPlus 仅供测试之用，还存在很多已知的问题与缺陷。要启用吗？") && (store.set("enable_on_newsystem", true) || window.location.reload());
       };
       return;
     }

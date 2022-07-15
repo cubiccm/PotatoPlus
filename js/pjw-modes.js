@@ -207,7 +207,7 @@ function() {
     };
   }
 
-  function buildAddParam(tcId, operationType = "1", is_delete = false) {
+  function buildAddParam(tcId, operationType = "1", is_deselect = false) {
     //操作类型：1添加、2删除
     // if (!operationType) {
       // operationType = '1';
@@ -239,7 +239,7 @@ function() {
         return false;
       }
     });
-    if (is_delete) {
+    if (is_deselect) {
       var deleteData = '{"operationType":"' + operationType + '","studentCode":"' + studentInfo.code + '","electiveBatchCode":"' + electiveBatch.code + '","teachingClassId":"' + tcId + '","isMajor":"1"}';
     
       var deleteStr = '{"data":' + deleteData + '}';
@@ -298,30 +298,31 @@ function() {
   list.select = function(classID, class_data) {
     return new Promise((resolve, reject) => {
       var target = this;
-      var remove_class = class_data.select_button.status == "Deselect";
-      var is_major = remove_class && sessionStorage["teachingClassType"] == "ZY";
-      var tryRequestResult = (list, remove_class, class_data) => {
+      var is_deselect = class_data.select_button.status == "Deselect";
+      var is_major = sessionStorage["teachingClassType"] == "ZY";
+      var tryRequestResult = (list, is_deselect, class_data) => {
         return new Promise((resolve, reject) => {
           $$.ajax({
             url: "/xsxkapp/sys/xsxkapp/elective/studentstatus.do",
             type: "POST",
             data: {
               "studentCode": JSON.parse(sessionStorage.getItem('studentInfo')).code,
-              "type": remove_class ? "2" : "1"
+              "type": is_deselect ? "2" : "1"
             }
           }).done((res) => {
             if (res.code == "0") {
-              window.setTimeout(() => {tryRequestResult(list, remove_class, class_data).done(
-                () => { resolve(); }
-              ).catch(
-                (e) => { reject(); }
-              );}, 500);
-              resolve();
+              window.setTimeout(() => {
+                tryRequestResult(list, is_deselect, class_data).then(
+                  () => { resolve(); }
+                ).catch(
+                  (e) => { reject(); }
+                );
+              }, 500);
             } else if (res.code == "1") {
-              list.console.success(`${!remove_class ? "选择" : "退选"}${list.getClassInfoForAlert(class_data)}成功`);
+              list.console.success(`${!is_deselect ? "选择" : "退选"}${list.getClassInfoForAlert(class_data)}成功`);
               resolve();
             } else if (res.code == "-1") {
-              list.console.warn(`${!remove_class ? "选课" : "退选"}失败：` + res.msg);
+              list.console.warn(`${!is_deselect ? "选课" : "退选"}失败：` + res.msg);
               reject();
             } else {
               list.console.warn("未知返回代码：" + res.code);
@@ -331,30 +332,38 @@ function() {
         });
       };
       $$.ajax({
-        url: !is_major ? "/xsxkapp/sys/xsxkapp/elective/volunteer.do" : "/xsxkapp/sys/xsxkapp/elective/deleteVolunteer.do",
+        url: !is_deselect ? "/xsxkapp/sys/xsxkapp/elective/volunteer.do" : "/xsxkapp/sys/xsxkapp/elective/deleteVolunteer.do",
         type: "POST",
         headers: {
           "token": sessionStorage.token
         },
-        data: buildAddParam(classID, remove_class ? "2" : "1", is_major)
+        data: buildAddParam(classID, is_deselect ? "2" : "1", is_deselect)
       }).done((res) => {
         if (res.code == "1") {
-          if (is_major) {
-            this.console.success(`退选专业课${target.getClassInfoForAlert(class_data)}成功`);
+          if (is_deselect) {
+            this.console.success(`退选${target.getClassInfoForAlert(class_data)}成功`);
+            $$.ajax({
+              url: "/xsxkapp/sys/xsxkapp/elective/studentstatus.do",
+              type: "POST",
+              data: {
+                "studentCode": JSON.parse(sessionStorage.getItem('studentInfo')).code,
+                "type": "0"
+              }
+            });
             resolve();
           } else {
-            tryRequestResult(target, remove_class, class_data).done(
+            tryRequestResult(target, is_deselect, class_data).then(
               () => { resolve(); }
             ).catch(
               (e) => { reject(); }
             );
           }
         } else {
-          this.console.warn(`${!remove_class ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败：` + res.msg);
+          this.console.warn(`${!is_deselect ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败：` + res.msg);
           reject();
         }
       }).fail((res) => {
-        this.console.warn(`${!remove_class ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败`);
+        this.console.warn(`${!is_deselect ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败`);
         reject();
       });
     });
@@ -364,61 +373,67 @@ function() {
     return new Promise((resolve, reject) => {
       try {
         for (var item of data) {
-          var select_status = sessionStorage["teachingClassType"] == "QB" ? false : (item.isChoose == "1" ? "Deselect" : (item.isFull == "1" ? "Full" : "Select"));
-          var class_data = {
-            classID: item.teachingClassID || item.tcList[0].teachingClassID,
-            title: item.courseName,
-            teachers: this.parseTeacherNames(item.teacherName),
-            info: [{
-              key: "课程编号",
-              val: item.courseNumber
-            }, {
-              key: "开课院系",
-              val: item.departmentName
-            }, {
-              key: "备注",
-              val: item.extInfo ? item.extInfo : ""
-            }, {
-              key: "年级",
-              val: item.recommendGrade,
-              hidden: true
-            }],
-            num_info: [{
-              num: parseInt(item.credit),
-              label: "学分"
-            }, {
-              num: parseInt(item.hours),
-              label: "学时"
-            }],
-            lesson_time: this.parseLessonTime(item.teachingTimeList),
-            time_detail: (item.teachingPlace || "").replace(/;/g, "<br>"),
-            places: this.parsePlaces(item.teachingPlace),
-            class_weeknum: this.parseWeekNum(item.teachingTimeList),
-            select_button: {
-              status: select_status,
-              text: item.classCapacity ? `${(item.numberOfSelected == "已满" ? item.classCapacity : item.numberOfSelected) || item.numberOfFirstVolunteer}/${item.classCapacity}` : "",
-              action: (e) => {
-                return new Promise((resolve, reject) => {
-                  e.data.target.list.select(e.data.target.data.classID, e.data.target.data).then(() => {
-                    resolve();
-                  }).catch(() => {
-                    reject();
+          if ("tcList" in item) multi_classes = true;
+          else multi_classes = false;
+          for (let class_i = 0; class_i < (multi_classes ? item.tcList.length : 1); class_i++) {
+            var select_status = sessionStorage["teachingClassType"] == "QB" ? false : (item.isChoose == "1" ? "Deselect" : (item.isFull == "1" ? "Full" : "Select"));
+            if (multi_classes) var parse_res = this.parseClassTime(item.tcList[class_i].teachingPlace);
+            let count_target = multi_classes ? item.tcList[class_i] : item;
+            var class_data = {
+              classID: multi_classes ? item.tcList[class_i].teachingClassID : item.teachingClassID,
+              title: item.courseName,
+              teachers: this.parseTeacherNames(multi_classes ? item.tcList[class_i].teacherName : item.teacherName),
+              info: [{
+                key: "课程编号",
+                val: item.courseNumber
+              }, {
+                key: "开课院系",
+                val: item.departmentName
+              }, {
+                key: "备注",
+                val: (multi_classes ? item.tcList[class_i].extInfo : item.extInfo) || ""
+              }, {
+                key: "年级",
+                val: item.recommendGrade,
+                hidden: true
+              }],
+              num_info: [{
+                num: item.credit,
+                label: "学分"
+              }, {
+                num: item.hours,
+                label: "学时"
+              }],
+              lesson_time: multi_classes ? parse_res.lesson_time : this.parseLessonTime(item.teachingTimeList),
+              time_detail: multi_classes ? item.tcList[class_i].teachingPlace : (item.teachingPlace || "").replace(/;/g, "<br>"),
+              places: multi_classes ? parse_res.places : this.parsePlaces(item.teachingPlace),
+              class_weeknum: multi_classes ? parse_res.class_weeknum : this.parseWeekNum(item.teachingTimeList),
+              select_button: {
+                status: select_status,
+                text: count_target.classCapacity ? `${(count_target.numberOfSelected == "已满" ? count_target.classCapacity : count_target.numberOfSelected) || count_target.numberOfFirstVolunteer}/${count_target.classCapacity}` : "",
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.target.list.select(e.data.target.data.classID, e.data.target.data).then(() => {
+                      resolve();
+                    }).catch(() => {
+                      reject();
+                    });
                   });
-                });
-              }
-            },
-            fav_button: {
-              type: sessionStorage.getItem("teachingClassType") == "SC" ? true : (item.favorite == "1" ? true : false),
-              action: (e) => {
-                return new Promise((resolve, reject) => {
-                  e.data.target.list.favorite(e.data.target.data.classID, e.data.target.data).then(() => {
-                    resolve();
+                }
+              },
+              fav_button: {
+                type: sessionStorage.getItem("teachingClassType") == "SC" ? true : (item.favorite == "1" ? true : false),
+                action: (e) => {
+                  return new Promise((resolve, reject) => {
+                    e.data.target.list.favorite(e.data.target.data.classID, e.data.target.data).then(() => {
+                      resolve();
+                    });
                   });
-                });
+                }
               }
-            }
-          };
-          this.add(class_data);
+            };
+            this.add(class_data);
+          }
         }
         this.update(data.totalCount);
       } catch (e) {
@@ -455,17 +470,19 @@ function() {
       }).done((data) => {
         this.ajax_request = null;
         if (data.totalCount > 50) {
-          var total_list = data.dataList;
-          var remaining_count = parseInt(data.totalCount / 50);
-          for (var page = 1; page <= parseInt((data.totalCount - 1) / 50); page++) {
-            $.ajax({
+          let total_list = data.dataList;
+          let remaining_count = parseInt(data.totalCount / 50);
+          for (let page = 1; page <= parseInt((data.totalCount - 1) / 50); page++) {
+            let pg = page;
+            window.setTimeout(() => {$.ajax({
               type: "POST",
               url: BaseUrl + "/sys/xsxkapp/elective/" + target_page,
-              data: getListParam(page),
+              data: getListParam(pg),
               headers: {
                 "token": sessionStorage.token
               }
             }).done((ndata) => {
+              if (ndata.code != "1") reject(ndata.msg);
               total_list = total_list.concat(ndata.dataList);
               remaining_count--;
               if (remaining_count == 0) {
@@ -478,7 +495,7 @@ function() {
                 this.parse(total_list);
                 resolve();
               }
-            });
+            });}, page * 500);
           }
         } else {
           this.parse(data.dataList);
@@ -486,7 +503,7 @@ function() {
         }
         
       }).fail((data) => {
-        reject("无法获取数据：" + data);
+        reject(data);
       });
     });
   }

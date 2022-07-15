@@ -1,5 +1,5 @@
 function ClassListPlugin() {
-  total_weeks = 17;
+  total_weeks = 16;
   const campus_id_map = {
     "仙林校区": 3,
     "浦口校区": 2,
@@ -393,7 +393,7 @@ function ClassListPlugin() {
             ${this.getHTML(data, "lessontime")}
           </div>
 
-          ${(!("places" in data) || data.places == "") ? "" : `<div class="pjw-class-places">${this.getHTML(data, "weeks")}<span>${data.places}</span></div>`}
+          ${`<div class="pjw-class-places">${this.getHTML(data, "weeks")}<span>${(!("places" in data) || data.places == "") ? "" : data.places}</span></div>`}
           
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
@@ -688,8 +688,6 @@ function ClassListPlugin() {
 
       if (!data.classID)
         data.classID = -1;
-      else
-        data.classID = parseInt(data.classID);
 
       if (data_compare_res) {
         // Conduct soft refresh
@@ -1012,7 +1010,7 @@ function ClassListPlugin() {
       var places = [];
 
       for (var item of classes) {
-        var words = item.split(/\s|\&nbsp;/g);
+        var words = item.split(/\s|\&nbsp;|,/g);
         var weekday = 0;
         var is_odd = false, is_even = false;
         var has_week_info = false;
@@ -1617,7 +1615,7 @@ function ClassListPlugin() {
     convert(val, text) {
       if (val == "pjw_custom_term") {
         if (typeof(this.current_custom_term) != "undefined")
-          this.current_custom_term = "20212";
+          this.current_custom_term = "20221";
         window.setCustomTerm = function() {
           var target = list.selectors.term;
           if (!target) return;
@@ -1634,7 +1632,7 @@ function ClassListPlugin() {
             target.obj.foundation.handleChange();
           }
         };
-        return `<li class="mdc-list-item" data-value="20212" data-text="${text}" data-index="-2" aria-selected="false" role="option" id="pjw-custom-term-option" onclick="setCustomTerm();"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
+        return `<li class="mdc-list-item" data-value="20222" data-text="${text}" data-index="-2" aria-selected="false" role="option" id="pjw-custom-term-option" onclick="setCustomTerm();"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
       }
       return `<li class="mdc-list-item" data-value="${val}" data-text="${text}" data-index="${this.count++}" aria-selected="false" role="option"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
     }

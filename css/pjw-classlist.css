@@ -341,6 +341,10 @@
   align-self: center;
 }
 
+.pjw-class-container--compressed .pjw-class-sub {
+  align-self: center;
+}
+
 /* Basic Class Info */
 
 .pjw-class-info {
@@ -613,6 +617,7 @@
 
 .pjw-class-weeknums {
   display: none;
+  letter-spacing: -0.5px;
   background: linear-gradient(95deg, rgba(229, 119, 180, 1), rgba(123, 11, 94, 1));
   -webkit-background-clip: text;
   background-clip: text;
@@ -821,12 +826,17 @@
   justify-content: space-around;
   align-items: center;
 }
+
+.view-narrow-desktop .pjw-class-container--compressed .pjw-class-sub {
+  align-self: stretch;
+}
+
 .view-narrow-desktop .pjw-class-operation {
   flex-direction: column;
   padding: 5px 0;
 }
 .view-narrow-desktop .pjw-class-places > span {
-  display: none;
+  /* display: none; */
 }
 .view-narrow-desktop .pjw-class-info-top {
   flex-direction: column;
