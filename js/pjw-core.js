@@ -353,8 +353,8 @@ window.potatojw_intl = function() {
 
     const menu_html = `
       <div id="pjw-menu" class="pjw-card">
-        <heading>Howdy, NJUer</heading><br>
-        <subheading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]} <a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank">${calcCurrentWeek()}</a></subheading>
+        <heading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</heading><br>
+        <subheading><a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank" style="margin-left: 0;">${calcCurrentWeek()}</a></subheading>
         <br>
         <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgb(30, 50, 180);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
