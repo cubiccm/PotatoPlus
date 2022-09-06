@@ -220,11 +220,11 @@ function ClassListPlugin() {
         switch (data.status) {
           case "Select":
             label_text = "选择";
-            icon_text = "add_task";
+            icon_text = "control_point";
             break;
           case "Deselect":
             label_text = "退选";
-            icon_text = "layers_clear";
+            icon_text = "delete_outline";
             extra_classes = "deselect";
             break;
           case "Full":
@@ -263,50 +263,50 @@ function ClassListPlugin() {
             <span class="mdc-fab__icon material-icons-round pjw-class-menu-icon">filter_alt</span>
           </button>
           <div class="mdc-menu mdc-menu-surface pjw-class-filter-menu">
-            <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-filter-include" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__graphic material-icons-round">
+            <ul class="mdc-deprecated-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+              <li class="mdc-deprecated-list-item pjw-class-menu-filter-include pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__graphic material-icons-round pjw-class-menu-item-icon">
                   filter_alt
-                  <span class="material-icons-round" style="font-size: 13px;">add</span>
+                  <span class="material-icons-round">add</span>
                 </span>
-                <span class="mdc-list-item__text">筛选器：包含此课程</span>
+                <span class="mdc-deprecated-list-item__text">筛选器：包含此课程</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-filter-exclude" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__graphic material-icons-round">
+              <li class="mdc-deprecated-list-item pjw-class-menu-filter-exclude pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__graphic material-icons-round pjw-class-menu-item-icon">
                   filter_alt
-                  <span class="material-icons-round" style="font-size: 13px;">remove</span>
+                  <span class="material-icons-round">remove</span>
                 </span>
-                <span class="mdc-list-item__text">筛选器：隐藏此课程</span>
+                <span class="mdc-deprecated-list-item__text">筛选器：隐藏此课程</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-search-similar" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__graphic material-icons-round">
+              <li class="mdc-deprecated-list-item pjw-class-menu-search-similar pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__graphic material-icons-round">
                   search
                 </span>
-                <span class="mdc-list-item__text">搜索相似课程</span>
+                <span class="mdc-deprecated-list-item__text">搜索相似课程</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded pjw-class-menu-search-teacher${teachers.length ? "" : " mdc-list-item--disabled"}" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__graphic material-icons-round">
+              <li class="mdc-deprecated-list-item${teachers.length ? "" : " mdc-deprecated-list-item--disabled"} pjw-class-menu-search-teacher pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__graphic material-icons-round pjw-class-menu-item-icon">
                   search
-                  <span class="material-icons-round" style="font-size: 13px;">school</span>
+                  <span class="material-icons-round">school</span>
                 </span>
-                <span class="mdc-list-item__text">搜索该教师</span>
+                <span class="mdc-deprecated-list-item__text">搜索该教师</span>
               </li>
-              <li class="mdc-list-divider" role="separator"></li>
-              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__text">${class_name}${teacher_str}</span>
+              <li class="mdc-deprecated-list-divider" role="separator"></li>
+              <li class="mdc-deprecated-list-item mdc-deprecated-list-item--disabled pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__text">${class_name}${teacher_str}</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__text">选课号：${classID > 0 ? classID : "无法选择"}</span>
+              <li class="mdc-deprecated-list-item mdc-deprecated-list-item--disabled pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__text">选课号：${classID > 0 ? classID : "无法选择"}</span>
               </li>
-              <li class="mdc-list-item mdc-ripple-upgraded mdc-list-item--disabled" data-mdc-auto-init="MDCRipple" role="menuitem">
-                <span class="mdc-list-item__ripple"></span>
-                <span class="mdc-list-item__text">列表排序：${index}</span>
+              <li class="mdc-deprecated-list-item mdc-deprecated-list-item--disabled pjw-class-menu-item" data-mdc-auto-init="MDCRipple" role="menuitem">
+                <span class="mdc-deprecated-list-item__ripple"></span>
+                <span class="mdc-deprecated-list-item__text">列表排序：${index}</span>
               </li>
             </ul>
           </div>
@@ -453,11 +453,11 @@ function ClassListPlugin() {
       this.select_button = this.operation.children(".pjw-class-select-button");
       this.filter_button = this.operation.find(".pjw-class-filter-button");
       this.favorite_button = this.operation.find(".pjw-class-fav-button");
-      this.filter_menu = new mdc.menuSurface.MDCMenuSurface(this.operation.find(".pjw-class-filter-menu")[0]);
+      this.filter_menu = new mdc.menu.MDCMenu(this.operation.find(".pjw-class-filter-menu")[0]);
       this.operation.find(".pjw-class-filter-menu").click({
         target: this.filter_menu
       }, (e) => {
-        e.data.target.close();
+        e.data.target.menuSurface.close();
       });
 
       // Draw weekday lesson time rings
@@ -532,10 +532,10 @@ function ClassListPlugin() {
       this.filter_button.click({
         target: this
       }, (e) => {
-        e.data.target.filter_menu.open();
+        e.data.target.filter_menu.menuSurface.open();
       });
 
-      this.filter_menu.setAnchorCorner(mdc.menu.Corner.TOP_RIGHT);
+      this.filter_menu.menuSurface.setAnchorCorner(mdc.menu.Corner.TOP_RIGHT);
       
       // Set filter menu click event
       this.operation.find(".pjw-class-menu-search-similar").click({
@@ -1632,7 +1632,7 @@ function ClassListPlugin() {
           target.current_custom_term = term;
           $$("#pjw-custom-term-option").attr("data-value", target.current_custom_term);
           $$("#pjw-custom-term-option").attr("data-text", "*自定学期：" + target.current_custom_term);
-          $$("#pjw-custom-term-option").children("span.mdc-list-item__text").text("*自定学期：" + target.current_custom_term);
+          $$("#pjw-custom-term-option").children("span.mdc-deprecated-list-item__text").text("*自定学期：" + target.current_custom_term);
           target.obj.menuItemValues[0] = target.current_custom_term;
           if (target.obj.selectedIndex == 0) {
             // The change event would not be triggered if the selectedIndex remains the same
@@ -1640,9 +1640,9 @@ function ClassListPlugin() {
             target.obj.foundation.handleChange();
           }
         };
-        return `<li class="mdc-list-item" data-value="20222" data-text="${text}" data-index="-2" aria-selected="false" role="option" id="pjw-custom-term-option" onclick="setCustomTerm();"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
+        return `<li class="mdc-deprecated-list-item" data-value="20222" data-text="${text}" data-index="-2" aria-selected="false" role="option" id="pjw-custom-term-option" onclick="setCustomTerm();"><span class="mdc-deprecated-list-item__ripple"></span><span class="mdc-deprecated-list-item__text">${text}</span></li>`;
       }
-      return `<li class="mdc-list-item" data-value="${val}" data-text="${text}" data-index="${this.count++}" aria-selected="false" role="option"><span class="mdc-list-item__ripple"></span><span class="mdc-list-item__text">${text}</span></li>`;
+      return `<li class="mdc-deprecated-list-item" data-value="${val}" data-text="${text}" data-index="${this.count++}" aria-selected="false" role="option"><span class="mdc-deprecated-list-item__ripple"></span><span class="mdc-deprecated-list-item__text">${text}</span></li>`;
     }
 
     addItem(item) {
@@ -1736,7 +1736,7 @@ function ClassListPlugin() {
         </div>
 
         <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
-          <ul class="mdc-list pjw-select-list" role="listbox">${list_html}</ul>
+          <ul class="mdc-deprecated-list pjw-select-list" role="listbox">${list_html}</ul>
         </div>
       </div>
       `;

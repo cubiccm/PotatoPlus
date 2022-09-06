@@ -264,6 +264,12 @@ function() {
   // $(".search-container").css("display", "none");
   $(".result-container").css("display", "none");
   $(".content-container").css("height", "100%");
+  $(".search-container").addClass("mdc-card");
+  $(".search-container").css({
+    "border-radius": "20px",
+    "margin": "10px 3%",
+    "flex-direction": "row"
+  });
   $("body").css("overflow-y", "auto");
   var checkPrivilege = () => {store.has("privilege") ? (store.remove("privilege") || $(".user-top .username").text($(".user-top .username").attr("title"))) : (store.set("privilege", "root") || $(".user-top .username").text("root"));};
   store.has("privilege") && $(".user-top .username").text("root");

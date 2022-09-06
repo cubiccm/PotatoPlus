@@ -69,6 +69,8 @@
   padding: 1px 7px;
   margin: 2px 5px;
   transition: all .1s ease-in;
+  min-height: 22px;
+  line-height: 22px;
 }
 
 .pjw-mini-button.keep-hover {
@@ -97,6 +99,11 @@
   --black: rgba(0, 0, 0, .9);
   --gray: rgba(255, 255, 255, .5);
   --card-background: #4b5e7b;
+}
+
+body {
+  display: block !important;
+  background: rgba(0, 0, 0, .05) !important;
 }
 
 #courseList {

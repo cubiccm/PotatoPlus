@@ -1,6 +1,6 @@
 .pjw-filter-panel {
   color: rgba(0, 0, 0, .4);
-  margin: 0 20px 10px 20px;
+  margin: 0 0 10px 20px;
   padding: 10px 20px;
   border-radius: 20px;
   background: linear-gradient(-20deg, #b6dcff, #b9b6e5);
@@ -17,6 +17,7 @@
 
 .view-single-column .pjw-filter-panel {
   min-width: none;
+  margin-right: 10px;
 }
 
 .pjw-filter-panel > div {
