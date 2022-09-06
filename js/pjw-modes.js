@@ -410,7 +410,11 @@ function() {
               class_weeknum: multi_classes ? parse_res.class_weeknum : this.parseWeekNum(item.teachingTimeList),
               select_button: {
                 status: select_status,
-                text: count_target.classCapacity ? `${(count_target.numberOfSelected == "已满" ? count_target.classCapacity : count_target.numberOfSelected) || count_target.numberOfFirstVolunteer}/${count_target.classCapacity}` : "",
+                text: count_target.classCapacity ? 
+                    `${(count_target.numberOfSelected == "已满" 
+                        ? count_target.classCapacity 
+                        : count_target.numberOfSelected) || count_target.numberOfFirstVolunteer}/${count_target.classCapacity}` 
+                    : "",
                 action: (e) => {
                   return new Promise((resolve, reject) => {
                     e.data.target.list.select(e.data.target.data.classID, e.data.target.data).then(() => {
@@ -422,7 +426,8 @@ function() {
                 }
               },
               fav_button: {
-                type: sessionStorage.getItem("teachingClassType") == "SC" ? true : (item.favorite == "1" ? true : false),
+                type: sessionStorage.getItem("teachingClassType") == "SC" ? true 
+                    : ((multi_classes ? item.tcList[class_i].favorite : item.favorite) == "1"),
                 action: (e) => {
                   return new Promise((resolve, reject) => {
                     e.data.target.list.favorite(e.data.target.data.classID, e.data.target.data).then(() => {
