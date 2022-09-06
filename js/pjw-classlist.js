@@ -1289,7 +1289,7 @@ function ClassListPlugin() {
       if (id == "autorefresh-switch") {
         if (!status) {
           $$("#autorefresh-icon").html("autorenew");
-          $$("#autorefresh-label").html("刷新");
+          $$("#autorefresh-label").html("");
           if (typeof(this.refresh_button_interval_id) != "undefined")
             clearInterval(this.refresh_button_interval_id);
           if (typeof(this.show_refresh_level_timeout_id) != "undefined")
@@ -1370,38 +1370,44 @@ function ClassListPlugin() {
           </div>
           <div class="pjw-classlist-controls">
             <section id="filter-control-section" style="display: none;">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button" style="border-radius: 30px;">
-                <div class="mdc-button__ripple" style="border-radius: 30px;"></div>
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button pjw-classlist-heading-filter-button">
+                <div class="mdc-button__ripple"></div>
                 <div class="material-icons-round">filter_alt</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="filter-control-label">筛选器面板</div>
+                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="filter-control-label">筛选器</div>
               </button>
             </section>
 
             <section id="autoreload-control-section">
-              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button">
+              <button data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-classlist-heading-button pjw-classlist-heading-refresh-button">
                 <div class="mdc-button__ripple"></div>
                 <div class="material-icons-round" id="autorefresh-icon">autorenew</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" id="autorefresh-label">刷新</div>
+                <div class="mdc-button__label pjw-classlist-heading-refresh-button__label" style="letter-spacing: 2px" id="autorefresh-label"></div>
               </button>
 
-              <button class="mdc-button mdc-button--raised pjw-classlist-heading-switch-button off" id="autorefresh-switch">
+              <button class="mdc-button mdc-button--raised pjw-classlist-heading-button pjw-classlist-heading-switch-button off" id="autorefresh-switch">
                 <div class="material-icons-round">toggle_off</div>
-                <div class="mdc-button__label pjw-classlist-heading-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
+                <div class="mdc-button__label pjw-classlist-heading-refresh-button__label" style="letter-spacing: 2px" data-off="手动" data-on="自动">手动</div>
               </button>
             </section>
 
             <section id="search-section">
-              <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-trailing-icon" id="pjw-classlist-search-field">
-                <input type="text" class="mdc-text-field__input" aria-labelledby="pjw-classlist-search-input__label" id="pjw-classlist-search-input" autocorrect="off" autocapitalize="off" spellcheck="false">
-                <i aria-hidden="true" class="material-icons-round mdc-text-field__icon mdc-text-field__icon--trailing pjw-classlist-search-clear" role="button" tabindex="0">clear</i>
+              <label id="pjw-classlist-search-field"
+                  class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-leading-icon mdc-text-field--with-trailing-icon">
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
                   <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label"><span style="font-family:Material Icons Round;">search</span>${pjw_mode == "course" ? "本地搜索" : "搜索"}</span>
+                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label">${pjw_mode == "course" ? "本地搜索" : "搜索"}</span>
                   </span>
                   <span class="mdc-notched-outline__trailing"></span>
                 </span>
+                
+                <i class="material-icons-round mdc-text-field__icon mdc-text-field__icon--leading pjw-classlist-search-icon" role="button">search</i>
+                <input id="pjw-classlist-search-input" class="mdc-text-field__input" type="text" 
+                    aria-labelledby="pjw-classlist-search-input__label" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <i class="material-icons-round mdc-text-field__icon mdc-text-field__icon--trailing pjw-classlist-search-clear"
+                    role="button">clear</i>
               </label>
+
             </section>
           </div>
         </div>
@@ -1430,8 +1436,8 @@ function ClassListPlugin() {
       this.controls = this.heading.children(".pjw-classlist-controls");
       this.main = this.dom.children(".pjw-classlist-main");
       this.body = this.main.children(".pjw-classlist-body__container").children(".pjw-classlist-body");
-      this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-button");
-      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-button");
+      this.refresh_button = this.controls.children("#autoreload-control-section").children(".pjw-classlist-heading-refresh-button");
+      this.filter_button = this.controls.children("#filter-control-section").children(".pjw-classlist-heading-filter-button");
       this.heading_switch_button = this.controls.children("section").children(".pjw-classlist-heading-switch-button");
       this.search_input = this.controls.find("#pjw-classlist-search-input");
       this.search_field = new mdc.textField.MDCTextField(document.getElementById("pjw-classlist-search-field"));
@@ -1449,11 +1455,11 @@ function ClassListPlugin() {
           var switch_dom = document.getElementById(cur_filter.dom.attr("data-switch"));
           cur_filter.enabled_switch = new mdc.switchControl.MDCSwitch(switch_dom);
           cur_filter.dom.find(".content").hide();
-          $$(switch_dom).on("change", null, {
+          $$(switch_dom).on("click", null, {
             space: cur_filter,
             list: this
           }, (e) => {
-            e.data.space.enabled = e.data.space.enabled_switch.checked;
+            e.data.space.enabled = e.data.space.enabled_switch.selected;
             if (typeof(e.data.space["onswitch"]) == "function")
               e.data.space.onswitch(e.data.space, e.data.list);
             if (e.data.space.dom.find(".content").length) {
@@ -1481,9 +1487,11 @@ function ClassListPlugin() {
         if (typeof(e.data.target.input_timeout_id) != "undefined")
           clearTimeout(e.data.target.input_timeout_id);
         if (e.data.target.search_obj.value != "") {
-          this.controls.find(".pjw-classlist-search-clear").show();
+          this.controls.find("#pjw-classlist-search-field").addClass("inputting");
+          this.controls.find("#pjw-classlist-search-field").removeClass("mdc-text-field--with-leading-icon");
         } else {
-          this.controls.find(".pjw-classlist-search-clear").hide();
+          this.controls.find("#pjw-classlist-search-field").removeClass("inputting");
+          this.controls.find("#pjw-classlist-search-field").addClass("mdc-text-field--with-leading-icon");
         }
         if (e.data.target.class_data.length <= 100) {
           e.data.target.search_string = this.search_input.val();
@@ -1498,7 +1506,7 @@ function ClassListPlugin() {
         }
       });
 
-      this.controls.find(".pjw-classlist-search-clear").hide().on("click", null, {
+      this.controls.find(".pjw-classlist-search-clear").on("click", null, {
         target: this
       }, (e) => {
         e.data.target.search_obj.value = "";

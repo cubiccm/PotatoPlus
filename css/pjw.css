@@ -92,50 +92,11 @@
   background-color: rgba(255, 255, 255, .9);
 }
 
-@font-face {
-  font-family: 'Material Icons Round';
-  font-style: normal;
-  font-weight: 400;
-  src: 
-    url("chrome-extension://__MSG_@@extension_id__/fonts/Material Icons Round.woff2") format('woff2'),
-    url("https://fonts.gstatic.com/s/materialicons/v81/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2") format('woff2');
-}
-
-.material-icons-round {
-  font-family: 'Material Icons Round' !important;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  display: inline-block;
-  line-height: 1;
-  text-transform: none;
-  letter-spacing: normal;
-  word-wrap: normal;
-  white-space: nowrap;
-  direction: ltr;
-  user-select: none;
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'liga';
-}
-
 :root {
   --white: rgba(255, 255, 255, .9);
   --black: rgba(0, 0, 0, .9);
   --gray: rgba(255, 255, 255, .5);
   --card-background: #4b5e7b;
-}
-
-body {
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
-  display: block !important;
-  background: rgba(0, 0, 0, .05) !important;
-}
-
-body * {
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 #courseList {

@@ -9,25 +9,36 @@ var pjw_filter = {
             <span class="pjw-filter-module-title">满额课程</span>
             <span class="pjw-filter-module-info">过滤人数已满课程</span>
           </div>
-          <div class="mdc-switch" id="pjw-filter-avail-switch">
+
+          <button id="pjw-filter-avail-switch" class="mdc-switch mdc-switch--unselected" type="button" 
+              role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
             <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            <div class="mdc-switch__handle-track">
+              <div class="mdc-switch__handle">
+                <div class="mdc-switch__shadow">
+                  <div class="mdc-elevation-overlay"></div>
+                </div>
+                <div class="mdc-switch__ripple"></div>
+              </div>
             </div>
-          </div>
+          </button>
         </div>
 
         <div class="content">
           <div class="pjw-switch-box" id="pjw-deselect-switch-box">
-            <div class="mdc-switch" id="pjw-deselect-switch">
+              <button id="pjw-deselect-switch"  class="mdc-switch mdc-switch--unselected" type="button" 
+                  role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
               <div class="mdc-switch__track"></div>
-              <div class="mdc-switch__thumb-underlay">
-                <div class="mdc-switch__thumb"></div>
-                <input type="checkbox" id="pjw-deselect-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              <div class="mdc-switch__handle-track">
+                <div class="mdc-switch__handle">
+                  <div class="mdc-switch__shadow">
+                    <div class="mdc-elevation-overlay"></div>
+                  </div>
+                  <div class="mdc-switch__ripple"></div>
+                </div>
               </div>
-            </div>
-            <label for="pjw-deselect-switch-input">隐藏已选课程</label>
+            </button>
+            <label for="pjw-deselect-switch">隐藏已选课程</label>
           </div>
         </div>
       </div>
@@ -37,11 +48,11 @@ var pjw_filter = {
       space.deselect_switch = new mdc.switchControl.MDCSwitch($$("#pjw-deselect-switch")[0]);
 
       space.keep_deselect = true;
-      space.dom.find("#pjw-deselect-switch").on("change", null, {
+      space.dom.find("#pjw-deselect-switch").on("click", null, {
         space: space,
         list: list
       }, (e) => {
-        e.data.space.keep_deselect = !e.data.space.deselect_switch.checked;
+        e.data.space.keep_deselect = !e.data.space.deselect_switch.selected;
         e.data.list.update();
       });
     },
@@ -66,13 +77,18 @@ var pjw_filter = {
             <span class="pjw-filter-module-title">课程时间</span>
             <span class="pjw-filter-module-info">按上课时间筛选课程</span>
           </div>
-          <div class="mdc-switch" id="pjw-filter-hours-switch">
+          <button id="pjw-filter-hours-switch" class="mdc-switch mdc-switch--unselected" type="button"
+              role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
             <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            <div class="mdc-switch__handle-track">
+              <div class="mdc-switch__handle">
+                <div class="mdc-switch__shadow">
+                  <div class="mdc-elevation-overlay"></div>
+                </div>
+                <div class="mdc-switch__ripple"></div>
+              </div>
             </div>
-          </div>
+          </button>
         </div>
         <div class="content">
           <div class="pjw-class-weekcal">
@@ -474,44 +490,64 @@ var pjw_filter = {
             <span class="pjw-filter-module-title">自动选课</span>
             <span class="pjw-filter-module-info">Take care & Good luck!</span>
           </div>
-          <div class="mdc-switch" id="pjw-filter-potatoes-switch">
+          <button id="pjw-filter-potatoes-switch" class="mdc-switch mdc-switch--unselected" type="button"
+              role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
             <div class="mdc-switch__track"></div>
-            <div class="mdc-switch__thumb-underlay">
-              <div class="mdc-switch__thumb"></div>
-              <input type="checkbox" class="mdc-switch__native-control" role="switch" aria-checked="false">
+            <div class="mdc-switch__handle-track">
+              <div class="mdc-switch__handle">
+                <div class="mdc-switch__shadow">
+                  <div class="mdc-elevation-overlay"></div>
+                </div>
+                <div class="mdc-switch__ripple"></div>
+              </div>
             </div>
-          </div>
+          </button>
         </div>
         <div class="content">
           <div class="pjw-switch-box">
-            <div class="mdc-switch" id="pjw-potatoes-switch">
+            <button id="pjw-potatoes-switch" class="mdc-switch mdc-switch--unselected" type="button"
+                role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
               <div class="mdc-switch__track"></div>
-              <div class="mdc-switch__thumb-underlay">
-                <div class="mdc-switch__thumb"></div>
-                <input type="checkbox" id="pjw-potatoes-switch-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              <div class="mdc-switch__handle-track">
+                <div class="mdc-switch__handle">
+                  <div class="mdc-switch__shadow">
+                    <div class="mdc-elevation-overlay"></div>
+                  </div>
+                  <div class="mdc-switch__ripple"></div>
+                </div>
               </div>
-            </div>
-            <label for="pjw-potatoes-switch-input">自动选课</label>
+            </button>
+            <label for="pjw-potatoes-switch">自动选课</label>
           </div>
           <div class="pjw-switch-box">
-            <div class="mdc-switch" id="pjw-potatoes-continue-on-failure">
+            <button id="pjw-potatoes-continue-on-failure" class="mdc-switch mdc-switch--unselected" type="button"
+                role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
               <div class="mdc-switch__track"></div>
-              <div class="mdc-switch__thumb-underlay">
-                <div class="mdc-switch__thumb"></div>
-                <input type="checkbox" id="pjw-potatoes-continue-on-failure-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              <div class="mdc-switch__handle-track">
+                <div class="mdc-switch__handle">
+                  <div class="mdc-switch__shadow">
+                    <div class="mdc-elevation-overlay"></div>
+                  </div>
+                  <div class="mdc-switch__ripple"></div>
+                </div>
               </div>
-            </div>
-            <label for="pjw-potatoes-continue-on-failure-input">选课失败后继续</label>
+            </button>
+            <label for="pjw-potatoes-continue-on-failure">选课失败后继续</label>
           </div>
           <div class="pjw-switch-box">
-            <div class="mdc-switch" id="pjw-potatoes-continue-on-success">
+            <button id="pjw-potatoes-continue-on-success" class="mdc-switch mdc-switch--unselected" type="button"
+                role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
               <div class="mdc-switch__track"></div>
-              <div class="mdc-switch__thumb-underlay">
-                <div class="mdc-switch__thumb"></div>
-                <input type="checkbox" id="pjw-potatoes-continue-on-success-input" class="mdc-switch__native-control" role="switch" aria-checked="false">
+              <div class="mdc-switch__handle-track">
+                <div class="mdc-switch__handle">
+                  <div class="mdc-switch__shadow">
+                    <div class="mdc-elevation-overlay"></div>
+                  </div>
+                  <div class="mdc-switch__ripple"></div>
+                </div>
               </div>
-            </div>
-            <label for="pjw-potatoes-continue-on-success-input">选课成功后继续</label>
+            </button>
+            <label for="pjw-potatoes-continue-on-success">选课成功后继续</label>
           </div>
           <p>*使用前请确认课程筛选正确并开启自动刷新开关。</p>
         </div>
@@ -524,22 +560,22 @@ var pjw_filter = {
       space.continue_on_failure_switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-continue-on-failure")[0]);
 
       space.status = false;
-      space.dom.find("#pjw-potatoes-switch-input").on("change", null, {
+      space.dom.find("#pjw-potatoes-switch-input").on("click", null, {
         target: space,
       }, (e) => {
-        e.data.target.status = e.data.target.switch.checked;
+        e.data.target.status = e.data.target.switch.selected;
       });
 
-      space.dom.find("#pjw-potatoes-continue-on-success-input").on("change", null, {
+      space.dom.find("#pjw-potatoes-continue-on-success-input").on("click", null, {
         target: space,
       }, (e) => {
-        e.data.target.continue_on_success = e.data.target.continue_on_success_switch.checked;
+        e.data.target.continue_on_success = e.data.target.continue_on_success_switch.selected;
       });
 
-      space.dom.find("#pjw-potatoes-continue-on-failure-input").on("change", null, {
+      space.dom.find("#pjw-potatoes-continue-on-failure-input").on("click", null, {
         target: space,
       }, (e) => {
-        e.data.target.continue_on_failure = e.data.target.continue_on_failure_switch.checked;
+        e.data.target.continue_on_failure = e.data.target.continue_on_failure_switch.selected;
       });
 
       space.potatoes_queue = [];
@@ -551,7 +587,7 @@ var pjw_filter = {
       return 0;
     },
     handlePotatoes: (space) => {
-      if (space.potatoes_queue.length == 0 || space.is_select_ongoing == false || space.switch.checked == false) {
+      if (space.potatoes_queue.length == 0 || space.is_select_ongoing == false || space.switch.selected == false) {
         space.is_select_ongoing = false;
         return;
       }
@@ -565,13 +601,13 @@ var pjw_filter = {
           if (space.continue_on_success == true)
             space.handlePotatoes(space);
           else
-            space.switch.checked = space.status = is_select_ongoing = false;
+            space.switch.selected = space.status = is_select_ongoing = false;
         }).catch((res) => {
           class_obj.list.console.debug("Got an error from the potatoes module: " + res);
           if (space.continue_on_failure == true)
             space.handlePotatoes(space);
           else 
-            space.switch.checked = space.status = is_select_ongoing = false;
+            space.switch.selected = space.status = is_select_ongoing = false;
         });
       } else {
         space.handlePotatoes(space);
