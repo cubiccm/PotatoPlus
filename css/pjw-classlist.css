@@ -551,7 +551,6 @@
 .pjw-class-weekcal-calendar-day > span {
   color: rgba(0, 0, 0, .6);
   font-size: 10px;
-  font-family: 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
   width: 16px;
   height: 16px;
   line-height: 16px;
@@ -620,6 +619,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .pjw-class-container--compressed .pjw-class-places {
@@ -646,6 +646,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .pjw-class-container--compressed .pjw-class-weeknums {

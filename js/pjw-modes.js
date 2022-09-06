@@ -267,7 +267,7 @@ function() {
   $("body").css("overflow-y", "auto");
   var checkPrivilege = () => {store.has("privilege") ? (store.remove("privilege") || $(".user-top .username").text($(".user-top .username").attr("title"))) : (store.set("privilege", "root") || $(".user-top .username").text("root"));};
   store.has("privilege") && $(".user-top .username").text("root");
-  $("#change_electiveBatch").dblclick(checkPrivilege);
+  $(".user-img").dblclick(checkPrivilege);
 
   list.favorite = function(classID, class_data) {
     return new Promise((resolve, reject) => {

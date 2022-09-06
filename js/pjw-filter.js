@@ -67,7 +67,7 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.5 */
+  /* hours module v0.6 */
   hours: {
     html: `
       <div id="pjw-hours-filter" class="pjw-filter-module" data-switch="pjw-filter-hours-switch">
@@ -93,18 +93,31 @@ var pjw_filter = {
         <div class="content">
           <div class="pjw-class-weekcal">
             <div class="pjw-class-weekcal-heading">
-              <div class="pjw-class-weekcal-heading-day select-all">ALL</div>
-              <div class="pjw-class-weekcal-heading-day">MO</div>
-              <div class="pjw-class-weekcal-heading-day">TU</div>
-              <div class="pjw-class-weekcal-heading-day">WE</div>
-              <div class="pjw-class-weekcal-heading-day">TH</div>
-              <div class="pjw-class-weekcal-heading-day">FR</div>
-              <div class="pjw-class-weekcal-heading-day">SA</div>
-              <div class="pjw-class-weekcal-heading-day">SU</div>
+              <div class="pjw-class-weekcal-heading-day select-all">
+                <i class="material-icons-round" style="font-size: 16px; line-height: 30px;">south_east</i>
+              </div>
+              <div class="pjw-class-weekcal-heading-day"><span>MO</span></div>
+              <div class="pjw-class-weekcal-heading-day"><span>TU</span></div>
+              <div class="pjw-class-weekcal-heading-day"><span>WE</span></div>
+              <div class="pjw-class-weekcal-heading-day"><span>TH</span></div>
+              <div class="pjw-class-weekcal-heading-day"><span>FR</span></div>
+              <div class="pjw-class-weekcal-heading-day"><span>SA</span></div>
+              <div class="pjw-class-weekcal-heading-day"><span>SU</span></div>
             </div>
             <div class="pjw-class-weekcal-calendar">
               <div class="pjw-class-weekcal-calendar-day select-time">
-                <span>1&gt;</span><span>2&gt;</span><span>3&gt;</span><span>4&gt;</span><span>5&gt;</span><span>6&gt;</span><span>7&gt;</span><span>8&gt;</span><span>9&gt;</span><span>10&gt;</span><span>11&gt;</span><span>12&gt;</span>
+                <div><span>1</span></div>
+                <div><span>2</span></div>
+                <div><span>3</span></div>
+                <div><span>4</span></div>
+                <div><span>5</span></div>
+                <div><span>6</span></div>
+                <div><span>7</span></div>
+                <div><span>8</span></div>
+                <div><span>9</span></div>
+                <div><span>10</span></div>
+                <div><span>11</span></div>
+                <div><span>12</span></div>
               </div>
               <div class="pjw-class-weekcal-calendar-day">
                 <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
@@ -133,7 +146,6 @@ var pjw_filter = {
             <div id="clear-calendar" class="pjw-mini-button">清空</div>
             <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
           </div>
-          <span>可单击表头全选整行/整列。</span>
         </div>
       </div>
     `,
@@ -314,7 +326,7 @@ var pjw_filter = {
         e.data.list.update();
       });
 
-      space.cal.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("span").on("click", null, {
+      space.cal.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("div").on("click", null, {
         space: space,
         list: list
       }, (e) => {

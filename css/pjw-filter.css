@@ -82,19 +82,19 @@
 #pjw-hours-filter .pjw-class-weekcal-heading-day {
   cursor: pointer;
   transition: color .1s ease-out;
-}
-
-#pjw-hours-filter .select-time > span {
-  cursor: pointer;
-  transition: color .1s ease-out;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
 }
 
 #pjw-hours-filter .pjw-class-weekcal-heading-day:hover {
   color: var(--white);
 }
 
-#pjw-hours-filter .select-time > span:hover {
-  color: var(--white);
+#pjw-hours-filter .pjw-class-weekcal-heading-day:not(.select-all):hover::after {
+  content: "arrow_downward";
+  font-family: "Material Icons Round";
 }
 
 #pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
@@ -103,9 +103,34 @@
   background-color: rgba(0, 0, 0, .5);
 }
 
-#pjw-hours-filter .pjw-class-weekcal-calendar-day.select-time > span {
+#pjw-hours-filter .select-time > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
   font-weight: bold;
-  border-color: transparent;
+  font-size: 10px;
+  color: rgba(0, 0, 0, .6);
+
+  height: 16px;
+  width: 24px;
+  min-width: 24px;
+  max-width: 24px;
+  line-height: 16px;
+  margin: 3px;
+
+  cursor: pointer;
+}
+
+
+#pjw-hours-filter .select-time > div:hover {
+  color: var(--white);
+}
+
+#pjw-hours-filter .select-time > div:hover::after {
+  content: "arrow_right";
+  font-family: "Material Icons Round";
 }
 
 #pjw-hours-filter-control {
