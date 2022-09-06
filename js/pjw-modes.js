@@ -383,7 +383,18 @@ function() {
           else multi_classes = false;
           for (let class_i = 0; class_i < (multi_classes ? item.tcList.length : 1); class_i++) {
             var select_status = sessionStorage["teachingClassType"] == "QB" ? false : (item.isChoose == "1" ? "Deselect" : (item.isFull == "1" ? "Full" : "Select"));
-            if (multi_classes) var parse_res = this.parseClassTime(item.tcList[class_i].teachingPlace);
+            let parse_res;
+            if (multi_classes) {
+              parse_res = this.parseClassTime(item.tcList[class_i].teachingPlace);
+            } else if (item.teachingTimeList) {
+              parse_res = {
+                lesson_time : this.parseLessonTime(item.teachingTimeList),
+                class_weeknum : this.parseWeekNum(item.teachingTimeList),
+                places: this.parsePlaces(item.teachingTimeList),
+              }
+            } else {
+              parse_res = this.parseClassTime(item.teachingPlace);
+            }
             let count_target = multi_classes ? item.tcList[class_i] : item;
             var class_data = {
               classID: multi_classes ? item.tcList[class_i].teachingClassID : item.teachingClassID,
@@ -410,10 +421,10 @@ function() {
                 num: item.hours,
                 label: "学时"
               }],
-              lesson_time: multi_classes ? parse_res.lesson_time : this.parseLessonTime(item.teachingTimeList),
+              lesson_time: parse_res.lesson_time,
               time_detail: multi_classes ? item.tcList[class_i].teachingPlace : (item.teachingPlace || "").replace(/;/g, "<br>"),
-              places: multi_classes ? parse_res.places : this.parsePlaces(item.teachingPlace),
-              class_weeknum: multi_classes ? parse_res.class_weeknum : this.parseWeekNum(item.teachingTimeList),
+              places: parse_res.places,
+              class_weeknum: parse_res.class_weeknum,
               select_button: {
                 status: select_status,
                 text: count_target.classCapacity ? 

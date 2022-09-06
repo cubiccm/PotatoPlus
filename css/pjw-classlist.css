@@ -599,6 +599,10 @@
   font-size: 8px;
 }
 
+.pjw-class-weekcal-calendar-day > span.selected.sel-odd-class.sel-even-class::after {
+  content: "!" !important;
+}
+
 /* Class Info (Numbers Part) */
 
 .pjw-class-sideinfo {

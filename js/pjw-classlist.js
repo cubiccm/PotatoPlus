@@ -110,8 +110,14 @@ function ClassListPlugin() {
 
       function getNumInfo(content) {
         var html = "";
-        for (var item of content)
-          html += `<div class="pjw-class-bignum"><span class="num">${item.num}</span><span class="label">${item.label}</span></div>`;
+        for (var item of content) {
+          if (item.num !== null)
+            html += 
+            `<div class="pjw-class-bignum">
+              <span class="num">${item.num}</span>
+              <span class="label">${item.label}</span>
+            </div>`;
+        }
         return html;
       }
 
@@ -152,8 +158,8 @@ function ClassListPlugin() {
         var body_html = ``;
 
         var weekend_flag = false;
-        var has_class = [0, 0, 0, 0, 0, 0, 0, 0];
-        var class_class = [
+        var has_lecture = [0, 0, 0, 0, 0, 0, 0, 0];
+        var hourly_css_class = [
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", ""],
@@ -168,15 +174,16 @@ function ClassListPlugin() {
           if (item.weekday > 5 && weekend_flag == false)
             weekend_flag = true;
 
-          has_class[item.weekday]++;
+          has_lecture[item.weekday]++;
 
-          var cssclass = "selected";
-          if (item.type == "odd") cssclass += " sel-odd-class";
-          else if (item.type == "even") cssclass += " sel-even-class";
-          for (var i = item.start; i <= item.end; i++)
-            class_class[item.weekday][i] = cssclass;
-          class_class[item.weekday][item.start] += " sel-start";
-          class_class[item.weekday][item.end] += " sel-end";
+          var css_class = "selected ";
+          if (item.type == "odd") css_class += "sel-odd-class ";
+          else if (item.type == "even") css_class += "sel-even-class ";
+          for (var i = item.start; i <= item.end; i++) {
+            hourly_css_class[item.weekday][i] += css_class;
+          }
+          hourly_css_class[item.weekday][item.start] += "sel-start ";
+          hourly_css_class[item.weekday][item.end] += "sel-end ";
         }
 
         const weekday_display_name = ["", "M", "TU", "W", "TH", "F", "SA", "SU"];
@@ -184,26 +191,26 @@ function ClassListPlugin() {
         for (var i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
-          var data_arc = class_class[i].map((x) => (
+          var data_arc = hourly_css_class[i].map((x) => (
             x == "" ? "0" : (x.includes("even") || x.includes("odd") ? "2" : "1")
           )).join('').slice(1);
 
           heading_html += `
-            <div class="pjw-class-weekcal-heading-day` + (has_class[i] ? " selected" : "") + `">
-              <span>${has_class[i] ? weekday_display_name[i][0] : weekday_display_name[i]}</span>
-              ${has_class[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${data_arc}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${data_arc}" width="100" height="100"></canvas>` : ''}
+            <div class="pjw-class-weekcal-heading-day` + (has_lecture[i] ? " selected" : "") + `">
+              <span>${has_lecture[i] ? weekday_display_name[i][0] : weekday_display_name[i]}</span>
+              ${has_lecture[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${data_arc}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${data_arc}" width="100" height="100"></canvas>` : ''}
             </div>`;
 
           var body_html_span = "";
           
           for (var j = 1; j <= 12; j++) {
-            if (class_class[i][j] != "")
-              body_html_span += `<span class="${class_class[i][j]}">${j}</span>`;
+            if (hourly_css_class[i][j] != "")
+              body_html_span += `<span class="${hourly_css_class[i][j]}">${j}</span>`;
             else if (j != 12)
               body_html_span += `<span>${j}</span>`;
           }
 
-          body_html += `<div class="pjw-class-weekcal-calendar-day` + (has_class[i] ? " selected" : "") + `">${body_html_span}</div>`;
+          body_html += `<div class="pjw-class-weekcal-calendar-day` + (has_lecture[i] ? " selected" : "") + `">${body_html_span}</div>`;
         }
 
         return `<div class="pjw-class-weekcal-heading">${heading_html}</div><div class="pjw-class-weekcal-calendar">${body_html}</div>`;
@@ -916,15 +923,25 @@ function ClassListPlugin() {
       return `《${data.title}》（${data.teachers.join("，")}）`;
     }
 
+    getPlacesString(places) {
+      return places.map((x) => (x ? x.replace(new RegExp("/", 'g'), " ") : x))
+                   .filter((v, i, s) => (s.indexOf(v) === i && v))
+                   .join('/')
+                   .replace(new RegExp("Ⅱ", 'g'), "II").replace(new RegExp("Ⅰ", 'g'), "I").replace(new RegExp("、", 'g'), " ")
+    }
+
     parseTeacherNames(text) {
       if (!text || text == "") return [];
       return text.split(/[,，]\s/g);
     }
 
-    parsePlaces(text) {
-      if (!text || text == "") return "";
-      var split_res = text.split(" ");
-      return split_res[split_res.length - 1];
+    parsePlaces(weeks_list) {
+      if (!weeks_list) return "";
+      let places = [];
+      for (const week of weeks_list) {
+        places.push(week.teachingPlace);
+      }
+      return this.getPlacesString(places);
     }
 
     parseWeekNum(weeks_list) {
@@ -1002,7 +1019,7 @@ function ClassListPlugin() {
       }, ...]
     }*/
     parseClassTime(text) {
-      var classes = text.split("<br>");
+      var classes = text.split(/<br>|;/);
       const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
 
       var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1010,48 +1027,48 @@ function ClassListPlugin() {
       var places = [];
 
       for (var item of classes) {
+        if (item == "") continue;
         var words = item.split(/\s|\&nbsp;|,/g);
         var weekday = 0;
-        var is_odd = false, is_even = false;
         var has_week_info = false;
         var has_lesson_time_info = false;
         var place = [];
 
-        for (var jtem of words) {
-          if (jtem[0] == "周") {
-            weekday = weekday_to_num[jtem[1]];
-          } else if (jtem[jtem.length - 1] == "周") {
+        for (var word of words) {
+          if (word[0] == "周") {
+            weekday = weekday_to_num[word[1]];
+          } else if (/周(\((单|双)\))?$/.test(word)) {
             has_week_info = true;
-            if (jtem.search("单周") != -1) {
+            if (word.search("单") != -1) {
               for (var i = 1; i <= total_weeks; i += 2)
                 weeks[i] = 1;
               ans[ans.length - 1].type = "odd";
-            } else if (jtem.search("双周") != -1) {
+            } else if (word.search("双") != -1) {
               for (var i = 2; i <= total_weeks; i += 2)
                 weeks[i] = 1;
               ans[ans.length - 1].type = "even";
             } else {
-              var num_arr = jtem.match(/(\d+)+/g);
+              var num_arr = word.match(/(\d+)+/g);
               if (num_arr.length == 1)
                 weeks[parseInt(num_arr[0])] = 1;
               else if (num_arr.length == 2)
                 for (var i = parseInt(num_arr[0]); i <= Math.min(total_weeks, parseInt(num_arr[1])); i++)
                   weeks[i] = 1;
             }
-          } else if (jtem.search(/从第(\d+)周开始/) != -1) {
+          } else if (/从第(\d+)周开始/.test(word)) {
             has_week_info = true;
-            var start_week = parseInt(jtem.match(/(?:从第)(\d+)(?:周开始)/)[1]);
-            if (jtem.search("单周") != -1) {
+            var start_week = parseInt(word.match(/(?:从第)(\d+)(?:周开始)/)[1]);
+            if (word.search("单周") != -1) {
               for (var i = start_week; i <= total_weeks; i += 2)
                 weeks[i] = 1;
               ans[ans.length - 1].type = "odd";
-            } else if (jtem.search("双周") != -1) {
+            } else if (word.search("双周") != -1) {
               for (var i = start_week; i <= total_weeks; i += 2)
                 weeks[i] = 1;
               ans[ans.length - 1].type = "even";
             }
-          } else if (jtem[jtem.length - 1] == "节") {
-            var num_arr = jtem.match(/(\d+)+/g);
+          } else if (word[word.length - 1] == "节") {
+            var num_arr = word.match(/(\d+)+/g);
             if (num_arr.length == 1)
               num_arr.push(num_arr[0]);
             if (weekday != 0 && num_arr.length) {
@@ -1064,7 +1081,7 @@ function ClassListPlugin() {
               });
             }
           } else {
-            place.push(jtem);
+            place.push(word);
           }
         }
 
@@ -1089,10 +1106,7 @@ function ClassListPlugin() {
       return {
         lesson_time: ans,
         class_weeknum: ans_weeks,
-        places: places.map((x) => (x.trim().replace(new RegExp("/", 'g'), " ")))
-            .filter((v, i, s) => (s.indexOf(v) === i && v))
-            .join('/')
-            .replace(new RegExp("Ⅱ", 'g'), "II").replace(new RegExp("Ⅰ", 'g'), "I").replace(new RegExp("、", 'g'), " ")
+        places: this.getPlacesString(places)
       };
     }
 
