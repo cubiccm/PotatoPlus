@@ -474,33 +474,42 @@ function() {
         }
       }).done((data) => {
         this.ajax_request = null;
+        if (data.code != "1") { 
+          reject(data.msg);
+          return;
+        }
         if (data.totalCount > 50) {
           let total_list = data.dataList;
           let remaining_count = parseInt(data.totalCount / 50);
           for (let page = 1; page <= parseInt((data.totalCount - 1) / 50); page++) {
             let pg = page;
-            window.setTimeout(() => {$.ajax({
-              type: "POST",
-              url: BaseUrl + "/sys/xsxkapp/elective/" + target_page,
-              data: getListParam(pg),
-              headers: {
-                "token": sessionStorage.token
-              }
-            }).done((ndata) => {
-              if (ndata.code != "1") reject(ndata.msg);
-              total_list = total_list.concat(ndata.dataList);
-              remaining_count--;
-              if (remaining_count == 0) {
-                this.parse(total_list);
-                resolve();
-              }
-            }).fail((ndata) => {
-              remaining_count--;
-              if (remaining_count == 0) {
-                this.parse(total_list);
-                resolve();
-              }
-            });}, page * 500);
+            window.setTimeout(function () {
+              $.ajax({
+                type: "POST",
+                url: BaseUrl + "/sys/xsxkapp/elective/" + target_page,
+                data: getListParam(pg),
+                headers: {
+                  "token": sessionStorage.token
+                }
+              }).done((ndata) => {
+                if (ndata.code != "1") {
+                  reject(ndata.msg);
+                  return;
+                }
+                total_list = total_list.concat(ndata.dataList);
+                remaining_count--;
+                if (remaining_count == 0) {
+                  this.parse(total_list);
+                  resolve();
+                }
+              }).fail((ndata) => {
+                remaining_count--;
+                if (remaining_count == 0) {
+                  this.parse(total_list);
+                  resolve();
+                }
+              });
+            }, page * 500);
           }
         } else {
           this.parse(data.dataList);
