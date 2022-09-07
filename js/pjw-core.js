@@ -4,6 +4,7 @@ let pjw = {
   site: "",
   mode: "",
   initialized: false,
+  version_description: "PotatoPlus 0.3.6 包含界面小更新与错误修复。",
   switch: function() {
     if (store.has("enabled")) {
       store.remove("enabled");
@@ -14,8 +15,8 @@ let pjw = {
     }
   },
   switchShareUsageData: function() {
-    if (store.has("share_usage_data")) {
-      store.remove("share_usage_data");
+    if (store.get("share_usage_data") == true) {
+      store.set("share_usage_data", false);
       return false;
     } else {
       store.set("share_usage_data", true);
@@ -258,6 +259,24 @@ window.potatojw_intl = function() {
     class_select_funcs[mode]();
   }
 
+  var getBulletin = function() {
+    if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
+      const is_sharing_stats = store.get("share_usage_data") == true
+          || (store.has("login_settings") && "share_stats" in store.get("login_settings") 
+              && store.get("login_settings")["share_stats"] == true);
+      const html = `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw.version}&share_stats=${is_sharing_stats ? 1 : 0}&site=${pjw.site}" width="300" height="300" style="display: none;"></iframe>`;
+    
+      window.addEventListener("message", (e) => {
+        if (e.origin !== "https://cubiccm.ddns.net") return;
+        store.set("bulletin_update_timestamp", new Date().getTime());
+        store.set("bulletin_content", e.data);
+        $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
+      });
+
+      $$("body").append(html);
+    }
+  }
+
   if (pjw.mode == "main_page") {
     window.pconsole = new PJWConsole();
     if (typeof(window.alert_data) != "undefined") {
@@ -275,7 +294,7 @@ window.potatojw_intl = function() {
 
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>PotatoPlus 0.3.6 包含界面小更新与错误修复。</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>${pjw.version_description}</span></p>
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
@@ -323,10 +342,14 @@ window.potatojw_intl = function() {
         return "查看教学周历";
     }
 
+    const date_html = `
+      <heading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</heading><br>
+      <subheading><a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank" style="margin-left: 0;">${calcCurrentWeek()}</a></subheading>`
+    ;
+
     const menu_html = `
       <div id="pjw-menu" class="pjw-card">
-        <heading>${new Date().getMonth() + 1}月${new Date().getDate()}日 星期${cn_days_name[new Date().getDay()]}</heading><br>
-        <subheading><a href="https://jw.nju.edu.cn/qxnjxxl/list.htm" target="_blank" style="margin-left: 0;">${calcCurrentWeek()}</a></subheading>
+        ${date_html}
         <br>
         <br>
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgb(30, 50, 180);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
@@ -355,17 +378,7 @@ window.potatojw_intl = function() {
       </div>
     `;
 
-    if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
-      var is_sharing_stats = store.has("login_settings") && "share_stats" in store.get("login_settings") && store.get("login_settings")["share_stats"] == true;
-      welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw.version}&share_stats=${is_sharing_stats ? 1 : 0}" width="300" height="300" style="display: none;"></iframe>`;
-
-      window.addEventListener("message", (e) => {
-        if (e.origin !== "https://cubiccm.ddns.net") return;
-        store.set("bulletin_update_timestamp", new Date().getTime());
-        store.set("bulletin_content", e.data);
-        $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
-      });
-    }
+    getBulletin();
     
     $$("#Function").before(menu_html);
     $$("#pjw-menu").append($$("#Function"));
@@ -430,13 +443,34 @@ window.potatojw_intl = function() {
       const target = $("#pjw-share-usage-data-switch").parent();
       if (pjw.switch()) target.show();
       else target.hide();
+      if (!store.has("share_usage_data"))
+        store.set("share_usage_data", true);
     });
 
     const share_usage_data_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-share-usage-data-switch"));
-    share_usage_data_switch.selected = store.has("share_usage_data");
+    share_usage_data_switch.selected = !store.has("share_usage_data") || store.get("share_usage_data") == true;
     if (!store.has("enabled"))
       $("#pjw-share-usage-data-switch").parent().hide();
     $("#pjw-share-usage-data-switch").on("click", () => { pjw.switchShareUsageData(); });
+
+    const welcome_html = `
+      <div class="pjw-xk-welcome-card">
+        <p id="pjw-bulletin-content" style="font-size: 14px;">${store.get("bulletin_content") || ""}</p>
+        <div class="pjw-xk-welcome-link-container">
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="font-weight: bold;">PotatoPlus ${pjw.version}</a>
+          <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
+        </div>
+        <div class="pjw-xk-welcome-link-container">
+          <a href="https://cubiccm.ddns.net/potato-mailing-list/" target="_blank">加入邮件列表</a>
+          <a href="mailto:illimosity@gmail.com">发送反馈邮件</a>
+          <a href="https://cubiccm.ddns.net/about" target="_blank">@Limos</a>
+        </div>
+      </div>
+    `;
+
+    $("div.language").before(welcome_html);
+
+    getBulletin();
     
   } else if (pjw.mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
@@ -1075,8 +1109,10 @@ window.potatojw_intl = function() {
   } else if (pjw.mode == "course_info") {
     $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
   } else if (pjw.mode == "course") {
-    if (store.has("enabled"))
+    $(".user-dropdown").prepend(`<div style="cursor: pointer; color: #4D87F2; line-height: 17px; margin-bottom: 20px;" onclick="window.pjw.switch();window.location.reload();">${store.has("enabled") ? "禁用" : "启用"} PotatoPlus (Beta)</div>`);
+    if (store.has("enabled")) {
       enterMode("course");
+    }
   } else {
     return;
   }

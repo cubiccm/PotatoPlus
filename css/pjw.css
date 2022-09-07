@@ -349,7 +349,7 @@ body {
 }
 
 .pjw-xk-welcome-wrapper {
-  padding: 12px 32px;
+  margin: 4px 32px 12px 32px;
   display: flex;
   flex-direction: column;
 }
@@ -368,7 +368,42 @@ body {
   margin: 0 6px;
 }
 
-.login-div {
+.pjw-xk-welcome-card {
+  padding: 12px 24px;
+  background: linear-gradient(50deg, rgba(99, 6, 95, 0.9) 0%, rgba(93, 42, 175, 0.9) 60%, rgba(255, 71, 71, 0.9) 100%);
+}
+
+.pjw-xk-welcome-card > p {
+  color: rgba(255, 255, 255, .87);
+}
+
+.pjw-xk-welcome-link-container {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.pjw-xk-welcome-link-container > a {
+  color: rgba(255, 255, 255, .6);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.pjw-xk-welcome-link-container > a:hover {
+  color: rgba(255, 255, 255, .9);
+  margin-right: 4px;
+}
+
+.pjw-xk-welcome-link-container > a:hover::after {
+  content: "arrow_right";
+  font-family: "Material Icons Round";
+}
+
+.login-div,.cv-login,.cv-user {
   height: auto !important;
 }
 
