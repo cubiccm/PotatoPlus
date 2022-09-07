@@ -1,104 +1,143 @@
+let pjw = {
+  version: "",
+  platform: "General Plugin",
+  site: "",
+  mode: "",
+  initialized: false,
+  switch: function() {
+    if (store.has("enabled")) {
+      store.remove("enabled");
+      return false;
+    } else {
+      store.set("enabled", true);
+      return true;
+    }
+  },
+  switchShareUsageData: function() {
+    if (store.has("share_usage_data")) {
+      store.remove("share_usage_data");
+      return false;
+    } else {
+      store.set("share_usage_data", true);
+      return true;
+    }
+  }
+};
+window.pjw = pjw;
+
+const info = document.querySelector("meta[name=\"pjw\"]");
+pjw.version = info.getAttribute("version");
+pjw.mode = info.getAttribute("mode");
+pjw.site = (window.location.host == "xk.nju.edu.cn" ? "xk" : "jw");
+
 window.potatojw_intl = function() {
-  if (typeof(window.pjw_version) == "string") return;
-
-  window.pjw_platform = "@platform@";
-  if (window.pjw_platform[0] == "@")
-    window.pjw_platform = "General Plugin";
-
-  window.pjw_version = "@version@";
-  if (window.pjw_version[0] == "@")
-    window.pjw_version = "0.3.6";
+  if (pjw.initialized == true) return;
+  pjw.initialized = true;
   
   if (jQuery.fn.jquery == "3.5.1")
     window.$$ = jQuery.noConflict();
   else
     window.$$ = $;
 
-  var head_metadata = `
+  const head_metadata = `
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
     <link rel="shortcut icon" href="https://www.nju.edu.cn/_upload/tpl/01/36/310/template310/images/16.ico" type="image/x-icon">
   `;
   $$("head").prepend(head_metadata);
 
-  // UI Improvement
-  if ($$("#Function").length) {
-    $$("#Function").addClass("light");
-    $$("#Function").find("li").on("click", (e) => {
-      window.location.href = $$(e.delegateTarget).find("a").attr("href");
+  const google_analytics_js = `
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173014211-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-173014211-1', {
+      'custom_map': {'dimension1': 'version'}
     });
-  }
+    gtag('event', 'version_dimension', {'version': pjw.version + " " + pjw.platform});
+  </script>
+  `;
 
-  if ($$("#UserInfo").length) {
-    $$("#UserInfo").html(`
-      <div id="pjw-user-info" onclick="window.location.href = '/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse';">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
-        <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
-      </div>
-    `);
-    if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
-    $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
-      else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
-      e.stopPropagation();
-    });
-    $$("#TopLink").children("img").remove();
-    if ($$(".Line").length) {
-      $$("table").find("tr").each((index, obj) => {
-        if ($$(obj).html().trim() == "")
-          $$(obj).remove();
-      });
-      $$("table").find("td[align=right] > b").css({
-        "font-size": "14px",
-        "color": "rgba(0, 0, 0, .75)",
-        "font-weight": "bold"
-      });
-      $$("table").find("td[align=left] > b").css({
-        "font-size": "14px",
-        "color": "rgba(0, 0, 0, .65)",
-        "font-weight": "normal"
-      });
-      $$("table").find("td[align=left] > b > a").css({
-        "font-size": "14px",
-        "color": "rgba(0, 0, 0, .65)",
-        "font-weight": "normal"
+  if (pjw.site == "jw") {
+    if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
+      $$("head").append($$(google_analytics_js));
+    }
+
+    if ($$("#Function").length) {
+      $$("#Function").addClass("light");
+      $$("#Function").find("li").on("click", (e) => {
+        window.location.href = $$(e.delegateTarget).find("a").attr("href");
       });
     }
-  }
 
-  if ($$("div#TopLink").length > 0) {
-    $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw_version}</span>
-      <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
-  }
-
-  window.reset_storage_confirm = false;
-  window.reset_storage_timeout = 0;
-  window.resetStorage = function() {
-    if (reset_storage_confirm) {
-      store.clearAll();
-      reset_storage_confirm = false;
-      $$("#reset_storage").html("重置存储");
-      clearInterval(reset_storage_timeout);
-    } else {
-      $$("#reset_storage").html("确定重置 PotatoPlus 的全部存储？");
-      reset_storage_confirm = true;
-      reset_storage_timeout = setTimeout(() => {
-        $$("#reset_storage").html("重置存储");
+    if ($$("#UserInfo").length) {
+      $$("#UserInfo").html(`
+        <div id="pjw-user-info" onclick="window.location.href = '/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse';">${$$("#UserInfo").html().slice(4).match(/.*?\&/)[0].slice(0, -1)}
+          <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
+        </div>
+      `);
+      if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
+      $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
+        else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+        e.stopPropagation();
+      });
+      $$("#TopLink").children("img").remove();
+      if ($$(".Line").length) {
+        $$("table").find("tr").each((index, obj) => {
+          if ($$(obj).html().trim() == "")
+            $$(obj).remove();
+        });
+        $$("table").find("td[align=right] > b").css({
+          "font-size": "14px",
+          "color": "rgba(0, 0, 0, .75)",
+          "font-weight": "bold"
+        });
+        $$("table").find("td[align=left] > b").css({
+          "font-size": "14px",
+          "color": "rgba(0, 0, 0, .65)",
+          "font-weight": "normal"
+        });
+        $$("table").find("td[align=left] > b > a").css({
+          "font-size": "14px",
+          "color": "rgba(0, 0, 0, .65)",
+          "font-weight": "normal"
+        });
+      }
+    }
+    
+    if ($$("div#TopLink").length > 0) {
+      $$("div#TopLink").html(`<span class="pjw-mini-button" onclick="window.open('https://cubiccm.ddns.net/potatoplus')">v${pjw.version}</span>
+        <span class="pjw-mini-button" id="pjw-logout-button" onclick="window.location.href='exit.do?type=student'">退出登录</span>`);
+    }
+    
+    window.reset_storage_confirm = false;
+    window.reset_storage_timeout = 0;
+    window.resetStorage = function() {
+      if (reset_storage_confirm) {
+        store.clearAll();
         reset_storage_confirm = false;
-      }, 2000);
+        $$("#reset_storage").html("重置存储");
+        clearInterval(reset_storage_timeout);
+      } else {
+        $$("#reset_storage").html("确定重置 PotatoPlus 的全部存储？");
+        reset_storage_confirm = true;
+        reset_storage_timeout = setTimeout(() => {
+          $$("#reset_storage").html("重置存储");
+          reset_storage_confirm = false;
+        }, 2000);
+      }
+    }
+  } else if (pjw.site == "xk") {
+    if (store.get("share_usage_data") == true) {
+      $("head").append($(google_analytics_js));
     }
   }
 
-  console.log(`PotatoPlus v${pjw_version} (${pjw_platform}) by Limos`);
-
-  if (pjw_mode == "") return;
-
-  console.log(pjw_mode + " mode activated");
-
-  if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
-    $$("head").append($$(google_analytics_js));
-  }
-
-  var filter_mode_list = {"major_course": 6};
-  var pjw_classlist_mode_list = {"dis_view": true, "art_view": true, "open_view": true, "all_course_list": true, "dis": true, "open": true, "common": true, "public": true, "read_view": true, "gym": true, "read": true, "grade_info": true, "public_view": true, "union": true, "course": true, "art": true};
+  console.log(`PotatoPlus v${pjw.version} (${pjw.platform}) by Limos`);
+  if (pjw.mode == "") return;
+  console.log(pjw.mode + " mode activated");
 
   const custom_toolbar_html = {
     course_eval: `
@@ -113,92 +152,22 @@ window.potatojw_intl = function() {
       <input type="checkbox" id="share_stats" class="login_settings" checked="checked">
       <label for="share_stats">发送匿名统计数据</label>
     `,
-    filter: `
-      <div id="filter-control-bar">
-        <section>
-          <input type="checkbox" id="filter_switch">
-          <label for="filter_switch">课程过滤器</label>
-          <span class="pjw-mini-button" id="show_filter_setting" onclick="showFilterSettings();">配置</span>
-        </section>
-        <section>
-          <input type="checkbox" id="auto_refresh">
-          <label for="auto_refresh" style="font-weight: bold; margin-right: 8px;">刷新</label>
-          <span style="color: #dedede; font-size: 11px;">标准</span>
-          <input type="range" id="auto_refresh_frequency" style="width: 50px; height: 15px;" value="0" onchange="frequencyUpdate();">
-          <span style="color: #dedede; font-size: 11px;">封号退学</span>
-        </section>
-        <section style="opacity: .6;">
-          <input type="checkbox" id="auto_select" disabled="disabled">
-          <label for="auto_select" style="font-weight: bold;">自动选择 *弃用</label>
-        </section>
-      </div>
-    `,
-    default: `<span>正在此页面上运行。</span>`
   };
 
-  const about_this_project = `
-  <span style="user-select: text;">PotatoPlus v` + pjw_version + `</span>
-  `;
-
-  if (pjw_mode in filter_mode_list) {
-    const filter_setting_html = `
-      <div id="potatojw_mask"></div>
-      <div id="potatojw_filter_setting_frame">
-        <section id="filter_full_class" class="filter_section">
-          <input type="checkbox" id="is_filter_full_class" checked="checked">
-          <label for="is_filter_full_class">仅显示空余课程</label>
-        </section>
-
-        <section id="filter_major" class="filter_section">
-          <h3>专业过滤</h3>
-          <h5>将会自动选择此专业。</h5>
-          <input type="text" id="filter_major_text">
-        </section>
-
-        <section id="filter_grade" class="filter_section">
-          <h3>年级过滤</h3>
-          <h5>将会自动选择此年级。</h5>
-          <input type="text" id="filter_grade_text">
-        </section>
-
-        <section id="filter_class_name" class="filter_section">
-          <h3>课名过滤</h3>
-          <h5>仅显示含有以下关键字的课程。</h5>
-          <input type="text" id="filter_class_name_text">
-        </section>
-        <section id="filter_teacher_name" class="filter_section">
-          <h3>教师过滤</h3>
-          <h5>仅显示含有该教师的课程。</h5>
-          <input type="text" id="filter_teacher_name_text">
-        </section>
-        <section id="filter_time" class="filter_section">
-          <h3>上课时间过滤</h3>
-        </section>
-        <br>
-        <span class="pjw-mini-button" onclick="hideFilterSettings();">完成设置</span>
-        <br><br>
-        <span>请留意，此处的课程过滤器是 PotatoPlus v0.1 的功能，近期未经过测试和更新，请不要依赖此功能。</span>
-        <br>
-        <span>上课时间过滤器暂不能储存，刷新页面后会消失。</span>
-        <br>
-        <span>打开开发者界面（F12 / Option + Command + I）的控制台（Console）可查看输出信息</span>
-        <br>
-        <div class="about-proj"></div>
-      </div>
-    `;
-    $$("body").append(filter_setting_html);
-  }
-
-  if (pjw_mode != "" && !(pjw_mode in pjw_classlist_mode_list) && pjw_mode != "main_page" && pjw_mode != "course_info" && pjw_mode != "xk_system") {
+  // PJW Toolbar for specific pages
+  if (pjw.mode in custom_toolbar_html) {
     $$("body").append(`<div id='pjw-toolbar'><div id="pjw-toolbar-content">` +
-        custom_toolbar_html[(pjw_mode in filter_mode_list ? "filter" : (pjw_mode in custom_toolbar_html ? pjw_mode : "default"))]
+      custom_toolbar_html[pjw.mode]
     + `<div class="about-proj"></div></div></div>`);
+
     const toolbar_button_html = `
-    <div id="pjw-toolbar-collapse-bg"><canvas id="pjw-toolbar-collapse" width="30px" height="30px"></canvas></div>
+      <div id="pjw-toolbar-collapse-bg"><canvas id="pjw-toolbar-collapse" width="30px" height="30px"></canvas></div>
     `;
     $$("#pjw-toolbar").prepend(toolbar_button_html);
 
-    // Initiate toolbar
+    const about_this_project = `
+      <span style="user-select: text;">PotatoPlus v` + pjw.version + `</span>
+    `;
     $$(".about-proj").html(about_this_project);
 
     // Draw collapse button
@@ -268,36 +237,39 @@ window.potatojw_intl = function() {
     }
   }
 
-  if (pjw_mode in pjw_classlist_mode_list)
+  // Initialize ClassList
+  const pjw_classlist_mode_list = ["dis_view", "art_view", "open_view", "all_course_list", "dis", "open", "common", "public", "read_view", "gym", "read", "grade_info", "public_view", "union", "course", "art"];
+  if (pjw_classlist_mode_list.includes(pjw.mode)) {
     ClassListPlugin();
+  }
 
-
-  // Storage Upgrade  
-  if (store.get("version") == null || store.get("version") != pjw_version) {
+  // Storage upgrade upon version upgrade
+  if (store.get("version") == null || store.get("version") != pjw.version) {
     store.set("is_toolbar_collapsed", false);
     store.remove("privilege");
-    store.set("version", pjw_version);
+    store.set("version", pjw.version);
     store.remove("bulletin_update_timestamp");
     store.remove("bulletin_content");
+    store.remove("enable_on_newsystem");
   }
 
   var enterMode = function(mode) {
-    window.pjw_select_mode = pjw_mode;
+    window.pjw_select_mode = pjw.mode;
     class_select_funcs[mode]();
   }
 
-  if (pjw_mode == "main_page") {
+  if (pjw.mode == "main_page") {
     window.pconsole = new PJWConsole();
     if (typeof(window.alert_data) != "undefined") {
       pconsole.alert(window.alert_data);
     }
-
+    
     $$("div#TopLink").prepend(`<span class="pjw-mini-button" style="color: gray; opacity: 0.7;" onclick="resetStorage();" id="reset_storage">重置存储</span>`);
 
     var update_html = "";
-    if (pjw_platform == "Userscript") {
+    if (pjw.platform == "Userscript") {
       update_html = `<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/potatoplus.user.js">&gt; 获取更新 - Userscript</a><br><br>PotatoPlus 浏览器扩展已经在<a href="https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba" target="_blank">Chrome网上应用店</a>和<a href="https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib" target="_blank">Microsoft Edge Add-ons</a>上线，您也可以可以到<a href="https://github.com/cubiccm/potatoplus/releases/latest/download/PotatoPlus.xpi" target="_blank">GitHub Releases</a>获取适用于 Firefox 浏览器的插件。迁移到插件版本会在部分功能上获得更好的体验；安装插件前请先关闭当前 Userscript 的执行。`;
-    } else if (pjw_platform == "General Plugin") {
+    } else if (pjw.platform == "General Plugin") {
       update_html = `您所安装的版本可能不支持自动更新，请访问<a href="https://github.com/cubiccm/potatoplus/releases/latest/" target="_blank">GitHub Releases</a>页面检查及获取更新。`;
     }
 
@@ -308,7 +280,7 @@ window.potatojw_intl = function() {
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         <note>
-          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw_version}</a>
+          <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="margin-left: 0;">PotatoPlus ${pjw.version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
           <a href="https://cubiccm.ddns.net/potato-mailing-list/" target="_blank">加入邮件列表</a>
           <a href="mailto:illimosity@gmail.com">发送反馈邮件</a>
@@ -384,8 +356,8 @@ window.potatojw_intl = function() {
     `;
 
     if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
-      var is_sharing_stats = ("share_stats" in store.get("login_settings")) && (store.get("login_settings")["share_stats"] == true);
-      welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw_version}&share_stats=${is_sharing_stats ? 1 : 0}" width="300" height="300" style="display: none;"></iframe>`;
+      var is_sharing_stats = store.has("login_settings") && "share_stats" in store.get("login_settings") && store.get("login_settings")["share_stats"] == true;
+      welcome_html += `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw.version}&share_stats=${is_sharing_stats ? 1 : 0}" width="300" height="300" style="display: none;"></iframe>`;
 
       window.addEventListener("message", (e) => {
         if (e.origin !== "https://cubiccm.ddns.net") return;
@@ -394,23 +366,79 @@ window.potatojw_intl = function() {
         $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
       });
     }
-
+    
     $$("#Function").before(menu_html);
     $$("#pjw-menu").append($$("#Function"));
     $$("#Function:eq(1)").remove();
     $$("#Function").addClass("main-page-function");
-
+    
     $$(".Line").before(welcome_html);
     $$(".Line").remove();
-
+    
     $$(".pjw-menu-button").on("click", (e) => {
       e.stopPropagation();
       var target = $$(e.delegateTarget);
       if (target.attr("data-link"))
         window.location.href = target.attr("data-link");
-    })
+    });
     window.mdc.autoInit();
-  } else if (pjw_mode == "course_eval") {
+  } else if (pjw.mode == "welcome") {
+    const pjw_options_html = `
+    <div class="pjw-xk-welcome-wrapper">
+      <div class="pjw-xk-welcome-option">
+        <button id="pjw-enable-switch" class="mdc-switch mdc-switch--unselected" type="button" role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
+          <div class="mdc-switch__track"></div>
+          <div class="mdc-switch__handle-track">
+            <div class="mdc-switch__handle">
+              <div class="mdc-switch__shadow">
+                <div class="mdc-elevation-overlay"></div>
+              </div>
+              <div class="mdc-switch__ripple"></div>
+            </div>
+          </div>
+          <span class="mdc-switch__focus-ring-wrapper">
+            <div class="mdc-switch__focus-ring"></div>
+          </span>
+        </button>
+        <label for="pjw-enable-switch">启用 PotatoPlus (Beta)</label>
+      </div>
+
+      <div class="pjw-xk-welcome-option" style="margin-left: 16px;">
+        <button id="pjw-share-usage-data-switch" class="mdc-switch mdc-switch--unselected" type="button" role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
+          <div class="mdc-switch__track"></div>
+          <div class="mdc-switch__handle-track">
+            <div class="mdc-switch__handle">
+              <div class="mdc-switch__shadow">
+                <div class="mdc-elevation-overlay"></div>
+              </div>
+              <div class="mdc-switch__ripple"></div>
+            </div>
+          </div>
+          <span class="mdc-switch__focus-ring-wrapper">
+            <div class="mdc-switch__focus-ring"></div>
+          </span>
+        </button>
+        <label for="pjw-share-usage-data-switch">发送匿名统计数据</label>
+      </div>
+    </div>
+    `;
+    $("div.language").before(pjw_options_html);
+
+    const enable_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-enable-switch"));
+    enable_switch.selected = store.has("enabled");
+    $("#pjw-enable-switch").on("click", () => {
+      const target = $("#pjw-share-usage-data-switch").parent();
+      if (pjw.switch()) target.show();
+      else target.hide();
+    });
+
+    const share_usage_data_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-share-usage-data-switch"));
+    share_usage_data_switch.selected = store.has("share_usage_data");
+    if (!store.has("enabled"))
+      $("#pjw-share-usage-data-switch").parent().hide();
+    $("#pjw-share-usage-data-switch").on("click", () => { pjw.switchShareUsageData(); });
+    
+  } else if (pjw.mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
       document.getElementById("td" + g_evlId).innerHTML = quick_eval_mode_enabled ? "已自动评价" : "已评";
@@ -459,7 +487,7 @@ window.potatojw_intl = function() {
         $$("#toggle_auto_eval_button").html("停用自动评价");
       }
     };
-  } else if (pjw_mode == "all_course_list") {
+  } else if (pjw.mode == "all_course_list") {
     // if ($$("#termList > option:eq(1)").val() != "20222")
     //   $$("#termList > option:eq(1)").before('<option value="20222">*2022-2023学年第二学期</option>');
     $$("#termList > option:eq(1)").before('<option value="pjw_custom_term">*自定学期...</option>');
@@ -646,7 +674,7 @@ window.potatojw_intl = function() {
         fillCompleted();
       });
     }
-  } else if (pjw_mode == "union") {
+  } else if (pjw.mode == "union") {
     var modes_map = [
       {"name": "通识课补选", "mode": "dis", "func": "dis_public"},
       {"name": "公选课补选", "mode": "public", "func": "dis_public"},
@@ -692,94 +720,23 @@ window.potatojw_intl = function() {
       var func = $$(this).attr("data-func") || mode;
       class_select_funcs[func]();
     });
-  } else if (pjw_mode == "gym") {
+  } else if (pjw.mode == "gym") {
     enterMode("gym");
-  } else if (pjw_mode == "read") {
+  } else if (pjw.mode == "read") {
     enterMode("read");
-  } else if (pjw_mode == "read_view") {
+  } else if (pjw.mode == "read_view") {
     enterMode("read_view");
-  } else if (pjw_mode == "common") {
+  } else if (pjw.mode == "common") {
     enterMode("common");
-  } else if (pjw_mode == "dis" || pjw_mode == "public" || pjw_mode == "art") {
+  } else if (pjw.mode == "dis" || pjw.mode == "public" || pjw.mode == "art") {
     enterMode("dis_public");
-  } else if (pjw_mode == "dis_view" || pjw_mode == "public_view" || pjw_mode == "art_view") {
+  } else if (pjw.mode == "dis_view" || pjw.mode == "public_view" || pjw.mode == "art_view") {
     enterMode("dis_public_view");
-  } else if (pjw_mode == "open") {
+  } else if (pjw.mode == "open") {
     enterMode("open");
-  } else if (pjw_mode == "open_view") {
+  } else if (pjw.mode == "open_view") {
     enterMode("open_view");
-  } else if (pjw_mode == "major_course") {
-    window.hideCourseDetail = function(response){
-      $('courseDetail').style.visibility = "hidden";
-      if (auto_select_switch) doAutoClassSelect();
-    }
-    window.initClassList = function(success_func = function() {}) {
-      var filtered_major = filter_settings.filter_major_text;
-      var filtered_grade = filter_settings.filter_grade_text;
-      if ($$("#specialityList").length > 0 && (filtered_major && filtered_grade)) {
-        $$("#specialityList").val($$("#specialityList").find('option:contains("' + filtered_major + '")').val());
-        $$("#gradeList").val($$("#gradeList").find('option:contains("' + filtered_grade + '")').val());
-      }
-      if ($$("#specialityList").length > 0) {
-        specialityChange();
-        return;
-      }
-      var pars = 'method=specialityCourseList';
-      var myAjax = new Ajax.Updater(
-        'courseList',
-        '/jiaowu/student/elective/courseList.do',
-        {
-          method : 'post',
-          parameters : pars,
-          evalScript : true
-        }
-      );
-    };
-
-    window.completeSelected = function(response) {
-      $('courseOperation').innerHTML = response.responseText;
-      if (document.getElementById('errMsg') != null) {
-        alert(document.getElementById('errMsg').title);
-        return;
-      }
-      if (document.getElementById("tdSelected" + g_selectingCourseNumber) != null) {
-        document.getElementById("tdSelected" + g_selectingCourseNumber).innerHTML = "<font color='#000000'>已选</font>";
-        stopAuto();
-      }
-    }
-
-    window.class_list_auto_triggered = false;
-    window.showCourseDetail = function(res){
-      $('courseDetail').style.visibility = "visible";
-      if (class_list_auto_triggered == true && auto_select_switch == true) {
-        class_list_auto_triggered = false;
-        $$("div#classList > table > tbody > tr").each(function() {
-          var current_teacher_name = $$(this).find("td:eq(1) > table > tbody > tr:eq(2) > td:eq(1)").html();
-          if (current_teacher_name.indexOf(filter_settings.filter_teacher_name_text) < 0)
-            return true;
-          console.log("Class Match. Selection requested.");
-          $$(this).children("td:eq(2)").children("input")[0].click();
-          selectClass();
-        })
-      }
-    }
-
-    window.checkCourse = function(element) {
-      var current_class_name = $$(element).children("td:eq(1)").html();
-      if (current_class_name.indexOf(filter_settings.filter_class_name_text) < 0)
-        return true;
-      if ($$(element).children("td:eq(7)").html() == "已选")
-        return true;
-      $$(element).children("td:eq(7)")[0].click();
-      class_list_auto_triggered = true;
-    };
-
-    $$(document).ready(function() {
-      showFilter("grade");
-      showFilter("major");
-      $$("#filter_switch").css("display", "none");
-    });
-  } else if (pjw_mode == "login_page") {
+  } else if (pjw.mode == "login_page") {
     $$("body").prepend(`
       <div id="pjw-login-mask" style="position: fixed; top: 0; left: 0; height: 100%; width: 100%; background-color: rgba(0, 0, 0, .2); display: flex; align-items: center; justify-content: center; z-index: 1000;">
       <div style="display: flex; flex-direction: column; align-items: center; border-radius: 30px; background-color: white; padding: 30px 20px;">
@@ -961,7 +918,7 @@ window.potatojw_intl = function() {
       fillCAPTCHA();
     });
     window.mdc.autoInit();
-  } else if (pjw_mode == "grade_info") {
+  } else if (pjw.mode == "grade_info") {
     window.pconsole = new PJWConsole();
 
     window.list = new PJWMiniList();
@@ -1115,270 +1072,31 @@ window.potatojw_intl = function() {
       $$("table:eq(0) > tbody > tr:eq(1) > td:eq(1) > div > table > tbody").prepend(`<div class="pjw-mini-button" onclick="window.location.href = '/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList&termCode=all';">加载所有学期成绩</div>`);
     }
     
-  } else if (pjw_mode == "course_info") {
+  } else if (pjw.mode == "course_info") {
     $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
-  } else if (pjw_mode == "course") {
-    $$(".cv-btn.yxkc-window-btn").after(`<button class="cv-btn yxkc-window-btn" onclick="window.switch_pjw();">${store.has("enable_on_newsystem") ? "禁用" : "启用"} PotatoPlus</button>`);
-    if (store.has("enable_on_newsystem")) {
-      window.switch_pjw = () => {
-        store.remove("enable_on_newsystem");
-        window.location.reload();
-      };
+  } else if (pjw.mode == "course") {
+    if (store.has("enabled"))
       enterMode("course");
-    } else {
-      window.switch_pjw = () => {
-        window.confirm("新选课系统中的 PotatoPlus 仅供测试之用，还存在很多已知的问题与缺陷。要启用吗？") && (store.set("enable_on_newsystem", true) || window.location.reload());
-      };
-      return;
-    }
   } else {
     return;
   }
+};
 
-  if (pjw_mode in filter_mode_list) {
-    window.select_class_button_index = {
-    };
-
-    window.class_name_index = {
-      "major_course": -1
-    };
-
-    window.teacher_name_index = {
-      "major_course": -1
-    };
-
-    window.class_time_index = {
-    };
-
-    if (store.get("filter_settings_" + pjw_mode) == null || store.get("filter_settings_" + pjw_mode) == "")
-      window.filter_settings = {};
-    else
-      window.filter_settings = store.get("filter_settings_" + pjw_mode);
-
-    $$(document).ready(function() {
-      if (typeof(class_name_index[pjw_mode]) != "undefined")
-        showFilter("class_name");
-      if (typeof(teacher_name_index[pjw_mode]) != "undefined")
-        showFilter("teacher_name");
-      if (typeof(class_time_index[pjw_mode]) != "undefined")
-        showFilter("time");
-      if (typeof(isClassFull) != "undefined")
-        showFilter("full_class");
-    });
-    window.showFilter = function(filter_name) {
-      $$("#filter_" + filter_name).css("display", "block");
-    };
-
-    window.showFilterSettings = function() {
-      $$("#potatojw_mask").css("display", "block");
-      $$("#potatojw_filter_setting_frame").css("display", "block");
-      $$("#is_filter_full_class").prop("checked", filter_settings.is_filter_full_class);
-      $$("#potatojw_filter_setting_frame input").each(function() {
-        if ($$(this).attr("id") in filter_settings)
-          $$(this).val(filter_settings[$$(this).attr("id")]);
-      });
-    };
-
-    window.hideFilterSettings = function() {
-      $$("#potatojw_filter_setting_frame input").each(function() {
-        filter_settings[$$(this).attr("id")] = $$(this).val();
-      });
-      filter_settings["is_filter_full_class"] = $$('#is_filter_full_class').is(":checked");
-      applyFilter();
-      $$("#potatojw_mask").css("display", "none");
-      $$("#potatojw_filter_setting_frame").css("display", "none");
-      store.set("filter_settings_" + pjw_mode, window.filter_settings);
-      $$("#filter_switch").prop("checked", true);
-      $$("#filter_switch").trigger("change");
-    };
-
-    window.applyFilter = function() {
-      getAllClassDOM().each(function() {
-        $$(this).css("display", (filterClass(this) ? "table-row" : "none"));
-      });
-    };
-
-    // Register control bar event
-    window.auto_refresh_interval_id = -1;
-    $$("#auto_refresh").change(function() {
-      $$("#auto_refresh").prop("checked") ? (function() {
-        startAutoRefresh();
-      } ()) : (function() {
-        stopAutoRefresh();
-      } ());
-    });
-
-    $$("#filter_switch").change(function() {
-      applyFilter();
-      $$("#auto_select").prop("disabled", false);
-      $$("#auto_select").trigger("change");
-    });
-
-    window.auto_select_switch = false;
-    $$("#auto_select").change(function() {
-      window.auto_select_switch = $$("#auto_select").prop("checked");
-    });
-
-    window.stopAuto = function(){
-      $$("#auto_refresh").prop("checked", false);
-      $$("#auto_refresh").trigger("change");
-      $$("#auto_select").prop("checked", false);
-      $$("#auto_select").trigger("change");
-    };
-
-    window.getAllClassDOM = function() {
-      return (pjw_mode == "open" ? $$("div#tbCourseList > tbody > tr:gt(0)") : $$("table#tbCourseList:eq(0) > tbody > tr"));
-    };
-
-    window.getNumberInNormalDistribution = function(mean, std_dev, lower_limit, upper_limit) {
-      var res = Math.floor(mean + randomNormalDistribution() * std_dev);
-      if (res >= upper_limit) return upper_limit;
-      if (res >= mean) return res;
-      res = mean - (mean-res) * 0.8;
-      if (res < lower_limit) return lower_limit;
-      return res;
-    };
-
-    window.randomNormalDistribution = function() {
-      var u=0.0, v=0.0, w=0.0, c=0.0;
-      do {
-        u = Math.random()*2 - 1.0;
-        v = Math.random()*2 - 1.0;
-        w = u*u + v*v;
-      } while (w == 0.0 || w >= 1.0)
-      c = Math.sqrt((-2 * Math.log(w)) / w);
-      return u * c;
-    };
-
-    window.auto_refresh_frequency = 1.0,
-    window.auto_refresh_loss_rate = 0.1;
-
-    // Auto-update class list
-    window.startAutoRefresh = function() {
-      initClassList(function() {doAutoClassSelect();});
-      window.auto_refresh_loss_rate = 0.1 + getNumberInNormalDistribution(10, 10, 0, 20) / 100;
-      var auto_check_times = 1;
-      console.log("First time refreshed.");
-      var random_interval = auto_refresh_frequency * getNumberInNormalDistribution(Math.floor(Math.random() * 600) + 1400, 800, 800, 3000);
-      window.auto_refresh_interval_id = window.setInterval(function() {
-        if (Math.random() < window.auto_refresh_loss_rate) return;
-        window.setTimeout(function() {
-          initClassList(function() {doAutoClassSelect();});
-          console.log((++auto_check_times) + " times refreshed.");
-        }, getNumberInNormalDistribution(random_interval * 0.3, random_interval * 0.3, 60, random_interval * 0.8));
-      }, random_interval);
-    };
-
-    window.stopAutoRefresh = function() {
-      window.clearInterval(window.auto_refresh_interval_id);
-      window.auto_refresh_interval_id = -1;
-    };
-
-    window.frequencyUpdate = function() {
-      window.auto_refresh_frequency = 1.0 / (1.0 + parseInt($$("#auto_refresh_frequency").val()) / 25);
-      if (window.auto_refresh_interval_id != -1) {
-        stopAutoRefresh();
-        startAutoRefresh();
-      }
-    };
-
-    // Select class automatically based on filter
-    window.doAutoClassSelect = function() {
-      if (auto_select_switch == false) return;
-      getAllClassDOM().each(function() {
-        if (auto_select_switch == false) return;
-        if (pjw_mode == "major_course") {
-          checkCourse(this); return;
-        }
-        if (!filterClass(this)) return;
-        if (typeof(isClassFull) == "function" && !isClassFull(this)) {
-          $$(this).children("td:eq(" + select_class_button_index[pjw_mode] + ")").children("a")[0].click();
-          console.log("Class Selected: " + $$(this).children("td:eq(" + class_name_index[pjw_mode] + ")").html());
-          stopAuto();
-        }
-      });
-    };
-
-    // Get the time of a given class
-    // 获取课程上课时间
-    window.getClassTime = function(element) {
-      return $$(element).children("td:eq(" + class_time_index[pjw_mode] + ")").html();
-    };
-
-    window.time_list = new Array();
-    window.updateFilterList = function() {
-      time_list = [];
-      $$("section#filter_time > input").css("display", "none");
-      $$("section#filter_time > label").css("display", "none");
-      $$("section#filter_time > br").css("display", "none");
-      var date_num = 0;
-      getAllClassDOM().each(function() {
-        if (typeof(class_time_index[pjw_mode]) != "undefined") {
-          var current_time_val = getClassTime(this);
-          var str_array = current_time_val.split("<br>");
-          for (var i = 0; i < str_array.length; i++) {
-            if (time_list.includes(str_array[i])) return;
-            time_list.push(str_array[i]);
-            var filter_time_append_html = `
-              <input type="checkbox" class="filter_time_checkbox" id="filter_time_checkbox_` + date_num + `" checked="checked">
-              <label for="filter_time_checkbox_` + (date_num++) + `">` + str_array[i] + `</label><br>
-            `;
-            $$("section#filter_time").append(filter_time_append_html);
-          }
-        }
-      });
-    };
-    updateFilterList();
-
-    // Check if the given class satisfy the filter
-    // 检查课程是否符合过滤器
-    window.filterClass = function(element) {
-      if ($$("#filter_switch").prop("checked") == false || pjw_mode == "major_course")
-        return true;
-      if (filter_settings.is_filter_full_class == true)
-        if (typeof(isClassFull) == "function" && isClassFull(element))
-          return false;
-      if (typeof(class_time_index[pjw_mode]) != "undefined") {
-        var current_time_val = getClassTime(element);
-        var str_array = current_time_val.split("<br>");
-        for (var i = 0; i < str_array.length; i++)
-          if (time_list.indexOf(str_array[i]) >= 0 && $$("#filter_time_checkbox_" + time_list.indexOf(str_array[i])).prop("checked") == false)
-            return false;
-      }
-      if (typeof(class_name_index[pjw_mode]) != "undefined") {
-        var current_class_name = $$(element).children("td:eq(" + class_name_index[pjw_mode] + ")").html();
-        if (current_class_name.indexOf(filter_settings.filter_class_name_text) < 0)
-          return false;
-      }
-      if (typeof(teacher_name_index[pjw_mode]) != "undefined") {
-        var current_teacher_name = $$(element).children("td:eq(" + teacher_name_index[pjw_mode] + ")").html();
-        if (current_teacher_name.indexOf(filter_settings.filter_teacher_name_text) < 0)
-          return false;
-      }
-      return true;
-    };
-
-    // Rewrite refresh function
-    // 改写刷新按钮：刷新课程列表
-    window.refreshCourseList = function() {
-      initClassList();
-    };
+window.proto_backup = {
+  reduce: function (callback, initialVal) {
+    // Source: https://stackoverflow.com/questions/55699861/implementing-reduce-from-scratch-not-sure-how-js-knows-what-array-is
+    var accumulator = (initialVal === undefined) ? this[0] : initialVal;
+    var start = (initialVal === undefined) ? 1 : 0;
+    for (var i = start; i < this.length; i++) {
+      accumulator = callback(accumulator, this[i])
+    }
+    return accumulator;
   }
 };
 
-var google_analytics_js = `
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173014211-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-173014211-1', {
-    'custom_map': {'dimension1': 'version'}
-  });
-  gtag('event', 'version_dimension', {'version': pjw_version + " " + pjw_platform});
-</script>
-`;
+if (/(\/jiaowu\/student\/index.do|\/jiaowu\/login.do)/i.test(window.location.href)) {
+  alert = function(x) {window.alert_data = x;};
+}
 
 (function() {
   if (document.readyState == "complete")

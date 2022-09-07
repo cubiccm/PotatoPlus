@@ -23,6 +23,9 @@
     "resources": ["js/*","css/*","fonts/*"],
     "matches": ["*://*.nju.edu.cn/*"]
   }],
+  "permissions": [
+    "nativeMessaging"
+  ],
   "host_permissions": [
     "*://*.nju.edu.cn/jiaowu*",
     "*://xk.nju.edu.cn/*"

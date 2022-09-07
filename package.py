@@ -33,8 +33,8 @@ for version in versions:
             with open(root + "/" + file, "r", encoding="utf-8") as corejs:
               lines = corejs.readlines()
               for line in lines:
-                if line.find("@platform@") != -1:
-                  data = data + line.replace("@platform@", version["label"])
+                if line.find("platform: \"General Plugin\"") != -1:
+                  data = data + line.replace("General Plugin", version["label"])
                 else:
                   data = data + line
             f.writestr(root + "/" + file, data)

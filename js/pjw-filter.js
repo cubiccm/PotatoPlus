@@ -192,7 +192,7 @@ var pjw_filter = {
             setLessonTime(space, store.get("my_lesson_time"));
             resolve();
           } else {
-            if (pjw_mode == "course") {
+            if (pjw.mode == "course") {
               var stu_info = JSON.parse(sessionStorage.studentInfo);
               $$.ajax({
                 url: "/xsxkapp/sys/xsxkapp/elective/courseResult.do",

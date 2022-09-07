@@ -91,7 +91,7 @@ function ClassListPlugin() {
           if ("key" in item) {
             if (item.key == "课程编号") {
               var link = "";
-              if (pjw_mode == "course")
+              if (pjw.mode == "course")
                 link = `/xsxkapp/sys/xsxkapp/*default/courseInfoElective.do?number=${item.val}&teachingClassID=${classID}`;
               else
                 link = `/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}`;
@@ -1410,7 +1410,7 @@ function ClassListPlugin() {
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>
                   <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label">${pjw_mode == "course" ? "本地搜索" : "搜索"}</span>
+                    <span class="mdc-floating-label" id="pjw-classlist-search-input__label">${pjw.mode == "course" ? "本地搜索" : "搜索"}</span>
                   </span>
                   <span class="mdc-notched-outline__trailing"></span>
                 </span>
@@ -1677,7 +1677,7 @@ function ClassListPlugin() {
         if (!(pjw_select_mode in options_data)) {
           return;
         }
-        if (pjw_mode != "union") {
+        if (pjw.mode != "union") {
           parent_list.console.info("没有获取到课程选择器，正在使用预加载的选择器", "preloader");
         }
         // Load from pre-determined option data
@@ -1689,7 +1689,7 @@ function ClassListPlugin() {
         id = options_id[pjw_select_mode];
       }
 
-      if (pjw_mode == "union" || !id) {
+      if (pjw.mode == "union" || !id) {
         preload(this);
       } else {
         var list;

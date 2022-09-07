@@ -544,7 +544,7 @@ function() {
 
 "gym": 
 function() {
-  if (pjw_mode != "union") {
+  if (pjw.mode != "union") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -584,7 +584,7 @@ function() {
   list.parse = function(data) {
     return new Promise((resolve, reject) => {
       try {
-        if (pjw_mode == "union") {
+        if (pjw.mode == "union") {
           // To do: check real stage of gym mode
           this.stage = "pre";
         } else if ($$("#comment").html().includes("现在是体育课补选阶段")) {
@@ -679,7 +679,7 @@ function() {
 
 "read":
 function () {
-  if (pjw_mode != "union") {
+  if (pjw.mode != "union") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -811,7 +811,7 @@ function () {
 
 "read_view":
 function () {
-  if (pjw_mode != "union") {
+  if (pjw.mode != "union") {
     window.list = new PJWClassList($$("body"));
     window.initClassList = () => {};
     $$("#courseList").hide();
@@ -938,7 +938,7 @@ function () {
 
 "common":
 function() {
-  if (pjw_mode != "union") {
+  if (pjw.mode != "union") {
     window.list = new PJWClassList($$("body"));
   }
 
@@ -1067,7 +1067,7 @@ function() {
 
 "dis_public":
 function() {
-  if (pjw_mode != "union") {
+  if (pjw.mode != "union") {
     window.list = new PJWClassList($$("body"));
     $$("input[type='button']").css("display", "none");
   }
@@ -1129,7 +1129,7 @@ function() {
               }, {
                 key: "备注",
                 val: td(8).html(),
-                hidden: pjw_mode != "art",
+                hidden: pjw.mode != "art",
               }],
               num_info: [{
                 num: parseInt(td(3).html()),
@@ -1388,7 +1388,7 @@ function() {
 
 "open":
 function() {
-  if (pjw_mode != "union") {
+  if (pjw.mode != "union") {
     window.list = new PJWClassList($$("body"));
   }
 

@@ -348,6 +348,30 @@ body {
   margin: 0 3px;
 }
 
+.pjw-xk-welcome-wrapper {
+  padding: 12px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pjw-xk-welcome-wrapper > * {
+  margin: 12px 0;
+}
+.pjw-xk-welcome-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.pjw-xk-welcome-option label {
+  opacity: .8;
+  margin: 0 6px;
+}
+
+.login-div {
+  height: auto !important;
+}
+
 /* Original functions */
 #Function.light {
   background: rgba(0, 0, 0, .15);

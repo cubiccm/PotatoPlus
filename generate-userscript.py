@@ -42,10 +42,8 @@ with open("js/inject.js", "r", encoding="utf-8") as fin:
         with open(filename, "r", encoding="utf-8") as lib:
           lines2 = lib.readlines()
           for line2 in lines2:
-            if line2.find("@platform@") != -1:
-              fout.write(line2.replace("@platform@", "Userscript"))
-            elif line2.find("@version@") != -1:
-              fout.write(line2.replace("@version@", version))
+            if line2.find("platform: \"General Plugin\"") != -1:
+              fout.write(line2.replace("General Plugin", "Userscript"))
             else:
               fout.write(line2)
         if line.find("injectStyle(\"") != -1:
