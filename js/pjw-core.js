@@ -4,13 +4,18 @@ let pjw = {
   site: "",
   mode: "",
   initialized: false,
-  version_description: "PotatoPlus 0.3.6 包含界面小更新与错误修复。",
+  version_description: "PotatoPlus 0.3.7 包含诸多界面更新与错误修复。",
   switch: function() {
     if (store.has("enabled")) {
       store.remove("enabled");
+      $(".pjw-xk-welcome-card")?.hide();
       return false;
     } else {
       store.set("enabled", true);
+      if (!store.has("share_usage_data")) {
+        store.set("share_usage_data", true);
+      }
+      $(".pjw-xk-welcome-card")?.show();
       return true;
     }
   },
@@ -443,8 +448,6 @@ window.potatojw_intl = function() {
       const target = $("#pjw-share-usage-data-switch").parent();
       if (pjw.switch()) target.show();
       else target.hide();
-      if (!store.has("share_usage_data"))
-        store.set("share_usage_data", true);
     });
 
     const share_usage_data_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-share-usage-data-switch"));
@@ -469,6 +472,8 @@ window.potatojw_intl = function() {
     `;
 
     $("div.language").before(welcome_html);
+    if (!store.has("enabled"))
+      $(".pjw-xk-welcome-card").hide();
 
     getBulletin();
     

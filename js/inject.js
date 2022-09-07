@@ -26,7 +26,7 @@ function injectStyleFromString(str) {
 
 var modes_reg = {
   course: /grablessons.do/i, // 选课系统列表
-  welcome: /\/\/xk.nju.edu.cn\/xsxkapp\/sys\/xsxkapp\/\*default\/index.do/i, // xk.nju.edu.cn 欢迎界面
+  welcome: /(xk.nju.edu.cn\/xsxkapp\/sys\/xsxkapp\/\*default\/index.do|\/\/xk.nju.edu.cn\/$)/i, // xk.nju.edu.cn 登录界面
   xk_system: /\/\/xk.nju.edu.cn/i, // 选课系统 xk.nju.edu.cn 的其它界面
 
   union: /student\/elective\/index.do/i, // 选课
@@ -62,11 +62,13 @@ for (const mode_name in modes_reg) {
   }
 }
 
-var info = document.createElement("meta");
-info.setAttribute("name", "pjw");
-info.setAttribute("version", browser.runtime.getManifest().version || GM_info.script.version);
-info.setAttribute("mode", pjw_mode);
-document.documentElement.appendChild(info);
+(() => {
+  const info = document.createElement("meta");
+  info.setAttribute("name", "pjw");
+  info.setAttribute("version", browser?.runtime?.getManifest()?.version || GM_info?.script?.version || "");
+  info.setAttribute("mode", pjw_mode);
+  document.documentElement.appendChild(info);
+})();
 
 /* BELOW COMMENTS ARE USED TO GENERATE USERSCRIPT */
 // injectStyle("css/material-components-web.min.css");
@@ -79,8 +81,6 @@ document.documentElement.appendChild(info);
 if (pjw_mode == "grade_info") {
   injectStyleFromString(`table.TABLE_BODY{ display: none; }`);
 }
-
-injectScript("js/pjw-core.js");
 
 if (pjw_mode != "course" && pjw_mode != "xk_system") {
   injectScript("js/jquery.min.js");
@@ -101,3 +101,5 @@ if (pjw_mode != "") {
 if (pjw_mode == "login_page") {
   injectScript("js/pjw-captcha.js");
 }
+
+injectScript("js/pjw-core.js");

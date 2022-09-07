@@ -1019,6 +1019,13 @@ function ClassListPlugin() {
       }, ...]
     }*/
     parseClassTime(text) {
+      if (!text) {
+        return {
+          lesson_time: [],
+          class_weeknum: [],
+          places: ""
+        };
+      }
       var classes = text.split(/<br>|;/);
       const weekday_to_num = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7};
 
@@ -1438,7 +1445,7 @@ function ClassListPlugin() {
               <p id="pjw-classlist-status">列表尚未加载</p>
             </div>
             <div class="pjw-mini-brand">
-              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Class List</p>
+              <span class="material-icons-round" style="font-size: 18px; color: rgba(0, 0, 0, .7);">insights</span><p>PotatoPlus Course List</p>
             </div>
           </div>
         </div>

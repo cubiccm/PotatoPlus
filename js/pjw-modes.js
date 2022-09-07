@@ -268,7 +268,12 @@ function() {
   $(".search-container").css({
     "border-radius": "20px",
     "margin": "10px 3%",
-    "flex-direction": "row"
+    "flex-direction": "row",
+    "flex-wrap": "wrap",
+  });
+  $(".search-item").css({
+    "width": "fit-content",
+    "flex-shrink": "0",
   });
   $("body").css("overflow-y", "auto");
   var checkPrivilege = () => {store.has("privilege") ? (store.remove("privilege") || $(".user-top .username").text($(".user-top .username").attr("title"))) : (store.set("privilege", "root") || $(".user-top .username").text("root"));};
@@ -496,10 +501,14 @@ function() {
           return;
         }
         if (data.totalCount > 50) {
+          if (data.totalCount > 150) {
+            this.console.info(`共需加载 ${data.totalCount} 门课程，可能需要较长时间。`);
+          }
           let total_list = data.dataList;
-          let remaining_count = parseInt(data.totalCount / 50);
+          let remaining_count = parseInt((data.totalCount - 1) / 50);
           for (let page = 1; page <= parseInt((data.totalCount - 1) / 50); page++) {
             let pg = page;
+            let list = this;
             window.setTimeout(function () {
               $.ajax({
                 type: "POST",
@@ -508,7 +517,7 @@ function() {
                 headers: {
                   "token": sessionStorage.token
                 }
-              }).done((ndata) => {
+              }).done(function (ndata) {
                 if (ndata.code != "1") {
                   reject(ndata.msg);
                   return;
@@ -516,13 +525,13 @@ function() {
                 total_list = total_list.concat(ndata.dataList);
                 remaining_count--;
                 if (remaining_count == 0) {
-                  this.parse(total_list);
+                  list.parse(total_list);
                   resolve();
                 }
               }).fail((ndata) => {
                 remaining_count--;
                 if (remaining_count == 0) {
-                  this.parse(total_list);
+                  list.parse(total_list);
                   resolve();
                 }
               });

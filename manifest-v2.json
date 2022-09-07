@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "PotatoPlus",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Potato Overflow! NJU土豆改善工程",
   "icons": {
     "96": "img/logo96.png",
