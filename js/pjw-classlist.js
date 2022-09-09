@@ -369,7 +369,6 @@ function ClassListPlugin() {
           if ("lesson_time" in data && data.lesson_time.length > 0)
             return getLessonTime(data.lesson_time);
           else return "";
-          // else return `<div class="pjw-class-weekcal-heading" style="padding: 0 9px;">自由时间</div>`;
 
         case "timedetail":
           if ("time_detail" in data && data.time_detail.length > 0)
@@ -400,11 +399,13 @@ function ClassListPlugin() {
             ${this.getHTML(data, "lessontime")}
           </div>
 
-          ${`<div class="pjw-class-places">${this.getHTML(data, "weeks")}<span>${(!("places" in data) || data.places == "") ? "" : data.places}</span></div>`}
+          <div class="pjw-class-places">
+            ${this.getHTML(data, "weeks")}
+            <span>${(!("places" in data) || data.places == "") ? "" : data.places}</span>
+          </div>
           
           <div class="pjw-class-sideinfo">
             ${this.getHTML(data, "timedetail")}
-            ${data.places == "" ? this.getHTML(data, "weeks") : ""}
             ${this.getHTML(data, "weeksbar")}
             <div class="pjw-class-num-info">${this.getHTML(data, "numinfo")}</div>
           </div>
@@ -946,16 +947,14 @@ function ClassListPlugin() {
 
     parseWeekNum(weeks_list) {
       if (!weeks_list) return [];
-      var weeks = "000000000000000000".split("");
-      for (var item of weeks_list) {
-        for (var index in item.week) {
-          weeks[index] = ((weeks[index] == "1" || item.week[index] == "1") ? "1" : "0");
+      let weeks = new Array(20).fill(0);
+      for (const item of weeks_list) {
+        for (let index = 0; index < item.week.length && index < total_weeks; index++) {
+          weeks[index + 1] |= (item.week[index] == "1" ? 1 : 0);
         }
       }
-      weeks = weeks.join("");
-      weeks = "0" + weeks;
-      var ans_weeks = [];
-      for (var i = 1; i <= total_weeks + 1; i++) {
+      let ans_weeks = [];
+      for (let i = 1; i <= total_weeks + 1; i++) {
         if (weeks[i] == 1 && weeks[i-1] == 0) {
           ans_weeks.push({
             start: i,
@@ -986,9 +985,10 @@ function ClassListPlugin() {
     // Converts new system lesson time to potatoplus lesson time
     // For new system
     parseLessonTime(data) {
-      var lesson_time = [];
+      let lesson_time = [];
       if (!data) return [];
-      for (var item of data) {
+      for (const item of data) {
+        if (item.endSection == 0) continue;
         lesson_time.push({
           start: parseInt(item.beginSection),
           end: parseInt(item.endSection),
