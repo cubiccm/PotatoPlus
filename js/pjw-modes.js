@@ -415,6 +415,10 @@ function() {
                 key: "备注",
                 val: (multi_classes ? item.tcList[class_i].extInfo : item.extInfo) || ""
               }, {
+                key: "校区",
+                val: item.campusName,
+                hidden: true
+              }, {
                 key: "年级",
                 val: item.recommendGrade,
                 hidden: true

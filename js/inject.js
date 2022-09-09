@@ -82,7 +82,7 @@ if (pjw_mode == "grade_info") {
   injectStyleFromString(`table.TABLE_BODY{ display: none; }`);
 }
 
-if (pjw_mode != "course" && pjw_mode != "xk_system") {
+if (pjw_mode != "course" && pjw_mode != "xk_system" && pjw_mode != "welcome") {
   injectScript("js/jquery.min.js");
 }
 
