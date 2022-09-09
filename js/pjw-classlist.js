@@ -86,16 +86,32 @@ function ClassListPlugin() {
 
       function getClassInfo(content, classID) {
         if (!classID || classID < 0) classID = "0";
-        var appear_html = [], hidden_html = "";
-        for (var item of content) {
+        let appear_html = [], hidden_html = "";
+        for (const item of content) {
           if ("key" in item) {
             if (item.key == "课程编号") {
-              var link = "";
-              if (pjw.mode == "course")
-                link = `/xsxkapp/sys/xsxkapp/*default/courseInfoElective.do?number=${item.val}&teachingClassID=${classID}`;
-              else
-                link = `/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}`;
-              item.val = `<span class="pjw-class-course-number pjw-no-expand" onclick="openLinkInFrame('${link}');">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+              if (pjw.site == "jw") {
+                const link = `/jiaowu/student/elective/courseList.do?method=getCourseInfoM&courseNumber=${item.val}&classid=${classID}`;
+                item.val = `<span class="pjw-class-course-number pjw-no-expand" onclick="openLinkInFrame('${link}');">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+              } else if (pjw.site == "xk") {
+                if (typeof pjw.showCourseInfo !== "function") {
+                  // Find "jxbInfoWindow" method (originally located in grablessons.js) in jQuery click event
+                  const events = jQuery._data(document.querySelector(".result-container"), "events");
+                  for (const event of events["click"]) {
+                    if (event.selector == ".cv-jxb-detail") {
+                      pjw.showCourseInfo = function(target) {
+                        event.handler({
+                          stopPropagation: () => {},
+                          preventDefault: () => {},
+                          currentTarget: target,
+                        });
+                      }
+                      break;
+                    }
+                  }
+                }
+                item.val = `<span class="pjw-class-course-number pjw-no-expand" data-teachingclassid="${classID}" data-number="${item.val}" onclick="pjw.showCourseInfo(this);">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+              }
             }
             if (!item.val) continue;
             if (!item.hidden)
@@ -603,15 +619,6 @@ function ClassListPlugin() {
       this.display = false;
       this.priority = 0;
 
-      // Set expand / collapse event of class container
-      // this.dom.on("mouseenter", null, {
-      //   target: this
-      // }, (e) => {
-      //   if (!e.data.target.list.move_to_expand) return;
-      //   var t = jQuery(e.delegateTarget);
-      //   t.removeClass("pjw-class-container--compressed");
-      // });
-
       this.dom.on("click", null, {
         target: this
       }, (e) => {
@@ -620,10 +627,6 @@ function ClassListPlugin() {
         if ($$(e.target).parents("button").length) return;
         if ($$(e.target).is(".pjw-no-expand")) return;
         if ($$(e.target).parents(".pjw-no-expand").length) return;
-        // if (!e.data.target.list.move_to_expand)
-        //   e.data.target.list.move_to_expand = true;
-        // else
-        //   e.data.target.list.move_to_expand = false;
         var t = jQuery(e.delegateTarget);
         var list = e.data.target.list;
         if (t.hasClass("pjw-class-container--compressed")) {
@@ -635,25 +638,6 @@ function ClassListPlugin() {
           list.current_expanded = null;
         }
       });
-
-      /*
-      this.dom.on("mouseleave", (e) => {
-        var t = jQuery(e.delegateTarget);
-        if (t.hasClass("pjw-class-container--compressed")) return;
-        var comp_height = t.height();
-        t.css("opacity", "0");
-        t.addClass("pjw-class-container--compressed");
-
-        window.setTimeout( () => {
-          comp_height = (comp_height - t.height()) / 2;
-          t.css({ "margin-top": `${comp_height}px`, "margin-bottom": `${comp_height}px` });
-          t.animate({ "margin-top": "2px", "margin-bottom": "2px" }, 100, (x) => {
-            return 1 - Math.cos(x * Math.PI / 2);
-          });
-          t.css("opacity", "1");
-        }, 5);
-      });
-      */
     }
   };
 
