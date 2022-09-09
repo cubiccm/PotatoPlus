@@ -770,16 +770,17 @@
 
 .pjw-class-select-button {
   background: linear-gradient(114deg, rgba(81, 18, 127, .9) 0%, rgba(215, 10, 132, .9) 100%);
-  border-radius: 20px;
+  border-radius: 100px;
+  height: fit-content;
   min-height: 40px;
   min-width: 96px;
   margin: 4px;
-  padding: 0 12px 0 8px;
+  padding: 2px 12px 2px 8px;
   justify-content: space-around;
 }
 
 .pjw-class-select-button > .mdc-button__ripple {
-  border-radius: 20px;
+  border-radius: 100px;
 }
 
 .pjw-class-select-button.deselect {
@@ -804,6 +805,18 @@
 .pjw-class-select-button__status {
   font-size: 10px;
   letter-spacing: 0;
+}
+
+.pjw-class-select-button-extra-text {
+  font-size: 12px;
+  color: rgba(0, 0, 0, .5);
+}
+
+.pjw-class-select-button__wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .pjw-class-splitter {

@@ -435,8 +435,12 @@ function() {
                 text: count_target.classCapacity ? 
                     `${(count_target.numberOfSelected == "已满" 
                         ? count_target.classCapacity 
-                        : count_target.numberOfSelected) || count_target.numberOfFirstVolunteer}/${count_target.classCapacity}` 
-                    : "",
+                        : count_target.numberOfSelected) || count_target.numberOfFirstVolunteer}`
+                    + ` / ${count_target.classCapacity}` : "",
+                extra_text: 
+                    count_target.numberOfTarget === undefined || count_target.numberOfTarget === null 
+                        ? null
+                        : "专业意向：" + count_target.numberOfTarget,
                 action: (e) => {
                   return new Promise((resolve, reject) => {
                     e.data.target.list.select(e.data.target.data.classID, e.data.target.data).then(() => {

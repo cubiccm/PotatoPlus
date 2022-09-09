@@ -273,13 +273,14 @@ function ClassListPlugin() {
             disabled: (disabled == "disabled"),
             extra_classes: extra_classes
           };
-        return `<button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>
-        <div class="pjw-class-splitter"></div>`;
+        return `<div class="pjw-class-select-button__wrapper"><button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>`
+          + (data.extra_text ? `<span class="pjw-class-select-button-extra-text">${data.extra_text}</span></div>` : "</div>")
+          + `<div class="pjw-class-splitter"></div>`;
       }
 
       function getMenuButtons(index, classID, class_name, teachers) {
         var teacher_str = teachers.length ? `（${teachers.join("，")}）`: "";
-        var html = `<div style="margin: 1px 3px; display: flex; flex-direction: row;">
+        var html = `<div style="margin: 1px 3px; display: flex;">
         <div class="mdc-menu-surface--anchor">
           <button class="mdc-fab pjw-class-menu-button pjw-class-filter-button" style="background-color: rgba(0, 0, 0, .7);" data-mdc-auto-init="MDCRipple">
             <div class="mdc-fab__ripple"></div>
