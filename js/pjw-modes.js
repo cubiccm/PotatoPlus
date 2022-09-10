@@ -276,8 +276,8 @@ function() {
     "flex-shrink": "0",
   });
   $("body").css("overflow-y", "auto");
-  var checkPrivilege = () => {store.has("privilege") ? (store.remove("privilege") || $(".user-top .username").text($(".user-top .username").attr("title"))) : (store.set("privilege", "root") || $(".user-top .username").text("root"));};
-  store.has("privilege") && $(".user-top .username").text("root");
+  const checkPrivilege = () => {(pjw.preferences.privilege && (delete pjw.preferences.privilege && $(".user-top .username").text($(".user-top .username").attr("title")))) || ((pjw.preferences.privilege = "root") && $(".user-top .username").text("root"));};
+  pjw.preferences.privilege && $(".user-top .username").text("root");
   $(".user-img").dblclick(checkPrivilege);
 
   list.favorite = function(classID, class_data) {

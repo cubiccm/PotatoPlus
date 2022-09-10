@@ -1,35 +1,57 @@
-let pjw = {
+const pjw = {
   version: "",
   platform: "General Plugin",
   site: "",
   mode: "",
   initialized: false,
   version_description: "PotatoPlus 0.3.7 包含诸多界面更新与错误修复。",
+  data: new Proxy(JSON.parse(localStorage.getItem("potatoplus_data")) || {}, {
+    get(target, property, receiver) {
+      if (property === "clear") {
+        return function () {
+          target = {};
+          localStorage.removeItem("potatoplus_data");
+        };
+      }
+      const data = target;
+      if (property in data)
+        return data[property];
+      else
+        return null;
+    },
+    set(target, property, value, receiver) {
+      try {
+        target[property] = value;
+        localStorage.setItem("potatoplus_data", JSON.stringify(target));
+        return true;
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+
+    },
+    deleteProperty(target, property) {
+      return delete target[property];
+    }
+  }),
+  preferences: {},
   switch: function() {
-    if (store.has("enabled")) {
-      store.remove("enabled");
+    if (pjw.preferences.enabled) {
+      pjw.preferences.enabled = false;
       $(".pjw-xk-welcome-card")?.hide();
       return false;
     } else {
-      store.set("enabled", true);
-      if (!store.has("share_usage_data")) {
-        store.set("share_usage_data", true);
-      }
+      pjw.preferences.enabled = true;
+      if (pjw.preferences.share_usage_data === null)
+        pjw.preferences.share_usage_data = true;
       $(".pjw-xk-welcome-card")?.show();
       return true;
     }
   },
-  switchShareUsageData: function() {
-    if (store.get("share_usage_data") == true) {
-      store.set("share_usage_data", false);
-      return false;
-    } else {
-      store.set("share_usage_data", true);
-      return true;
-    }
-  }
 };
+
 window.pjw = pjw;
+pjw.preferences = pjw.data;
 
 const info = document.querySelector("meta[name=\"pjw\"]");
 pjw.version = info.getAttribute("version");
@@ -67,7 +89,7 @@ window.potatojw_intl = function() {
   `;
 
   if (pjw.site == "jw") {
-    if (store.get("login_settings") != null && store.get("login_settings").share_stats == true) {
+    if (pjw.data.login_settings?.share_stats == true) {
       $$("head").append($$(google_analytics_js));
     }
 
@@ -84,9 +106,9 @@ window.potatojw_intl = function() {
           <div id="pjw-user-type">${$$("#UserInfo").html().slice(4).match(/：.*/)[0].slice(1)}</div>
         </div>
       `);
-      if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege")); 
+      pjw.preferences.privilege && $$("#pjw-user-type").html(pjw.preferences.privilege); 
       $$("#pjw-user-type").on("click", (e) => { if (window.click_count) {window.click_count++;}
-        else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; if (store.has("privilege")) { store.remove("privilege"); $$("#pjw-user-type").html("学生");} else store.set("privilege", "root"); if (store.has("privilege")) $$("#pjw-user-type").html(store.get("privilege"));}/*ifyouareheretryitout*/
+        else {window.click_count = 1; setTimeout(() => {delete click_count;}, 2000);} if (window.click_count >= 5) { window.click_count = 0; (pjw.preferences.privilege && delete pjw.preferences.privilege && $$("#pjw-user-type").html("学生")) || ((pjw.preferences.privilege = "root") && $$("#pjw-user-type").html(pjw.preferences.privilege))};
         e.stopPropagation();
       });
       $$("#TopLink").children("img").remove();
@@ -122,7 +144,7 @@ window.potatojw_intl = function() {
     window.reset_storage_timeout = 0;
     window.resetStorage = function() {
       if (reset_storage_confirm) {
-        store.clearAll();
+        pjw.data.clear();
         reset_storage_confirm = false;
         $$("#reset_storage").html("重置存储");
         clearInterval(reset_storage_timeout);
@@ -136,9 +158,7 @@ window.potatojw_intl = function() {
       }
     }
   } else if (pjw.site == "xk") {
-    if (store.get("share_usage_data") == true) {
-      $("head").append($(google_analytics_js));
-    }
+    pjw.preferences.share_usage_data && $("head").append($(google_analytics_js));
   }
 
   console.log(`PotatoPlus v${pjw.version} (${pjw.platform}) by Limos`);
@@ -205,7 +225,7 @@ window.potatojw_intl = function() {
 
     // Collapse / Expand toolbar
     function switchToolBar() {
-      if (store.get("is_toolbar_collapsed") == true) expandToolBar();
+      if (pjw.preferences.is_toolbar_collapsed) expandToolBar();
       else collapseToolBar();
     }
     function collapseToolBar() {
@@ -218,15 +238,13 @@ window.potatojw_intl = function() {
         "top": "calc(100% - 60px)",
         "transform": "rotate(180deg)"
       });
-      store.set("is_toolbar_collapsed", true);
+      pjw.preferences.is_toolbar_collapsed = true;
     }
-    if (store.get("is_toolbar_collapsed") == null)
-      store.set("is_toolbar_collapsed", false);
-    else if (store.get("is_toolbar_collapsed") == true)
+    if (pjw.preferences.is_toolbar_collapsed === true)
       collapseToolBar();
     $$("#pjw-toolbar-collapse-bg").on("click", switchToolBar);
-    $$("#pjw-toolbar-collapse").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
-    $$("#pjw-toolbar-collapse-bg").on("mousedown", () => { if (store.get("is_toolbar_collapsed") == false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
+    $$("#pjw-toolbar-collapse").on("mousedown", () => { if (pjw.preferences.is_toolbar_collapsed === false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
+    $$("#pjw-toolbar-collapse-bg").on("mousedown", () => { if (pjw.preferences.is_toolbar_collapsed === false) $$("#pjw-toolbar-collapse-bg").css("background-color", "rgba(255, 255, 255, 1.0)");} );
 
     // Show toolbar
     function expandToolBar() {
@@ -239,7 +257,7 @@ window.potatojw_intl = function() {
         "top": "",
         "transform": ""
       });
-      store.set("is_toolbar_collapsed", false);
+      pjw.preferences.is_toolbar_collapsed = false;
     }
   }
 
@@ -250,13 +268,13 @@ window.potatojw_intl = function() {
   }
 
   // Storage upgrade upon version upgrade
-  if (store.get("version") == null || store.get("version") != pjw.version) {
-    store.set("is_toolbar_collapsed", false);
-    store.remove("privilege");
-    store.set("version", pjw.version);
-    store.remove("bulletin_update_timestamp");
-    store.remove("bulletin_content");
-    store.remove("enable_on_newsystem");
+  if ((pjw.data.version || 0) !== pjw.version) {
+    if (localStorage.getItem("version")) {
+      localStorage.clear();
+    }
+    delete pjw.data.bulletin_update_timestamp;
+    delete pjw.data.bulletin_content;
+    pjw.data.version = pjw.version;
   }
 
   var enterMode = function(mode) {
@@ -265,17 +283,27 @@ window.potatojw_intl = function() {
   }
 
   var getBulletin = function() {
-    if (!store.has("bulletin_update_timestamp") || store.get("bulletin_update_timestamp") + 300000 <= new Date().getTime()) {
-      const is_sharing_stats = store.get("share_usage_data") == true
-          || (store.has("login_settings") && "share_stats" in store.get("login_settings") 
-              && store.get("login_settings")["share_stats"] == true);
-      const html = `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw.version}&share_stats=${is_sharing_stats ? 1 : 0}&site=${pjw.site}" width="300" height="300" style="display: none;"></iframe>`;
+    if ((pjw.data.bulletin_update_timestamp || 0) + 300000 <= new Date().getTime()) {
+      const html = `<iframe src="https://cubiccm.ddns.net/apps/potatoplus-bulletin/?version=${pjw.version}&share_stats=${
+        (pjw.preferences.share_usage_data || pjw.preferences.login_settings?.share_stats) ? 1 : 0
+      }&site=${pjw.site}" width="300" height="300" style="display: none;"></iframe>`;
     
-      window.addEventListener("message", (e) => {
-        if (e.origin !== "https://cubiccm.ddns.net") return;
-        store.set("bulletin_update_timestamp", new Date().getTime());
-        store.set("bulletin_content", e.data);
-        $$("#pjw-bulletin-content").html(store.get("bulletin_content"));
+      $$(window).on("message", (e) => {
+        if (e.originalEvent.origin !== "https://cubiccm.ddns.net") return;
+        if (e?.originalEvent?.data) {
+          let data = {};
+          try {
+            data = JSON.parse(e.originalEvent.data);
+          } catch (e) {
+            console.warn(e);
+          } finally {
+            if (data["type"] == "bulletin") {
+              pjw.data.bulletin_content = data["content"];
+              pjw.data.bulletin_update_timestamp = new Date().getTime();
+              $$("#pjw-bulletin-content").html(data["content"]);
+            }
+          }
+        }
       });
 
       $$("body").append(html);
@@ -300,7 +328,7 @@ window.potatojw_intl = function() {
     var welcome_html = `
       <div id="pjw-welcome" class="pjw-card">
         <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">done</span><span>&nbsp;&nbsp;</span><span>${pjw.version_description}</span></p>
-        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${store.get("bulletin_content") || ""}</span></p>
+        <p style="display: flex; flex-direction: row; align-items: flex-start;"><span class="material-icons-round">contactless</span><span>&nbsp;&nbsp;</span><span id="pjw-bulletin-content">${pjw.data.bulletin_content || ""}</span></p>
         <br>
         <div class="pjw-welcome-get-update">${update_html}</div>
         <note>
@@ -421,44 +449,46 @@ window.potatojw_intl = function() {
         <label for="pjw-enable-switch">启用 PotatoPlus (Beta)</label>
       </div>
 
-      <div class="pjw-xk-welcome-option" style="margin-left: 16px;">
-        <button id="pjw-share-usage-data-switch" class="mdc-switch mdc-switch--unselected" type="button" role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
-          <div class="mdc-switch__track"></div>
-          <div class="mdc-switch__handle-track">
-            <div class="mdc-switch__handle">
-              <div class="mdc-switch__shadow">
-                <div class="mdc-elevation-overlay"></div>
+      <div class="pjw-xk-welcome-subsection">
+        <div class="pjw-xk-welcome-option">
+          <button id="pjw-share-usage-data-switch" class="mdc-switch mdc-switch--unselected" type="button" role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__handle-track">
+              <div class="mdc-switch__handle">
+                <div class="mdc-switch__shadow">
+                  <div class="mdc-elevation-overlay"></div>
+                </div>
+                <div class="mdc-switch__ripple"></div>
               </div>
-              <div class="mdc-switch__ripple"></div>
             </div>
-          </div>
-          <span class="mdc-switch__focus-ring-wrapper">
-            <div class="mdc-switch__focus-ring"></div>
-          </span>
-        </button>
-        <label for="pjw-share-usage-data-switch">发送匿名统计数据</label>
+            <span class="mdc-switch__focus-ring-wrapper">
+              <div class="mdc-switch__focus-ring"></div>
+            </span>
+          </button>
+          <label for="pjw-share-usage-data-switch">发送匿名统计数据</label>
+        </div>
       </div>
     </div>
     `;
     $("div.language").before(pjw_options_html);
 
     const enable_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-enable-switch"));
-    enable_switch.selected = store.has("enabled");
+    enable_switch.selected = pjw.preferences.enabled === true;
     $("#pjw-enable-switch").on("click", () => {
-      const target = $("#pjw-share-usage-data-switch").parent();
+      const target = $(".pjw-xk-welcome-subsection");
       if (pjw.switch()) target.show();
       else target.hide();
     });
 
     const share_usage_data_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-share-usage-data-switch"));
-    share_usage_data_switch.selected = !store.has("share_usage_data") || store.get("share_usage_data") == true;
-    if (!store.has("enabled"))
-      $("#pjw-share-usage-data-switch").parent().hide();
-    $("#pjw-share-usage-data-switch").on("click", () => { pjw.switchShareUsageData(); });
+    share_usage_data_switch.selected = pjw.preferences.share_usage_data === null || pjw.preferences.share_usage_data === true;
+    if (!pjw.preferences.enabled)
+      $(".pjw-xk-welcome-subsection").hide();
+    $("#pjw-share-usage-data-switch").on("click", () => { pjw.preferences.share_usage_data = !pjw.preferences.share_usage_data; });
 
     const welcome_html = `
       <div class="pjw-xk-welcome-card">
-        <p id="pjw-bulletin-content" style="font-size: 14px;">${store.get("bulletin_content") || ""}</p>
+        <p id="pjw-bulletin-content" style="font-size: 14px;">${pjw.data.bulletin_content || ""}</p>
         <div class="pjw-xk-welcome-link-container">
           <a href="https://cubiccm.ddns.net/potatoplus" target="_blank" style="font-weight: bold;">PotatoPlus ${pjw.version}</a>
           <a href="https://github.com/cubiccm/potatoplus" target="_blank">GitHub</a>
@@ -472,11 +502,10 @@ window.potatojw_intl = function() {
     `;
 
     $("div.language").before(welcome_html);
-    if (!store.has("enabled"))
+    if (pjw.preferences.enabled)
       $(".pjw-xk-welcome-card").hide();
 
     getBulletin();
-    
   } else if (pjw.mode == "course_eval") {
     window.quick_eval_mode_enabled = false;
     window.updateEval = function() {
@@ -652,9 +681,10 @@ window.potatojw_intl = function() {
 
     // 自动获取年级及专业
     function autofillInfo() {
-      var stu_info = store.get("stu_info");
-      var stu_grade = stu_info.grade, stu_dept = stu_info.department, stu_major = stu_info.major;
-      var sel = list.selectors;
+      const stu_info = pjw.data.stu_info;
+      if (!stu_info) return;
+      const stu_grade = stu_info.grade, stu_dept = stu_info.department, stu_major = stu_info.major;
+      const sel = list.selectors;
       sel.grade.setByText(stu_grade);
       sel.institution.setByText("全部课程");
       list.selectors.major.dom.hide();
@@ -695,7 +725,7 @@ window.potatojw_intl = function() {
       });
     }
 
-    if (store.get("stu_info") != null && Date.now() - store.get("stu_info").last_update < 3 * 24 * 3600 * 1000) {
+    if (Date.now() - (pjw.data.stu_info?.last_update || 0) < 3 * 24 * 3600 * 1000) {
       autofillInfo();
     } else {
       $$.ajax({
@@ -706,7 +736,7 @@ window.potatojw_intl = function() {
         var stu_grade = aux_data.find("div#d11 > form > table > tbody > tr:eq(4) > td:eq(3)").html();
         var stu_dept = aux_data.find("div#d11 > form > table > tbody > tr:eq(3) > td:eq(1)").html();
         var stu_major = aux_data.find("div#d11 > form > table > tbody > tr:eq(3) > td:eq(3)").html();
-        store.set("stu_info", {grade: stu_grade, department: stu_dept, major: stu_major, last_update: Date.now()});
+        pjw.data.stu_info = {grade: stu_grade, department: stu_dept, major: stu_major, last_update: Date.now()};
         autofillInfo();
       }).fail(() => {
         reloadMajor();
@@ -848,7 +878,7 @@ window.potatojw_intl = function() {
           username: username,
           password: password
         }
-        store.set("login_info", login_info);
+        pjw.data.login_info = login_info;
       }
       $$("#pjw-login-form").submit();
     }
@@ -862,11 +892,9 @@ window.potatojw_intl = function() {
     // Load login settings
     window.login_settings = {};
     function updateLoginSettings(write = false) {
-      if (store.get("login_settings") != null) {
-        login_settings = store.get("login_settings");
-      }
+      login_settings = pjw.preferences.login_settings || {};
       $$(".login_settings").each(function() {
-        var t = $$(this);
+        const t = $$(this);
         if (t.attr("id") in login_settings) {
           if (write)
             login_settings[t.attr("id")] = t.prop("checked");
@@ -876,13 +904,13 @@ window.potatojw_intl = function() {
           login_settings[t.attr("id")] = t.prop("checked");
         }
       });
-      store.set("login_settings", login_settings);
+      pjw.preferences.login_settings = login_settings;
       if (login_settings["solve_captcha"] == false)
         closeLoginMask();
       if (!write) return login_settings;
 
       if (login_settings["store_login_info"] == false)
-        store.remove("login_info");
+        delete pjw.data.login_info
       if (login_settings["solve_captcha"] == true && $$("#ValidateCode").val().length == 0)
         fillCAPTCHA();
       return login_settings;
@@ -892,22 +920,21 @@ window.potatojw_intl = function() {
     $$(".login_settings").on("change", function() { updateLoginSettings(true); });
 
     // Username & password auto-fill
-    if (login_settings["store_login_info"] == true && store.get("login_info") != null) {
-      var login_info = store.get("login_info");
+    if (login_settings["store_login_info"] == true && pjw.data.login_info !== null) {
       if ($$("input[name=userName]").val().length == 0)
-        $$("input[name=userName]").val(login_info.username);
+        $$("input[name=userName]").val(pjw.data.login_info.username);
       if ($$("input[name=password]").val().length == 0)
-        $$("input[name=password]").val(login_info.password);
+        $$("input[name=password]").val(pjw.data.login_info.password);
     }
-    var checkLogin = function() {
-      login_settings = store.get("login_settings");
+    const checkLogin = function() {
+      login_settings = pjw.preferences.login_settings;
       if (CheckForm()) {
         if (login_settings["store_login_info"] == true) {
-          var login_info = {
+          const login_info = {
             username: $$("input[name=userName]").val(),
             password: $$("input[name=password]").val()
           }
-          store.set("login_info", login_info);
+          pjw.data.login_info = login_info;
         }
         return true;
       } else {
@@ -923,11 +950,10 @@ window.potatojw_intl = function() {
     // CAPTCHA auto-fill
     CAPTCHAPlugin();
 
-    min_certainty = 14;
+    let min_certainty = 14;
 
     function fillCAPTCHA() {
-      login_settings = store.get("login_settings");
-      if (login_settings["solve_captcha"] == false) return;
+      if (!pjw.data.login_settings?.["solve_captcha"]) return;
       $$("#pjw-captcha-result").html("正在识别验证码...");
       $$("#pjw-login-mask-refresh-captcha").prop("disabled", true);
       var res = solveCAPTCHA($$("#ValidateImg")[0]);
@@ -992,16 +1018,14 @@ window.potatojw_intl = function() {
         </div>
       `);
 
-      if (store.get("grade_info_settings") == null) {
-        store.set("grade_info_settings", true);
-      }
-      if (!store.get("grade_info_settings")) {
+      pjw.preferences.grade_info_settings || (pjw.preferences.grade_info_settings = true);
+      if (!pjw.preferences.grade_info_settings) {
         showGrade();
         $$("#hide-grade").prop("checked", false);
         $$("#show-all-grade").css("display", "none");
       }
       $$("#hide-grade").on("change", function() {
-        store.set("grade_info_settings", $$("#hide-grade").prop("checked"));
+        pjw.preferences.grade_info_settings = $$("#hide-grade").prop("checked");
       });
       $$("#show-all-grade").on("click", function() {
         showGrade();
@@ -1114,10 +1138,8 @@ window.potatojw_intl = function() {
   } else if (pjw.mode == "course_info") {
     $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
   } else if (pjw.mode == "course") {
-    $(".user-dropdown").prepend(`<div style="cursor: pointer; color: #4D87F2; line-height: 17px; margin-bottom: 20px;" onclick="window.pjw.switch();window.location.reload();">${store.has("enabled") ? "禁用" : "启用"} PotatoPlus (Beta)</div>`);
-    if (store.has("enabled")) {
-      enterMode("course");
-    }
+    $(".user-dropdown").prepend(`<div style="cursor: pointer; color: #4D87F2; line-height: 17px; margin-bottom: 20px;" onclick="window.pjw.switch();window.location.reload();">${pjw.preferences.enabled ? "禁用" : "启用"} PotatoPlus (Beta)</div>`);
+    pjw.preferences.enabled && enterMode("course");
   } else {
     return;
   }

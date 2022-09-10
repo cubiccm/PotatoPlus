@@ -244,7 +244,7 @@
   padding: 5px 8px;
 }
 
-.pjw-classlist-heading-button > .mdc-button__ripple {
+.pjw-classlist-heading-refresh-button > .mdc-button__ripple {
   border-radius: 24px 0 0 24px;
 }
 
@@ -542,8 +542,8 @@
   box-sizing: content-box;
   display: flex;
   flex-direction: column;
-  margin: 0;
-  border-radius: 4px;
+  margin: 0 4px;
+  border-radius: 9px;
 }
 
 .pjw-class-weekcal-calendar-day.selected {
@@ -560,7 +560,7 @@
   vertical-align: middle;
   border: 1px solid rgba(0, 0, 0, .2);
   border-radius: 9px;
-  margin: 2px 6px;
+  margin: 2px 2px;
 }
 
 .pjw-classlist-body .pjw-class-weekcal-calendar-day > span.selected {
@@ -570,7 +570,7 @@
   font-weight: bold;
   background-color: var(--pjw-dark-background);
   height: 22px;
-  margin: 0 6px;
+  margin: 0 2px;
   white-space: nowrap;
 }
 

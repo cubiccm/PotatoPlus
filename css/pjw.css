@@ -354,18 +354,22 @@ body {
   flex-direction: column;
 }
 
-.pjw-xk-welcome-wrapper > * {
-  margin: 12px 0;
-}
 .pjw-xk-welcome-option {
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin: 8px 0;
 }
 
 .pjw-xk-welcome-option label {
   opacity: .8;
   margin: 0 6px;
+}
+
+.pjw-xk-welcome-subsection {
+  margin: 2px 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .pjw-xk-welcome-card {

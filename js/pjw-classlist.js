@@ -1361,7 +1361,7 @@ function ClassListPlugin() {
     }
 
     constructor(parent, modules = ["avail", "hours", "advanced", "frozen"]) {
-      if (modules != [] && store.has("privilege") && store.get("privilege") == "root") {modules.push("potatoes"); this.max_frequency = 15.0;}
+      if (modules != [] && pjw.preferences.privilege == "root") {modules.push("potatoes"); this.max_frequency = 15.0;}
       this.filter_modules = modules;
 
       // Deploy filter DOM

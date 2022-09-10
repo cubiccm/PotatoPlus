@@ -178,22 +178,22 @@ var pjw_filter = {
       };
 
       space.loadMyClass = function(force_reload = false, include_odd_even = true) {
-        var setLessonTime = (space, lesson_time, include_odd_even = true) => {
-          for (var item of lesson_time) {
+        const setLessonTime = (space, lesson_time, include_odd_even = true) => {
+          for (const item of lesson_time) {
             if (include_odd_even || item.type == "normal") {
-              for (var i = item.start; i <= item.end; i++)
+              for (let i = item.start; i <= item.end; i++)
                 space.setValue(item.weekday, i, false);
             }
           }
         };
         return new Promise((resolve, reject) => {
-          if (!force_reload && store.has("my_lesson_time") && store.has("my_lesson_time_update_timestamp") && 
-              new Date().getTime() - store.get("my_lesson_time_update_timestamp") < 300000) {
-            setLessonTime(space, store.get("my_lesson_time"));
+          if (!force_reload && pjw.data.my_lesson_time && 
+              new Date().getTime() - (pjw.data.my_lesson_time_update_timestamp || 0) < 300000) {
+            setLessonTime(space, pjw.data.my_lesson_time);
             resolve();
           } else {
-            if (pjw.mode == "course") {
-              var stu_info = JSON.parse(sessionStorage.studentInfo);
+            if (pjw.site == "xk") {
+              const stu_info = JSON.parse(sessionStorage.studentInfo);
               $$.ajax({
                 url: "/xsxkapp/sys/xsxkapp/elective/courseResult.do",
                 data: {
@@ -209,12 +209,12 @@ var pjw_filter = {
                 },
                 method: "POST",
                 success: (res) => {
-                  var lesson_time = [];
-                  for (var item of res.dataList) {
-                    lesson_time = lesson_time.concat(list.parseClassTime(item.teachingPlace).lesson_time);
+                  const lesson_time = [];
+                  for (const item of res.dataList) {
+                    lesson_time.push(...list.parseClassTime(item.teachingPlace).lesson_time);
                   }
-                  store.set("my_lesson_time", lesson_time);
-                  store.set("my_lesson_time_update_timestamp", new Date().getTime());
+                  pjw.data.my_lesson_time = lesson_time;
+                  pjw.data.my_lesson_time_update_timestamp = new Date().getTime();
                   setLessonTime(space, lesson_time);
                   resolve();
                 },
@@ -223,7 +223,7 @@ var pjw_filter = {
                   reject();
                 }
               });
-            } else {
+            } else if (pjw.site == "jw") {
               $$.ajax({
                 url: "/jiaowu/student/teachinginfo/courseList.do",
                 data: {
@@ -231,12 +231,12 @@ var pjw_filter = {
                 },
                 method: "GET"
               }).done((res) => {
-                var lesson_time = [];
+                const lesson_time = [];
                 $$(res).find(".TABLE_BODY > tbody > tr:gt(0)").each((index, val) => {
-                  lesson_time = lesson_time.concat(list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time);
+                  lesson_time.push(...list.parseClassTime($$(val).children("td:eq(4)").html()).lesson_time);
                 });
-                store.set("my_lesson_time", lesson_time);
-                store.set("my_lesson_time_update_timestamp", new Date().getTime());
+                pjw.data.my_lesson_time = lesson_time;
+                pjw.data.my_lesson_time_update_timestamp = new Date().getTime();
                 setLessonTime(space, lesson_time);
                 resolve();
               }).catch((res) => {

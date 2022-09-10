@@ -86,7 +86,6 @@ if (pjw_mode != "course" && pjw_mode != "xk_system" && pjw_mode != "welcome") {
   injectScript("js/jquery.min.js");
 }
 
-injectScript("js/store.min.js");
 injectScript("js/material-components-web.min.js");
 
 if (pjw_mode != "") {
