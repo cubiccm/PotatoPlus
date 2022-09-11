@@ -65,7 +65,9 @@ for (const mode_name in modes_reg) {
 (() => {
   const info = document.createElement("meta");
   info.setAttribute("name", "pjw");
-  info.setAttribute("version", browser?.runtime?.getManifest()?.version || GM_info?.script?.version || "");
+  info.setAttribute("version", 
+      (typeof GM_info == "undefined" ? "" : GM_info?.script?.version) 
+      || (browser?.runtime?.getManifest()?.version || ""));
   info.setAttribute("mode", pjw_mode);
   document.documentElement.appendChild(info);
 })();

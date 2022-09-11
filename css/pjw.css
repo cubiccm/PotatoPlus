@@ -375,10 +375,11 @@ body {
 .pjw-xk-welcome-card {
   padding: 12px 24px;
   background: linear-gradient(50deg, rgba(99, 6, 95, 0.9) 0%, rgba(93, 42, 175, 0.9) 60%, rgba(255, 71, 71, 0.9) 100%);
+  color: white;
 }
 
 .pjw-xk-welcome-card > p {
-  color: rgba(255, 255, 255, .87);
+  opacity: .87;
 }
 
 .pjw-xk-welcome-link-container {
@@ -389,22 +390,41 @@ body {
   margin: 12px 0;
 }
 
-.pjw-xk-welcome-link-container > a {
-  color: rgba(255, 255, 255, .6);
-  display: flex;
+.pjw-xk-welcome-card a {
+  color: white;
+  opacity: 0.6;
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
+}
+
+.pjw-xk-welcome-card a:hover {
+  opacity: 0.9;
+}
+
+.pjw-xk-welcome-link-container > a {
   margin-right: 16px;
 }
 
 .pjw-xk-welcome-link-container > a:hover {
-  color: rgba(255, 255, 255, .9);
   margin-right: 4px;
 }
 
 .pjw-xk-welcome-link-container > a:hover::after {
   content: "arrow_right";
   font-family: "Material Icons Round";
+}
+
+#pjw-captcha-config {
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #c1c1c1;
+  border-radius: 4px;
+  padding: 1px 3px;
+}
+
+#pjw-captcha-config:hover {
+  font-weight: bold;
 }
 
 .login-div,.cv-login,.cv-user {

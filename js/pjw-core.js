@@ -4,7 +4,7 @@ const pjw = {
   site: "",
   mode: "",
   initialized: false,
-  version_description: "PotatoPlus 0.3.7 包含诸多界面更新与错误修复。",
+  version_description: "PotatoPlus 0.3.8 包含界面更新与错误修复。",
   data: new Proxy(JSON.parse(localStorage.getItem("potatoplus_data")) || {}, {
     get(target, property, receiver) {
       if (property === "clear") {
@@ -31,7 +31,9 @@ const pjw = {
 
     },
     deleteProperty(target, property) {
-      return delete target[property];
+      let delete_res = delete target[property];
+      localStorage.setItem("potatoplus_data", JSON.stringify(target));
+      return delete_res;
     }
   }),
   preferences: {},
@@ -50,13 +52,14 @@ const pjw = {
   },
 };
 
-window.pjw = pjw;
-pjw.preferences = pjw.data;
-
-const info = document.querySelector("meta[name=\"pjw\"]");
-pjw.version = info.getAttribute("version");
-pjw.mode = info.getAttribute("mode");
-pjw.site = (window.location.host == "xk.nju.edu.cn" ? "xk" : "jw");
+(() => {
+  window.pjw = pjw;
+  pjw.preferences = pjw.data;
+  const info = document.querySelector("meta[name=\"pjw\"]");
+  pjw.version = info.getAttribute("version");
+  pjw.mode = info.getAttribute("mode");
+  pjw.site = (window.location.host == "xk.nju.edu.cn" ? "xk" : "jw");
+})();
 
 window.potatojw_intl = function() {
   if (pjw.initialized == true) return;
@@ -85,7 +88,7 @@ window.potatojw_intl = function() {
       'custom_map': {'dimension1': 'version'}
     });
     gtag('event', 'version_dimension', {'version': pjw.version + " " + pjw.platform});
-  </script>
+    </script>
   `;
 
   if (pjw.site == "jw") {
@@ -158,7 +161,7 @@ window.potatojw_intl = function() {
       }
     }
   } else if (pjw.site == "xk") {
-    pjw.preferences.share_usage_data && $("head").append($(google_analytics_js));
+    pjw.preferences.enabled && pjw.preferences.share_usage_data && $("head").append($(google_analytics_js));
   }
 
   console.log(`PotatoPlus v${pjw.version} (${pjw.platform}) by Limos`);
@@ -467,7 +470,65 @@ window.potatojw_intl = function() {
           </button>
           <label for="pjw-share-usage-data-switch">发送匿名统计数据</label>
         </div>
+
+        <div class="pjw-xk-welcome-option">
+          <button id="pjw-solve-captcha-switch" class="mdc-switch mdc-switch--unselected" type="button" role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
+            <div class="mdc-switch__track"></div>
+            <div class="mdc-switch__handle-track">
+              <div class="mdc-switch__handle">
+                <div class="mdc-switch__shadow">
+                  <div class="mdc-elevation-overlay"></div>
+                </div>
+                <div class="mdc-switch__ripple"></div>
+              </div>
+            </div>
+            <span class="mdc-switch__focus-ring-wrapper">
+              <div class="mdc-switch__focus-ring"></div>
+            </span>
+          </button>
+          <label for="pjw-solve-captcha-switch">验证码识别服务</label>
+          <label id="pjw-captcha-config">配置</label>
+        </div>
       </div>
+    </div>
+
+    <div id="pjw-captcha-config-dialog" class="mdc-dialog">
+      <div class="mdc-dialog__container">
+        <div class="mdc-dialog__surface"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="pjw-captcha-config-dialog-title"
+          aria-describedby="pjw-captcha-config-dialog-content">
+          <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+          <h2 class="mdc-dialog__title" id="pjw-captcha-config-dialog-title">
+            验证码识别服务配置
+          </h2>
+          <div class="mdc-dialog__content" id="pjw-captcha-config-dialog-content">
+            <p>启用验证码识别后，当前页面用于生成及校验验证码的 vtoken 将会被自动发送到远程服务器进行处理。您可以在此配置远程服务器的 URL，或留空以使用默认服务器。</p>
+            <label id="pjw-captcha-config-dialog-url" class="mdc-text-field mdc-text-field--filled" style="width: 100%;" data-mdc-auto-init="MDCRipple">
+              <span class="mdc-text-field__ripple"></span>
+              <span class="mdc-floating-label" id="pjw-captcha-config-dialog-urllabel">URL</span>
+              <input class="mdc-text-field__input" type="text" aria-labelledby="pjw-captcha-config-dialog-urllabel" placeholder="https://example.com/captcha-solver/?data={%data}">
+              <span class="mdc-line-ripple"></span>
+            </label>
+            <section style="font-size: 12px;">
+              <span>URL 中的 {%data} 将会在使用时被替换为 vtoken 的值。</span> <br>
+              <span>声明：默认服务器为实验性质，不保证准确度和稳定性。您的个人数据不会被服务器存储。</span>
+            </section>
+          </div>
+          <div class="mdc-dialog__actions">
+            <button type="button" class="mdc-button mdc-dialog__button" style="color: gray;" data-mdc-dialog-action="close">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">撤销更改</span>
+            </button>
+            <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="accept">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">保存</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="mdc-dialog__scrim"></div>
     </div>
     `;
     $("div.language").before(pjw_options_html);
@@ -486,6 +547,90 @@ window.potatojw_intl = function() {
       $(".pjw-xk-welcome-subsection").hide();
     $("#pjw-share-usage-data-switch").on("click", () => { pjw.preferences.share_usage_data = !pjw.preferences.share_usage_data; });
 
+    const solve_captcha_switch = new window.mdc.switchControl.MDCSwitch(document.getElementById("pjw-solve-captcha-switch"));
+    solve_captcha_switch.selected = (pjw.preferences.solve_captcha === true);
+
+    const captcha_config_dialog = new window.mdc.dialog.MDCDialog(document.getElementById("pjw-captcha-config-dialog"));
+    $("#pjw-solve-captcha-switch").on("click", null, {
+      dialog: captcha_config_dialog,
+      switch: solve_captcha_switch
+    }, (e) => {
+      if (pjw.data.captcha_solver_link === null) {
+        e.data.switch.selected = false;
+        pjw.preferences.solve_captcha = false;
+        e.data.dialog.open();
+      } else {
+        pjw.preferences.solve_captcha = !pjw.preferences.solve_captcha;
+        initCAPTCHASolver();
+      }
+    });
+    $("#pjw-captcha-config").on("click", null, {
+      dialog: captcha_config_dialog
+    }, (e) => {
+      e.data.dialog.open();
+    });
+
+    const captcha_config_dialog_urlfield = new mdc.textField.MDCTextField(
+        document.getElementById("pjw-captcha-config-dialog-url"));
+    captcha_config_dialog_urlfield.value = pjw.data.captcha_solver_link || "";
+    captcha_config_dialog.buttons[1].addEventListener("click", function () {
+      pjw.data.captcha_solver_link = captcha_config_dialog_urlfield.value;
+    });
+
+    function initCAPTCHASolver() {
+      if (pjw.captcha_initialized === true) {
+        if (document.getElementById("vcodeImg").complete) {
+          solveXKCAPTCHA();
+        }
+        return;
+      }
+      
+      $(window).on("message", (e) => {
+        if (!e.originalEvent.isTrusted) return;
+        if (e?.originalEvent?.data) {
+          let data = {};
+          try {
+            data = JSON.parse(e.originalEvent.data);
+          } catch (e) {
+            console.warn(e);
+          } finally {
+            if (data["type"] == "captcha" && data["content"].length == 4)
+              $("input#verifyCode").val(data["content"]);
+          }
+        }
+      });
+
+      $("#vcodeImg").css("cursor", "pointer");
+      $("#vcodeImg").on("click", () => {
+        $("input#verifyCode").val("");
+      })
+    
+      function solveXKCAPTCHA() {
+        if (pjw.preferences.solve_captcha && $("#loginDiv").css("display") != "none") {
+          let link = pjw.data.captcha_solver_link || "https://cubiccm.ddns.net/captcha-solver/?mode=xk&data={%data}";
+          link = link.replace("{%data}", sessionStorage.getItem("vtoken"));
+          if ($("iframe[data-type=captcha]").length) {
+            $("iframe[data-type=captcha]").attr("src", link);
+          } else {
+            $("body").append(`<iframe src="${link}" width="300" height="300" data-type="captcha" style="display: none;"></iframe>`);
+          }
+        }
+      }
+    
+      if (document.getElementById("vcodeImg").complete) {
+        solveXKCAPTCHA();
+      }
+
+      $("#vcodeImg").on("load", () => {
+        solveXKCAPTCHA();
+      });
+
+      pjw.captcha_initialized = true;
+    }
+
+    pjw.preferences.solve_captcha && initCAPTCHASolver();
+    
+
     const welcome_html = `
       <div class="pjw-xk-welcome-card">
         <p id="pjw-bulletin-content" style="font-size: 14px;">${pjw.data.bulletin_content || ""}</p>
@@ -502,7 +647,7 @@ window.potatojw_intl = function() {
     `;
 
     $("div.language").before(welcome_html);
-    if (pjw.preferences.enabled)
+    if (!pjw.preferences.enabled)
       $(".pjw-xk-welcome-card").hide();
 
     getBulletin();
