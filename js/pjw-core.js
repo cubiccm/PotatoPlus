@@ -4,7 +4,7 @@ const pjw = {
   site: "",
   mode: "",
   initialized: false,
-  version_description: "PotatoPlus 0.3.8 包含界面更新与错误修复。",
+  version_description: "PotatoPlus 0.3.9 包含界面更新与错误修复。",
   data: new Proxy(JSON.parse(localStorage.getItem("potatoplus_data")) || {}, {
     get(target, property, receiver) {
       if (property === "clear") {
@@ -795,8 +795,8 @@ window.potatojw_intl = function() {
           this.setTotalWeeks(total_weeks_history[sel.term.val()] || 18);
           this.parse(data);
           resolve();
-        }).fail((data) => {
-          reject(data);
+        }).fail((jqXHR, textStatus) => {
+          reject(`${textStatus} (${jqXHR.status})`);
         });
       });
     }

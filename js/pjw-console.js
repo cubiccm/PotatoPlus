@@ -57,6 +57,8 @@ window.PJWConsole = class {
     if (channel) {
       channel = `data-channel="${channel}"`;
       this.dom.find(`[${channel}]`).remove();
+    } else {
+      channel = "";
     }
     var html = `
       <div class="pjw-console-item" ${channel}>
@@ -127,8 +129,6 @@ window.PJWConsole = class {
 
     this.dom = $$(html).appendTo("body");
     this.history = this.dom.children("#pjw-console-history");
-
-    $$("body").css("margin-bottom", "40px");
 
     $$(document).on("mousemove", null, {
       target: this

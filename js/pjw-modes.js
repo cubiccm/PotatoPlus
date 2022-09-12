@@ -306,8 +306,8 @@ function() {
           this.console.warn(`${remove_fav ? "取消" : ""}收藏${target.getClassInfoForAlert(class_data)}失败` + res.msg);
           reject();
         }
-      }).fail((res) => {
-        this.console.warn(`${remove_fav ? "取消" : ""}收藏${target.getClassInfoForAlert(class_data)}失败`);
+      }).fail((jqXHR, textStatus) => {
+        this.console.warn(`${remove_fav ? "取消" : ""}收藏${target.getClassInfoForAlert(class_data)}失败：` + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -379,8 +379,8 @@ function() {
           this.console.warn(`${!is_deselect ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败：` + res.msg);
           reject();
         }
-      }).fail((res) => {
-        this.console.warn(`${!is_deselect ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败`);
+      }).fail((jqXHR, textStatus) => {
+        this.console.warn(`${!is_deselect ? "选择" : "退选"}${target.getClassInfoForAlert(class_data)}失败：` + `${textStatus} (${jqXHR.status})`);
         reject();
       });
     });
@@ -542,7 +542,8 @@ function() {
                   list.parse(total_list);
                   resolve();
                 }
-              }).fail((ndata) => {
+              }).fail((jqXHR, textStatus) => {
+                list.console.warn(`获取第 ${pg} 页课程时遇到问题：${textStatus} (${jqXHR.status})`);
                 remaining_count--;
                 if (remaining_count == 0) {
                   list.parse(total_list);
@@ -556,8 +557,8 @@ function() {
           resolve();
         }
         
-      }).fail((data) => {
-        reject(data);
+      }).fail((jqXHR, textStatus) => {
+        reject(`${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -597,9 +598,9 @@ function() {
           target.console.success(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title") || res}`);
           resolve(res);
         }
-      }).fail((res) => {
+      }).fail((jqXHR, textStatus) => {
         target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
-        reject(res);
+        reject(`${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -691,8 +692,8 @@ function() {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -730,8 +731,8 @@ function () {
           target.console.warn(`选择${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
           reject(res);
         }
-      }).fail((res) => {
-        target.console.error(`选择失败：${res}`);
+      }).fail((jqXHR, textStatus) => {
+        target.console.error(`选择失败：${textStatus} (${jqXHR.status})`);
         reject(res);
       });
     });
@@ -808,8 +809,8 @@ function () {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -860,9 +861,9 @@ function () {
           target.console.warn(`${deselect ? "退选" : "选择"}${class_data.title}（${class_data.teachers.join("，")}）：${$$(res).attr("title")}`);
           reject(res);
         }
-      }).fail((res) => {
-        target.console.error(`${deselect ? "退选" : "选择"}失败：${res}`);
-        reject(res);
+      }).fail((jqXHR, textStatus) => {
+        target.console.error(`${deselect ? "退选" : "选择"}失败：${textStatus} (${jqXHR.status})`);
+        reject(`${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -935,8 +936,8 @@ function () {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -991,9 +992,9 @@ function() {
           target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           reject();
         }
-      }).fail((res) => {
-        target.console.error(`请求失败：${res}`);
-        reject(res);
+      }).fail((jqXHR, textStatus) => {
+        target.console.error(`请求失败：${textStatus} (${jqXHR.status})`);
+        reject(`${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1070,8 +1071,8 @@ function() {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1118,9 +1119,9 @@ function() {
           target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           reject();
         }
-      }).fail((res) => {
-        target.console.error(`请求失败：${res}`);
-        reject(res);
+      }).fail((jqXHR, textStatus) => {
+        target.console.error(`请求失败：${`${textStatus} (${jqXHR.status})`}`);
+        reject(`${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1211,8 +1212,8 @@ function() {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1375,8 +1376,8 @@ function() {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1446,9 +1447,9 @@ function() {
           target.console.warn(`选择${target.getClassInfoForAlert(class_data)}：${res}`);
           reject();
         }
-      }).fail((res) => {
-        target.console.error(`请求失败：${res}`);
-        reject(res);
+      }).fail((jqXHR, textStatus) => {
+        target.console.error(`请求失败：${textStatus} (${jqXHR.status})`);
+        reject(`${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1537,8 +1538,8 @@ function() {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }
@@ -1695,8 +1696,8 @@ function() {
         this.ajax_request = null;
         this.parse(data);
         resolve();
-      }).fail((data) => {
-        reject("无法获取数据：" + data);
+      }).fail((jqXHR, textStatus) => {
+        reject("无法获取数据：" + `${textStatus} (${jqXHR.status})`);
       });
     });
   }

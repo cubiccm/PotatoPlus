@@ -104,6 +104,11 @@
 
 #pjw-hours-filter .pjw-class-weekcal-calendar-day > span {
   cursor: pointer;
+  border-radius: 4px;
+  margin: 1px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
 }
 
 #pjw-hours-filter .pjw-class-weekcal-calendar-day > span:hover {
@@ -161,7 +166,7 @@
   opacity: .5;
 }
 
-#pjw-hours-filter .select-time > div:hover::after {
+#pjw-hours-filter .select-time > div::after {
   content: "arrow_right";
   font-family: "Material Icons Round";
 }
@@ -177,7 +182,7 @@
   color: var(--pjw-dark-background);
 }
 
-#pjw-hours-filter-control .pjw-mini-button:hover {
+#pjw-hours-filter-control .pjw-mini-button:not(.disabled):hover {
   color: rgb(208, 196, 16);
 }
 

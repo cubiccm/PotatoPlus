@@ -1,5 +1,5 @@
 function ClassListPlugin() {
-  total_weeks = 16;
+  let total_weeks = 16;
   const campus_id_map = {
     "仙林校区": 3,
     "浦口校区": 2,

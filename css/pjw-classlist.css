@@ -531,7 +531,7 @@
 .pjw-class-weekcal-calendar {
   display: flex;
   flex-direction: row;
-  margin: 2px;
+  margin: 4px 2px 8px 2px;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-calendar {

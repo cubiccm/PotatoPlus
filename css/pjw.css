@@ -65,12 +65,19 @@
   border: 0; border-radius: 7px;
   background-color: rgba(255, 255, 255, .8);
   color: #63065f;
-  user-select: none; cursor: pointer;
+  user-select: none;
+  cursor: pointer;
   padding: 1px 7px;
   margin: 2px 5px;
   transition: all .1s ease-in;
   min-height: 22px;
   line-height: 22px;
+}
+
+.pjw-mini-button.disabled {
+  color: gray !important;
+  cursor: default;
+  pointer-events: none;
 }
 
 .pjw-mini-button.keep-hover {
@@ -81,7 +88,7 @@
   margin: 2px;
 }
 
-.pjw-mini-button:hover {
+.pjw-mini-button:not(.disabled):hover {
   background: rgba(255, 255, 255, 1);
   color: #f37232;
   border-radius: 10px;
@@ -89,7 +96,7 @@
   margin: 2px;
 }
 
-.pjw-mini-button:active {
+.pjw-mini-button:not(.disabled):active {
   color: #c1c1c1 !important;
   background-color: rgba(255, 255, 255, .9);
 }

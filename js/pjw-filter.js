@@ -67,7 +67,7 @@ var pjw_filter = {
     }
   }, 
 
-  /* hours module v0.6 */
+  /* hours module v0.7 */
   hours: {
     html: `
       <div id="pjw-hours-filter" class="pjw-filter-module" data-switch="pjw-filter-hours-switch">
@@ -245,22 +245,21 @@ var pjw_filter = {
                 headers: {
                   "token": sessionStorage.token
                 },
-                method: "POST",
-                success: (res) => {
-                  const lesson_time = [];
-                  for (const item of res.dataList) {
-                    lesson_time.push(...list.parseClassTime(item.teachingPlace).lesson_time);
-                  }
-                  pjw.data.my_lesson_time = lesson_time;
-                  pjw.data.my_lesson_time_update_timestamp = new Date().getTime();
-                  setLessonTime(lesson_time);
-                  saveData();
-                  resolve();
-                },
-                fail: (res) => {
-                  list.console.error("课程时间筛选器无法加载已有课程：" + res);
-                  reject();
+                method: "POST"
+              }).done((res) => {
+                const lesson_time = [];
+                for (const item of res.dataList) {
+                  lesson_time.push(...list.parseClassTime(item.teachingPlace).lesson_time);
                 }
+                pjw.data.my_lesson_time = lesson_time;
+                pjw.data.my_lesson_time_update_timestamp = new Date().getTime();
+                clearCalendar();
+                setLessonTime(lesson_time);
+                saveData();
+                resolve();
+              }).fail((jqXHR, textStatus, errorThrown) => {
+                list.console.error("课程时间筛选器无法加载已有课程：" + `${textStatus} (${jqXHR.status})` + " " + textStatus);
+                reject();
               });
             } else if (pjw.site == "jw") {
               $$.ajax({
@@ -276,10 +275,12 @@ var pjw_filter = {
                 });
                 pjw.data.my_lesson_time = lesson_time;
                 pjw.data.my_lesson_time_update_timestamp = new Date().getTime();
-                setLessonTime(space, lesson_time);
+                clearCalendar();
+                setLessonTime(lesson_time);
+                saveData();
                 resolve();
-              }).catch((res) => {
-                list.console.error("课程时间筛选器无法加载已有课程：" + res);
+              }).fail((jqXHR, textStatus) => {
+                list.console.error("课程时间筛选器无法加载已有课程：" + `${textStatus} (${jqXHR.status})`);
                 reject();
               });
             }
@@ -313,9 +314,12 @@ var pjw_filter = {
       });
 
       $$("#reset-calendar").on("click", function () {
-        clearCalendar();
+        $$("#reset-calendar").addClass("disabled");
         loadMyClass(force_reload = true).then(function () {
+          $$("#reset-calendar").removeClass("disabled");
           list.update();
+        }).catch(function () {
+          $$("#reset-calendar").removeClass("disabled");
         });
       });
 
