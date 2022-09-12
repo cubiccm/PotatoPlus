@@ -1,4 +1,9 @@
-path = "."
+import sys
+
+output_path = "./"
+if len(sys.argv) >= 2:
+  output_path = sys.argv[1] + "/"
+
 root_dirs = ["css", "js", "img", "fonts"]
 
 versions = [{
@@ -11,16 +16,15 @@ versions = [{
   "label": "Chrome Extension"
 }, {
   "filename": "potatoplus - Edge",
-  "manifest": 2,
+  "manifest": 3,
   "label": "Edge Extension"
 }]
 
 import os
 import zipfile
 
-os.chdir(path)
 for version in versions:
-  with zipfile.ZipFile(version["filename"] + ".zip", "w") as f:
+  with zipfile.ZipFile(output_path + version["filename"] + ".zip", "w") as f:
     if version["manifest"] == 3:
       f.write("manifest.json")
     elif version["manifest"] == 2:
