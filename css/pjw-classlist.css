@@ -456,7 +456,7 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  border-radius: 14px;
+  border-radius: 20px;
   background-color: rgba(0, 0, 0, .05);
   justify-content: space-around;
   user-select: none;
@@ -531,7 +531,7 @@
 .pjw-class-weekcal-calendar {
   display: flex;
   flex-direction: row;
-  margin-bottom: 4px;
+  margin: 2px;
 }
 
 .pjw-class-container--compressed .pjw-class-weekcal-calendar {

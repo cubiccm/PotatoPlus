@@ -143,53 +143,91 @@ var pjw_filter = {
             </div>
           </div>
           <div id="pjw-hours-filter-control">
-            <div id="clear-calendar" class="pjw-mini-button">清空</div>
-            <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
+            <section>
+              <button id="autosave-switch" class="mdc-switch mdc-switch--selected" type="button" role="switch" aria-checked="false" data-mdc-auto-init="MDCRipple">
+                <div class="mdc-switch__track"></div>
+                <div class="mdc-switch__handle-track">
+                  <div class="mdc-switch__handle">
+                    <div class="mdc-switch__shadow">
+                      <div class="mdc-elevation-overlay"></div>
+                    </div>
+                    <div class="mdc-switch__ripple"></div>
+                  </div>
+                </div>
+                <span class="mdc-switch__focus-ring-wrapper">
+                  <div class="mdc-switch__focus-ring"></div>
+                </span>
+              </button>
+              <label for="autosave-switch">自动保存</label>
+            </section>
+            <section>
+              <div id="clear-calendar" class="pjw-mini-button">清空</div>
+              <div id="reset-calendar" class="pjw-mini-button">过滤冲突课程</div>
+            </section>
           </div>
         </div>
       </div>
     `,
     intl: (space, list) => {
       space.data = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       space.dom = $$("#pjw-hours-filter");
       space.cal = $$("#pjw-hours-filter").find(".pjw-class-weekcal");
 
-      // Value: 0, false
-      space.setValue = function(day, lesson, val) {
-        this.data[day][lesson] = val;
-        var target_lesson = this.cal.find(`div.pjw-class-weekcal-calendar-day:eq(${day})`).children(`span:eq(${lesson - 1})`);
-        if (val === false) target_lesson.addClass("selected");
+      function saveData() {
+        pjw.preferences.filter_autosave && (pjw.data.filter_autosave_data = space.data
+            .map(array => array.join("")).join(","));
+      }
+
+      function loadData() {
+        return pjw.preferences.filter_autosave && pjw.data.filter_autosave_data
+            && (space.data = pjw.data.filter_autosave_data
+                .split(",").map(str => str.split("").map(val => parseInt(val)))) 
+            || false;
+      }
+
+      // Value: 0, 1
+      function setValue(day, lesson, val, append = false) {
+        if (append)
+          space.data[day - 1][lesson - 1] |= val;
+        else
+          space.data[day - 1][lesson - 1] = val;
+        const target_lesson = space.cal
+            .find(`div.pjw-class-weekcal-calendar-day:eq(${day})`)
+            .children(`span:eq(${lesson - 1})`);
+        if (val == 1) target_lesson.addClass("selected");
         else target_lesson.removeClass("selected");
       };
 
-      space.clear = function() {
-        for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 12; j++)
-            space.setValue(i, j, 0);
+      function clearCalendar() {
+        for (let i = 1; i <= 7; i++)
+          for (let j = 1; j <= 12; j++)
+            setValue(i, j, 0);
+        saveData();
       };
 
-      space.loadMyClass = function(force_reload = false, include_odd_even = true) {
-        const setLessonTime = (space, lesson_time, include_odd_even = true) => {
-          for (const item of lesson_time) {
-            if (include_odd_even || item.type == "normal") {
-              for (let i = item.start; i <= item.end; i++)
-                space.setValue(item.weekday, i, false);
-            }
+      function setLessonTime(lesson_time, include_odd_even = true) {
+        for (const item of lesson_time) {
+          if (include_odd_even || item.type == "normal") {
+            for (let i = item.start; i <= item.end; i++)
+              setValue(item.weekday, i, 1);
           }
-        };
+        }
+      };
+
+      const update_interval = 300000;
+      function loadMyClass(force_reload = false, include_odd_even = true) {
         return new Promise((resolve, reject) => {
           if (!force_reload && pjw.data.my_lesson_time && 
-              new Date().getTime() - (pjw.data.my_lesson_time_update_timestamp || 0) < 300000) {
-            setLessonTime(space, pjw.data.my_lesson_time);
+              new Date().getTime() - (pjw.data.my_lesson_time_update_timestamp || 0) < update_interval) {
+            setLessonTime(pjw.data.my_lesson_time);
             resolve();
           } else {
             if (pjw.site == "xk") {
@@ -215,7 +253,8 @@ var pjw_filter = {
                   }
                   pjw.data.my_lesson_time = lesson_time;
                   pjw.data.my_lesson_time_update_timestamp = new Date().getTime();
-                  setLessonTime(space, lesson_time);
+                  setLessonTime(lesson_time);
+                  saveData();
                   resolve();
                 },
                 fail: (res) => {
@@ -248,147 +287,143 @@ var pjw_filter = {
         });
       };
 
-      space.loadMyClass();
-
-      $$("#clear-calendar").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.space.clear();
-        e.data.list.update();
+      space.autosave_switch = new mdc.switchControl.MDCSwitch($$("#autosave-switch")[0]);
+      pjw.preferences.filter_autosave === null && (pjw.preferences.filter_autosave = true);
+      space.autosave_switch.selected = pjw.preferences.filter_autosave;
+      space.autosave_switch.listen("click", function () {
+        (pjw.preferences.filter_autosave = space.autosave_switch.selected)
+            || delete pjw.data.filter_autosave_data;
+        saveData();
       });
 
-      $$("#reset-calendar").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.space.clear();
-        e.data.space.loadMyClass(force_reload = true).then(() => {e.data.list.update();});
+      // Update DOM if auto-save data is loaded
+      loadData() ? (function() {
+        for (let i = 0; i < 7; i++)
+          for (let j = 0; j < 12; j++)
+            if (space.data[i][j] == 1)
+              space.cal
+                   .find(`div.pjw-class-weekcal-calendar-day:eq(${i+1})`)
+                   .children(`span:eq(${j})`)
+                   .addClass("selected");
+      })() : loadMyClass();
+
+      $$("#clear-calendar").on("click", function () {
+        clearCalendar();
+        list.update();
       });
 
-      space.mouse_select = false;
-      space.handleMouseUp = function() {
-        if (space.mouse_select == true) {
-          space.mouse_select = false;
-          delete space.mouse_select_start;
-        }
-      };
-
-      space.cal.on("mousedown", null, {
-        space: space
-      }, (e) => {
-        e.data.space.mouse_select = true;
+      $$("#reset-calendar").on("click", function () {
+        clearCalendar();
+        loadMyClass(force_reload = true).then(function () {
+          list.update();
+        });
       });
 
-      space.cal.on("mouseup", null, {
-        space: space
-      }, (e) => {
-        e.data.space.handleMouseUp();
-      });
+      // space.mouse_select = false;
+      // function handleMouseUp() {
+      //   if (space.mouse_select == true) {
+      //     space.mouse_select = false;
+      //     delete space.mouse_select_start_val;
+      //     saveData();
+      //   }
+      // };
 
-      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        if (!e.data.space.mouse_select) return;
-        var elem = $$(e.delegateTarget);
-        var day = elem.parent().index();
-        var lesson = elem.index() + 1;
-        var val = false;
+      // space.cal.on("mousedown", function () {
+      //   space.mouse_select = true;
+      // });
+
+      // space.cal.on("mouseup", function () {
+      //   handleMouseUp();
+      // });
+
+      // space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousemove", function (e) {
+      //   if (!space.mouse_select) return;
+      //   const elem = $$(e.delegateTarget);
+      //   const day = elem.parent().index();
+      //   const lesson = elem.index() + 1;
+      //   let val = 1;
+      //   if (elem.hasClass("selected")) val = 0;
+      //   if (typeof(space.mouse_select_start_val) == "undefined")
+      //     space.mouse_select_start_val = val;
+      //   else
+      //     val = space.mouse_select_start_val;
+      //   setValue(day, lesson, val);
+      // });
+      
+      // Flip single item
+      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("click", function (e) {
+        const elem = $$(e.delegateTarget);
+        const day = elem.parent().index();
+        const lesson = elem.index() + 1;
+        let val = 1;
         if (elem.hasClass("selected")) val = 0;
-        if (typeof(e.data.space.mouse_select_start) == "undefined")
-          e.data.space.mouse_select_start = val;
-        else
-          val = e.data.space.mouse_select_start;
-        e.data.space.setValue(day, lesson, val);
+        // if (typeof(space.mouse_select_start_val) == "undefined")
+        //   space.mouse_select_start_val = val;
+        // else
+        //   val = space.mouse_select_start_val;
+        setValue(day, lesson, val);
+        saveData();
+        list.update();
       });
 
-      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mousedown", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        var elem = $$(e.delegateTarget);
-        var day = elem.parent().index();
-        var lesson = elem.index() + 1;
-        var val = false;
-        if (elem.hasClass("selected")) val = 0;
-        if (typeof(e.data.space.mouse_select_start) == "undefined")
-          e.data.space.mouse_select_start = val;
-        else
-          val = e.data.space.mouse_select_start;
-        e.data.space.setValue(day, lesson, val);
-      });
-
-      space.cal.find("div.pjw-class-weekcal-calendar-day:gt(0)").children("span").on("mouseup", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        e.data.list.update();
-      });
-
-      space.cal.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("div").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        var elem = $$(e.delegateTarget);
-        var lesson = elem.index() + 1;
-        var val = 0;
-        for (var i = 1; i <= 7; i++)
-          if (e.data.space.data[i][lesson] !== false) {
-            val = false;
+      // Flip whole row when header clicked
+      space.cal.find(`div.pjw-class-weekcal-calendar-day:eq(0)`).children("div").on("click", function (e) {
+        const elem = $$(e.delegateTarget);
+        const lesson = elem.index() + 1;
+        let val = 0;
+        for (let i = 1; i <= 7; i++)
+          if (space.data[i-1][lesson-1] != 1) {
+            val = 1;
             break;
           }
-        for (var i = 1; i <= 7; i++)
-          e.data.space.setValue(i, lesson, val);
-        e.data.list.update();
+        for (let i = 1; i <= 7; i++)
+          setValue(i, lesson, val);
+        saveData();
+        list.update();
       });
 
-      space.cal.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        var elem = $$(e.delegateTarget);
-        var day = elem.index();
-        var val = 0;
-        for (var j = 1; j <= 12; j++)
-          if (e.data.space.data[day][j] !== false) {
-            val = false;
+      // Flip whole column when header clicked
+      space.cal.find("div.pjw-class-weekcal-heading-day:gt(0)").on("click", function (e) {
+        const elem = $$(e.delegateTarget);
+        const day = elem.index();
+        let val = 0;
+        for (let j = 1; j <= 12; j++)
+          if (space.data[day-1][j-1] != 1) {
+            val = 1;
             break;
           }
-        for (var j = 1; j <= 12; j++)
-          e.data.space.setValue(day, j, val);
-        e.data.list.update();
+        for (let j = 1; j <= 12; j++)
+          setValue(day, j, val);
+        saveData();
+        list.update();
       });
 
-      space.cal.find("div.pjw-class-weekcal-heading-day.select-all").on("click", null, {
-        space: space,
-        list: list
-      }, (e) => {
-        var val = 0;
-        for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 12; j++)
-            if (e.data.space.data[i][j] !== false) {
-              val = false;
+      // Flip all items when header clicked
+      space.cal.find("div.pjw-class-weekcal-heading-day.select-all").on("click", function () {
+        let val = 0;
+        for (let i = 1; i <= 7; i++)
+          for (let j = 1; j <= 12; j++)
+            if (space.data[i-1][j-1] != 1) {
+              val = 1;
               break;
             }
-        for (var i = 1; i <= 7; i++)
-          for (var j = 1; j <= 12; j++)
-            e.data.space.setValue(i, j, val);
-        e.data.list.update();
+        for (let i = 1; i <= 7; i++)
+          for (let j = 1; j <= 12; j++)
+            setValue(i, j, val);
+        saveData();
+        list.update();
       });
 
-      $$("body").on("mouseup", null, {
-        target: space
-      }, (e) => {
-        e.data.target.handleMouseUp();
-      });
+      // $$("body").on("mouseup", function () {
+      //   handleMouseUp();
+      // });
     }, 
     check: (space, data) => {
       if (!data.lesson_time || !data.lesson_time.length) return 0;
-      var priority = 0.0;
-      for (var item of data.lesson_time) {
-        for (var i = item.start; i <= item.end; i++) {
-          var this_priority = space.data[item.weekday][i];
+      let priority = 0.0;
+      for (const item of data.lesson_time) {
+        for (let i = item.start; i <= item.end; i++) {
+          const this_priority = space.data[item.weekday-1][i-1] == 1 ? false : 0;
           if (this_priority === false)
             return false;
           else priority += this_priority / (item.end - item.start + 1);

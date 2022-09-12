@@ -21,7 +21,7 @@
 }
 
 .pjw-filter-panel > div {
-  margin: 10px 0;
+  margin: 6px 0;
 }
 
 .pjw-filter-panel .pjw-filter-module-title {
@@ -34,7 +34,7 @@
 }
 
 .pjw-filter-panel .content {
-  margin: 10px 20px;
+  padding: 8px 12px;
 }
 
 .pjw-filter-panel .pjw-filter-module-header {
@@ -93,15 +93,43 @@
   color: var(--white);
 }
 
+#pjw-hours-filter .pjw-class-weekcal-heading-day:active {
+  opacity: .5;
+}
+
 #pjw-hours-filter .pjw-class-weekcal-heading-day:not(.select-all):hover::after {
   content: "arrow_downward";
   font-family: "Material Icons Round";
 }
 
-#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span {
+  cursor: pointer;
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span:hover {
   color: rgba(255, 255, 255, .7);
+  background-color: rgba(0, 0, 0, .2);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span:active {
+  color: rgba(255, 255, 255, .4);
+  background-color: rgba(0, 0, 0, .8);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected {
   text-decoration: line-through;
+  color: rgba(255, 255, 255, .7);
   background-color: rgba(0, 0, 0, .5);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected:hover {
+  color: rgba(255, 255, 255, .7);
+  background-color: rgba(0, 0, 0, .4);
+}
+
+#pjw-hours-filter .pjw-class-weekcal-calendar-day > span.selected:active {
+  color: rgba(255, 255, 255, .4);
+  background-color: rgba(0, 0, 0, .8);
 }
 
 #pjw-hours-filter .select-time > div {
@@ -115,9 +143,9 @@
   color: rgba(0, 0, 0, .6);
 
   height: 16px;
-  width: 24px;
-  min-width: 24px;
-  max-width: 24px;
+  width: 16px;
+  min-width: 16px;
+  max-width: 16px;
   line-height: 16px;
   margin: 3px;
 
@@ -129,6 +157,10 @@
   color: var(--white);
 }
 
+#pjw-hours-filter .select-time > div:active {
+  opacity: .5;
+}
+
 #pjw-hours-filter .select-time > div:hover::after {
   content: "arrow_right";
   font-family: "Material Icons Round";
@@ -136,24 +168,24 @@
 
 #pjw-hours-filter-control {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
-  margin: 10px 0;
-  opacity: 0.65;
-  transition: opacity .1s ease-out;
+  margin-top: 6px;
 }
 
-#pjw-hours-filter-control:hover {
-  display: flex;
-  margin: 10px 0;
-  opacity: 1;
-}
-
-#pjw-hours-filter-control > .pjw-mini-button {
+#pjw-hours-filter-control .pjw-mini-button {
   color: var(--pjw-dark-background);
 }
 
-#pjw-hours-filter-control > .pjw-mini-button:hover {
+#pjw-hours-filter-control .pjw-mini-button:hover {
   color: rgb(208, 196, 16);
+}
+
+#pjw-hours-filter-control > section {
+  margin: 4px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .pjw-filter-advanced-list-item {
