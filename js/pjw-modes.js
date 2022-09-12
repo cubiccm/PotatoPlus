@@ -207,6 +207,12 @@ function() {
     };
   }
 
+  if ($("#cvPageHeadTab").length != 0
+      && $("#cvPageHeadTab a[data-teachingclasstype='SC']").length == 0) {
+    const html = `<li><a href="javascript:void(0);" class="tab-first" data-teachingclasstype="SC">收藏</a></li>`;
+    $("#cvPageHeadTab").append(html);
+  }
+
   function buildAddParam(tcId, operationType = "1", is_deselect = false) {
     //操作类型：1添加、2删除
     // if (!operationType) {
