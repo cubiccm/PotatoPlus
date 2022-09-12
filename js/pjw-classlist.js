@@ -475,7 +475,7 @@ function ClassListPlugin() {
       this.weekcal = this.sub.children(".pjw-class-weekcal");
       this.sideinfo = this.sub.children(".pjw-class-sideinfo");
       this.operation = this.dom.children(".pjw-class-operation");
-      this.select_button = this.operation.children(".pjw-class-select-button");
+      this.select_button = this.operation.find(".pjw-class-select-button");
       this.filter_button = this.operation.find(".pjw-class-filter-button");
       this.favorite_button = this.operation.find(".pjw-class-fav-button");
       this.filter_menu = new mdc.menu.MDCMenu(this.operation.find(".pjw-class-filter-menu")[0]);
@@ -1219,10 +1219,8 @@ function ClassListPlugin() {
           text = "标准";
         else if (this.auto_refresh_frequency <= 6.0)
           text = "快";
-        else if (this.auto_refresh_frequency < 8.0)
-          text = "极速";
         else
-          text = "封号退学";
+          text = "极速";
         this.show_refresh_level_timeout_id = setTimeout( (text) => {
           $$("#autorefresh-label").html(text);
         }, 1000, text);
