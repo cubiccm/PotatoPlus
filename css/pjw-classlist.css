@@ -416,7 +416,11 @@
 }
 
 .pjw-class-course-number:hover {
-  color: var(--black);
+  color: rgba(0, 0, 0, .75);
+}
+
+.pjw-class-course-number:active {
+  color: black;
 }
 
 .pjw-class-title {
@@ -476,10 +480,15 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
+  cursor: pointer;
 }
 
-.pjw-class-container--compressed .pjw-class-weekcal-heading {
-  cursor: pointer;
+.pjw-class-container--compressed .pjw-class-weekcal-heading:hover {
+  border-bottom-width: 6px;
+}
+
+.pjw-class-weekcal-heading:active {
+  background-color: rgba(0, 0, 0, .2);
 }
 
 .pjw-class-weekcal-heading-day {
@@ -683,11 +692,6 @@
   display: none;
 }
 
-.pjw-class-container--compressed .pjw-class-weeknum-bar {
-  width: 150px;
-  cursor: pointer;
-}
-
 .pjw-class-weeknum-bar__fill {
   position: absolute;
   height: 18px;
@@ -722,24 +726,25 @@
 
 .pjw-class-container--compressed .pjw-class-bignum {
   margin: 0 5px;
-  flex-direction: row;
-  align-items: flex-end;
   padding: 0;
-  cursor: pointer;
   user-select: none;
+}
+
+.view-narrow-desktop .pjw-class-container--compressed .pjw-class-bignum {
+  flex-direction: row;
+  align-items: baseline;
 }
 
 .pjw-class-bignum > .num {
   white-space: nowrap;
-  font-size: 27px;
+  font-size: 24px;
   font-weight: bold;
   color: black;
   transition: font-size .2s ease-out;
 }
 
 .pjw-class-container--compressed .pjw-class-bignum > .num {
-  font-size: 19px;
-  line-height: 19px;
+  font-size: 18px;
   margin: 0 2px;
 }
 
@@ -896,28 +901,31 @@
   flex-direction: column;
   padding: 5px 0;
 }
-.view-narrow-desktop .pjw-class-places > span {
-  /* display: none; */
-}
+
 .view-narrow-desktop .pjw-class-info-top {
   flex-direction: column;
   align-items: flex-start;
   flex-wrap: wrap;
 }
+
 .view-single-column .pjw-classlist-main {
   flex-direction: column;
 }
+
 .view-mobile .pjw-class-container {
   flex-direction: column;
 }
+
 .view-mobile .pjw-class-info {
   max-width: 100%;
   width: 100%;
 }
+
 .view-mobile .pjw-class-operation {
   flex-direction: row;
   justify-content: center;
 }
+
 .view-mobile .pjw-class-info-top {
   flex-direction: row;
   align-items: flex-end;

@@ -501,28 +501,28 @@ function ClassListPlugin() {
       });
 
       // Draw weekday lesson time rings
-      var deg_list = [
+      const deg_list = [
         [0,2],[2,4],
         [5,7],[7,9],
         [10,12],[12,14],
         [15,17],[17,19],
         [20,22],[22,24],[24,26]
       ];
-      var color_list = [
+      const color_list = [
         "yellow", "yellow",
-        "white", "white",
-        "#e5ffc7", "#e5ffc7",
+        "#53fffe", "#53fffe",
+        "#b4ff25", "#b4ff25",
         "#ff5400", "#ff5400",
         "#8178f9", "#8178f9", "#8178f9"
       ];
       this.weekcal.find("canvas").each((index, val) => {
-        var ctx = val.getContext("2d");
-        var arc_list = $$(val).attr("data-arc");
+        const ctx = val.getContext("2d");
+        const arc_list = $$(val).attr("data-arc");
 
-        for (var i = 0; i < 11; i++) {
-          ctx.beginPath();  
+        for (let i = 0; i < 11; i++) {
+          ctx.beginPath();
           if ($$(val).hasClass("pjw-class-weekcal-arc")) {
-            ctx.lineWidth = 8;
+            ctx.lineWidth = 12;
             // Stroke color in compressed calendar
             ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : color_list[i];
           } else {
@@ -530,11 +530,12 @@ function ClassListPlugin() {
             // Stroke color in expanded calendar
             ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "rgba(255, 255, 255, 1)";
           }
-          var deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.02;
-          var deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.02;
+          let deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.02;
+          let deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.02;
           if (arc_list[i] == "2" || arc_list[i] == "0") {
             // Draw dotted line
-            var deg_mid = (deg_start + deg_end) / 2, deg_gap = (deg_end - deg_start) / 6;
+            const deg_mid = (deg_start + deg_end) / 2,
+                  deg_gap = (deg_end - deg_start) / 6;
             deg_start = deg_mid - (arc_list[i] == "0" ? 1 : 2) * deg_gap;
             deg_end = deg_mid + deg_gap;
           }
