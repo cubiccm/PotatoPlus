@@ -207,12 +207,6 @@ function() {
     };
   }
 
-  if ($("#cvPageHeadTab").length != 0
-      && $("#cvPageHeadTab a[data-teachingclasstype='SC']").length == 0) {
-    const html = `<li><a href="javascript:void(0);" class="tab-first" data-teachingclasstype="SC">收藏</a></li>`;
-    $("#cvPageHeadTab").append(html);
-  }
-
   function buildAddParam(tcId, operationType = "1", is_deselect = false) {
     //操作类型：1添加、2删除
     // if (!operationType) {
@@ -266,6 +260,12 @@ function() {
     return appParam;
   }
 
+  if ($("#cvPageHeadTab").length != 0
+      && $("#cvPageHeadTab a[data-teachingclasstype='SC']").length == 0) {
+    const html = `<li><a href="javascript:void(0);" class="tab-first" data-teachingclasstype="SC">收藏</a></li>`;
+    $("#cvPageHeadTab").append(html);
+  }
+
   window.list = new PJWClassList($(".content-container"));
   // $(".search-container").css("display", "none");
   $(".result-container").css("display", "none");
@@ -282,6 +282,39 @@ function() {
     "flex-shrink": "0",
   });
   $("body").css("overflow-y", "auto");
+  $(".cv-page-footer").hide();
+
+  let copyright_info = "南京大学本科生院";
+  try {
+    copyright_info = $("#cv-copyright").html();
+    copyright_info = copyright_info.slice(copyright_info.search("©") + 1).trim();
+  } catch {}
+  let online_user_count = "N/A";
+  try {
+    online_user_count = $("#noline-tip").html().match(/[0-9]+/)[0];
+  } catch {}
+  $("#noline-tip").on('DOMSubtreeModified', function() {
+    try {
+      online_user_count = $("#noline-tip").html().match(/[0-9]+/)[0];
+      $("#pjw-online-user-count").text(online_user_count);
+    } catch {}
+  });
+  let hotline = "89682303";
+  try {
+    hotline = $(".cv-page-footer .cv-mh-4.cv-color-danger").html().match(/[0-9]+/)[0];
+  } catch {}
+  $("article#course-main").after(`
+    <footer class="pjw-xk-footer">
+      <i class="material-icons-round" title="版权信息">copyright</i>
+      <span>${copyright_info}</span>
+      <i class="material-icons-round" title="当前在线人数">people</i>
+      <span id="pjw-online-user-count">${online_user_count}</span>
+      <i class="material-icons-round" title="联系电话">phone</i>
+      <span>${hotline}</span>
+      <i class="material-icons-round" title="PotatoPlus 版本">extension</i>
+      <span>PotatoPlus ${pjw.version} ${pjw.platform}</span>
+    </footer>
+  `);
   const checkPrivilege = () => {(pjw.preferences.privilege && (delete pjw.preferences.privilege && $(".user-top .username").text($(".user-top .username").attr("title")))) || ((pjw.preferences.privilege = "root") && $(".user-top .username").text("root"));};
   pjw.preferences.privilege && $(".user-top .username").text("root");
   $(".user-img").dblclick(checkPrivilege);

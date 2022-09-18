@@ -240,6 +240,10 @@ body {
   opacity: 0;
 }
 
+#course-main .content-container {
+  margin-bottom: 0 !important;
+}
+
 /* pjw-card */
 .pjw-card {
   margin: 20px min(5%, 25px);
@@ -420,6 +424,28 @@ body {
 .pjw-xk-welcome-link-container > a:hover::after {
   content: "arrow_right";
   font-family: "Material Icons Round";
+}
+
+article#course-main {
+  background-color: transparent;
+}
+
+.pjw-xk-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 48px 0;
+}
+
+.pjw-xk-footer > i {
+  margin: 0 6px;
+  font-size: 18px;
+}
+
+.pjw-xk-footer > span {
+  margin-right: 20px;
+  color: rgba(0, 0, 0, .6);
 }
 
 #pjw-captcha-config {

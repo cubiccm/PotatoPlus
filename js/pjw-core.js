@@ -1282,7 +1282,7 @@ window.potatojw_intl = function() {
   } else if (pjw.mode == "course_info") {
     $$("div:eq(1)").after(`<br>当前页面地址是：${window.location.href}`);
   } else if (pjw.mode == "course") {
-    $(".user-dropdown").prepend(`<div style="cursor: pointer; color: #4D87F2; line-height: 17px; margin-bottom: 20px;" onclick="window.pjw.switch();window.location.reload();">${pjw.preferences.enabled ? "禁用" : "启用"} PotatoPlus (Beta)</div>`);
+    $(".user-dropdown").prepend(`<div style="cursor: pointer; color: #4D87F2; line-height: 17px; margin-bottom: 20px;" onclick="window.pjw.switch();window.location.reload();">${pjw.preferences.enabled ? "禁用 PotatoPlus" : "启用 PotatoPlus (Beta)"}</div>`);
     pjw.preferences.enabled && enterMode("course");
   } else {
     return;
