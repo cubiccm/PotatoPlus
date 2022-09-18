@@ -150,22 +150,37 @@ function ClassListPlugin() {
       }
 
       function getWeeks(data) {
-        var html = "";
-        var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        for (var item of data) {
-          for (var i = item.start; i <= item.end; i++)
+        let html = "";
+        const weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (let item of data) {
+          for (let i = item.start; i <= item.end; i++)
             weeks[i] = 1;
           weeks[item.start] = 2;
           weeks[item.end] = 2;
         }
-        for (var i = 1; i <= total_weeks; i++)
+        for (let i = 1; i <= total_weeks; i++) {
+          const s = [229, 119, 180];
+          const e = [123, 11, 94];
+          const x = (i - 1) / (total_weeks - 1);
+          const _x = 1 - x;
+          const rgb = [s[0]*x+e[0]*_x, s[1]*x+e[1]*_x, s[2]*x+e[2]*_x];
+          const fill_color = `rgb(${rgb.join(",")})`;
           if (weeks[i] == 1) {
-            html += `<span style="-webkit-text-fill-color: transparent;">&gt;</span>`;
+            html += `
+              <svg height="15" width="5">
+                <path d="M 0.7 5.5 L 0.7 9.5 L 4.3 7.5 Z" fill="${fill_color}"></path>
+              </svg>`;
           } else if (weeks[i] == 2) {
-            html += `<span style="font-size: 10px; -webkit-text-fill-color: transparent;">${i}</span>`;
+            html += `<svg height="15" width="${i > 9 ? 15 : 10}">
+              <text x="50%" y="50%" dy="1" dominant-baseline="middle" text-anchor="middle" 
+                  style="fill: ${fill_color}; font: bold 11px sans-serif;">${i}</text>
+            </svg>`;
           } else {
-            html += `<span>·</span>`;
+            html += `<svg height="15" width="3.5">
+              <circle cx="50%" cy="50%" r="1" fill="gray"/>
+            </svg>`;
           }
+        }
         return html;
       }
 

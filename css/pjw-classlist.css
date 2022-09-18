@@ -656,16 +656,18 @@
 }
 
 .pjw-class-container--compressed .pjw-class-weeknums {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
-.pjw-class-weeknums > span {
-  line-height: 14px;
-  vertical-align: middle;
+.pjw-class-weeknums > * {
   font-size: 7px;
   font-weight: bold;
   color: rgba(0, 0, 0, .6);
-  margin: 0 1px;
+  margin: 0;
+  -webkit-text-fill-color: transparent;
 }
 
 .pjw-class-weeknum-bar {
