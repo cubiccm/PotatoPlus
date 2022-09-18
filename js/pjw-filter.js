@@ -611,19 +611,19 @@ var pjw_filter = {
       space.continue_on_failure_switch = new mdc.switchControl.MDCSwitch($$("#pjw-potatoes-continue-on-failure")[0]);
 
       space.status = false;
-      space.dom.find("#pjw-potatoes-switch-input").on("click", null, {
+      space.dom.find("#pjw-potatoes-switch").on("click", null, {
         target: space,
       }, (e) => {
         e.data.target.status = e.data.target.switch.selected;
       });
 
-      space.dom.find("#pjw-potatoes-continue-on-success-input").on("click", null, {
+      space.dom.find("#pjw-potatoes-continue-on-success").on("click", null, {
         target: space,
       }, (e) => {
         e.data.target.continue_on_success = e.data.target.continue_on_success_switch.selected;
       });
 
-      space.dom.find("#pjw-potatoes-continue-on-failure-input").on("click", null, {
+      space.dom.find("#pjw-potatoes-continue-on-failure").on("click", null, {
         target: space,
       }, (e) => {
         e.data.target.continue_on_failure = e.data.target.continue_on_failure_switch.selected;

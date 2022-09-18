@@ -628,8 +628,7 @@ window.potatojw_intl = function() {
       pjw.captcha_initialized = true;
     }
 
-    pjw.preferences.solve_captcha && initCAPTCHASolver();
-    
+    pjw.preferences.enabled && pjw.preferences.solve_captcha && initCAPTCHASolver();
 
     const welcome_html = `
       <div class="pjw-xk-welcome-card">
