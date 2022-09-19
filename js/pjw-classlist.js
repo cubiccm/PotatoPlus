@@ -75,8 +75,9 @@ function ClassListPlugin() {
       }
 
       function getTeachers(content) {
-        var is_first = true; var html = `<span class="material-icons-round pjw-class-teacher-icon">school</span>`;
-        for (var str of content) {
+        let is_first = true;
+        let html = `<span class="material-icons-round pjw-class-teacher-icon">school</span>`;
+        for (const str of content) {
           if (!is_first) html += "，";
           is_first = false;
           html += `<span class="pjw-class-name-initial">${str[0]}</span>` + str.slice(1);
@@ -138,13 +139,20 @@ function ClassListPlugin() {
       }
 
       function getWeeksBar(data) {
-        var html = "";
-        for (var item of data) {
-          var style = `left: ${String((item.start - 1.4) / total_weeks * 100) + "%"}; width: ${String((item.end - item.start + 1.8) / total_weeks * 100) + "%"}`;
-          if (item.start != item.end)
+        let html = "";
+        for (const item of data) {
+          const left = (item.start - 1) / total_weeks * 100;
+          const width = (item.end - item.start + 1) / total_weeks * 100;
+          let dl = 4, dw = 8;
+          if (item.start == 1 && item.end == total_weeks) dl = dw = 0;
+          else if (item.start == 1) dl = 0, dw = 4;
+          else if (item.end == total_weeks) dl = 4, dw = 4;
+          const style = `left: calc(${left}% - ${dl}px); width: calc(${width}% + ${dw}px)";`;
+          if (item.start != item.end) {
             html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}-${item.end}${item.end - item.start > 2 ? "周" : ""}</div>`;
-          else
+          } else {
             html += `<div class="pjw-class-weeknum-bar__fill" style="${style}">${item.start}</div>`;
+          }
         }
         return html;
       }
@@ -201,16 +209,16 @@ function ClassListPlugin() {
           ["", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
-        for (var item of data) {
+        for (const item of data) {
           if (item.weekday > 5 && weekend_flag == false)
             weekend_flag = true;
 
           has_lecture[item.weekday]++;
 
-          var css_class = "selected ";
+          let css_class = "selected ";
           if (item.type == "odd") css_class += "sel-odd-class ";
           else if (item.type == "even") css_class += "sel-even-class ";
-          for (var i = item.start; i <= item.end; i++) {
+          for (let i = item.start; i <= item.end; i++) {
             hourly_css_class[item.weekday][i] += css_class;
           }
           hourly_css_class[item.weekday][item.start] += "sel-start ";
@@ -219,10 +227,10 @@ function ClassListPlugin() {
 
         const weekday_display_name = ["", "M", "TU", "W", "TH", "F", "SA", "SU"];
 
-        for (var i = 1; i <= 7; i++) {
+        for (let i = 1; i <= 7; i++) {
           if (i > 5 && weekend_flag == false) break;
 
-          var data_arc = hourly_css_class[i].map((x) => (
+          let data_arc = hourly_css_class[i].map((x) => (
             x == "" ? "0" : (x.includes("even") || x.includes("odd") ? "2" : "1")
           )).join('').slice(1);
 
@@ -232,27 +240,38 @@ function ClassListPlugin() {
               ${has_lecture[i] ? `<canvas class="pjw-class-weekcal-arc" data-arc="${data_arc}" width="100" height="100"></canvas><canvas class="pjw-class-weekcal-arc-white" data-arc="${data_arc}" width="100" height="100"></canvas>` : ''}
             </div>`;
 
-          var body_html_span = "";
+          let body_html_span = "";
           
-          for (var j = 1; j <= 12; j++) {
+          for (let j = 1; j <= 12; j++) {
             if (hourly_css_class[i][j] != "")
               body_html_span += `<span class="${hourly_css_class[i][j]}">${j}</span>`;
             else if (j != 12)
               body_html_span += `<span>${j}</span>`;
           }
 
-          body_html += `<div class="pjw-class-weekcal-calendar-day` + (has_lecture[i] ? " selected" : "") + `">${body_html_span}</div>`;
+          body_html += `
+            <div class="pjw-class-weekcal-calendar-day ${has_lecture[i] ? " selected" : ""}">
+              ${body_html_span}
+            </div>
+          `;
         }
 
-        return `<div class="pjw-class-weekcal-heading">${heading_html}</div><div class="pjw-class-weekcal-calendar">${body_html}</div>`;
+        return `
+          <div class="pjw-class-weekcal-heading">
+            ${heading_html}
+          </div>
+          <div class="pjw-class-weekcal-calendar">
+            ${body_html}
+          </div>
+        `;
       }
 
       function getSelectButton(data, get_inner = false) {
         if (!data.status) return "";
-        var label_text = "";
-        var icon_text = "";
-        var disabled = "";
-        var extra_classes = "";
+        let label_text = "";
+        let icon_text = "";
+        let disabled = "";
+        let extra_classes = "";
 
         // status: "Select", "Deselect", "Full", "Selected", false
         switch (data.status) {
@@ -277,19 +296,37 @@ function ClassListPlugin() {
             break;
         }
 
-        var info_text = "";
+        let info_text = "";
         if (data.text)
           info_text = `<div class="pjw-class-select-button__status">${data.text}</div>`;
 
-        var inner_html = `<div class="mdc-button__ripple"></div><div class="material-icons-round">${icon_text}</div><div class="pjw-class-select-button__container"><div class="pjw-class-select-button__label">${label_text}</div>${info_text}</div>`;
+        const inner_html = `
+          <div class="mdc-button__ripple"></div>
+          <div class="pjw-class-select-button__content">
+            <div class="material-icons-round">${icon_text}</div>
+            <div class="pjw-class-select-button__text">
+              <div class="pjw-class-select-button__label">${label_text}</div>
+              ${info_text}
+            </div>
+          </div>`;
         if (get_inner === true)
           return {
             html: inner_html,
             disabled: (disabled == "disabled"),
             extra_classes: extra_classes
           };
-        return `<div class="pjw-class-select-button__wrapper"><button data-mdc-auto-init="MDCRipple" ${disabled} class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" data-extra-class="${extra_classes}">${inner_html}</button>`
-          + (data.extra_text ? `<span class="pjw-class-select-button-extra-text">${data.extra_text}</span></div>` : "</div>")
+        return `
+          <div class="pjw-class-select-button__wrapper">
+            <button data-mdc-auto-init="MDCRipple" ${disabled} 
+                class="mdc-button mdc-button--raised pjw-class-select-button ${extra_classes}" 
+                data-extra-class="${extra_classes}">
+              ${inner_html}
+            </button>`
+            + (data.extra_text ? `
+            <span class="pjw-class-select-button-extra-text">
+              ${data.extra_text}
+            </span>
+          </div>` : "</div>")
           + `<div class="pjw-class-splitter"></div>`;
       }
 
@@ -400,7 +437,8 @@ function ClassListPlugin() {
         case "lessontime":
           if ("lesson_time" in data && data.lesson_time.length > 0)
             return getLessonTime(data.lesson_time);
-          else return "";
+          else
+            return `<div class="pjw-class-weekcal-calendar">无课程时间信息</div>`;
 
         case "timedetail":
           if ("time_detail" in data && data.time_detail.length > 0)
@@ -418,7 +456,7 @@ function ClassListPlugin() {
     }
 
     set(data) {
-      var class_html = `
+      const class_html = `
         <div class="pjw-class-info">
           <div class="pjw-class-info-top">
             <span class="pjw-class-title">${this.getHTML(data, "title")}</span>
@@ -469,8 +507,11 @@ function ClassListPlugin() {
     }
 
     constructor(DOMparent, data, index, listparent) {
-      var class_html = `<div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;"></div>`;
-      this.dom = $$(class_html).appendTo(DOMparent);
+      const course_container = `
+        <div class="mdc-card pjw-class-container pjw-class-container--compressed" style="display: none;">
+        </div>
+      `;
+      this.dom = $$(course_container).appendTo(DOMparent);
       this.data = data;
       this.index = index;
       this.list = listparent;
@@ -526,9 +567,9 @@ function ClassListPlugin() {
             // Stroke color in compressed calendar
             ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : color_list[i];
           } else {
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 8;
             // Stroke color in expanded calendar
-            ctx.strokeStyle = arc_list[i] == "0" ? "#7b97ca" : "rgba(255, 255, 255, 1)";
+            ctx.strokeStyle = arc_list[i] == "0" ? "rgba(255, 255, 255, .2)" : "rgba(255, 255, 255, 1)";
           }
           let deg_start = (deg_list[i][0] * (2/27) - 1.2037) * Math.PI - 0.02;
           let deg_end = (deg_list[i][1] * (2/27) - 1.2037) * Math.PI + 0.02;
@@ -926,15 +967,20 @@ function ClassListPlugin() {
     }
 
     getPlacesString(places) {
-      return places.map((x) => (x ? x.replace(new RegExp("/", 'g'), " ") : x))
-                   .filter((v, i, s) => (s.indexOf(v) === i && v))
-                   .join('/')
-                   .replace(new RegExp("Ⅱ", 'g'), "II").replace(new RegExp("Ⅰ", 'g'), "I").replace(new RegExp("、", 'g'), " ")
+      return places
+        .map((x) => (x ? x.replace(/&nbsp;*/, " ") : x))
+        .map((x) => (x ? x.trim() : x))
+        .map((x) => (x ? x.replace(new RegExp("/", 'g'), " ") : x))
+        .filter((v, i, s) => (s.indexOf(v) === i && v))
+        .join('/')
+        .replace(new RegExp("Ⅱ", 'g'), "II")
+        .replace(new RegExp("Ⅰ", 'g'), "I")
+        .replace(new RegExp("、", 'g'), " ");
     }
 
     parseTeacherNames(text) {
       if (!text || text == "") return [];
-      return text.split(/[,，]\s/g);
+      return text.split(/[,，]\s*/g);
     }
 
     parsePlaces(weeks_list) {

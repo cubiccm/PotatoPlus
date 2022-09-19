@@ -74,6 +74,10 @@
   margin: 15px;
 }
 
+#pjw-hours-filter {
+  --pjw-calendar-highlight: rgba(0, 0, 0, .2);
+}
+
 #pjw-hours-filter > .content {
   display: flex;
   flex-direction: column;

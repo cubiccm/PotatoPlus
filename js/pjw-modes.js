@@ -312,7 +312,7 @@ function() {
       <i class="material-icons-round" title="联系电话">phone</i>
       <span>${hotline}</span>
       <i class="material-icons-round" title="PotatoPlus 版本">extension</i>
-      <span>PotatoPlus ${pjw.version} ${pjw.platform}</span>
+      <a href="https://cubiccm.ddns.net/potatoplus" target="_blank">PotatoPlus ${pjw.version} ${pjw.platform}</a>
     </footer>
   `);
   const checkPrivilege = () => {(pjw.preferences.privilege && (delete pjw.preferences.privilege && $(".user-top .username").text($(".user-top .username").attr("title")))) || ((pjw.preferences.privilege = "root") && $(".user-top .username").text("root"));};
