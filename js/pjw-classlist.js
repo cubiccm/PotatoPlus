@@ -98,20 +98,28 @@ function ClassListPlugin() {
                 if (typeof pjw.showCourseInfo !== "function") {
                   // Find "jxbInfoWindow" method (originally located in grablessons.js) in jQuery click event
                   const events = jQuery._data(document.querySelector(".result-container"), "events");
-                  for (const event of events["click"]) {
-                    if (event.selector == ".cv-jxb-detail") {
-                      pjw.showCourseInfo = function(target) {
-                        event.handler({
-                          stopPropagation: () => {},
-                          preventDefault: () => {},
-                          currentTarget: target,
-                        });
+                  if (events && events["click"]) {
+                    for (const event of events["click"]) {
+                      if (event.selector == ".cv-jxb-detail") {
+                        pjw.showCourseInfo = function(target) {
+                          event.handler({
+                            stopPropagation: () => {},
+                            preventDefault: () => {},
+                            currentTarget: target,
+                          });
+                        }
+                        break;
                       }
-                      break;
                     }
                   }
                 }
-                item.val = `<span class="pjw-class-course-number pjw-no-expand" data-teachingclassid="${classID}" data-number="${item.val}" onclick="pjw.showCourseInfo(this);">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+                if (typeof pjw.showCourseInfo !== "function") {
+                  // Fallback
+                  const onclick_event = `openLinkInFrame('/xsxkapp/sys/xsxkapp/*default/courseInfoElective.do?number=${item.val}&teachingClassID=${classID}');`;
+                  item.val = `<span class="pjw-class-course-number pjw-no-expand" data-teachingclassid="${classID}" data-number="${item.val}" onclick="${onclick_event}">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+                } else {
+                  item.val = `<span class="pjw-class-course-number pjw-no-expand" data-teachingclassid="${classID}" data-number="${item.val}" onclick="pjw.showCourseInfo(this);">${item.val}<span class="material-icons-round" style="font-size: 12px; margin-left: 1px;">info</span></span>`;
+                }
               }
             }
             if (!item.val) continue;
