@@ -5,7 +5,7 @@
 [项目页面及更新日志](https://cubiccm.ddns.net/2019/09/potatojw-upgraded/)
 
 <a href='https://chrome.google.com/webstore/detail/potatoplus/mokphlegfcilcbnjmhgfikjgnbnconba'><img src='https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/HRs9MPufa1J1h5glNhut.png' alt='Chrome Web Store Badge' style='width: 238px; height: 72px;'/></a>
-<a href='https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib'><img src='https://getbadgecdn.azureedge.net/images/en-us light.svg' alt='Microsoft Store' style='width: 202.5px; height: 72px;'/></a>
+<a href='https://microsoftedge.microsoft.com/addons/detail/potatoplus/miofoebmeohjbieochdmaolpaneapmib'><img src='https://get.microsoft.com/images/en-us%20light.svg' alt='Microsoft Store' style='width: 202.5px; height: 72px;'/></a>
 
 ## 安装
 
