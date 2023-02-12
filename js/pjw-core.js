@@ -4,7 +4,7 @@ const pjw = {
   site: "",
   mode: "",
   initialized: false,
-  version_description: "PotatoPlus 0.3.9 包含界面更新与错误修复。",
+  version_description: "PotatoPlus 0.3.10 包含多项界面更新与错误修复。",
   data: new Proxy(JSON.parse(localStorage.getItem("potatoplus_data")) || {}, {
     get(target, property, receiver) {
       if (property === "clear") {
