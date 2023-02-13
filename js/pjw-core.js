@@ -349,12 +349,12 @@ window.potatojw_intl = function() {
     var calcCurrentWeek = () => {
       const fall_sem = new Date(new Date("2022-09-05").getTime() - 8 * 3600000);
       const fall_exam = new Date(new Date("2022-12-26").getTime() - 8 * 3600000);
-      const winter_holiday = new Date(new Date("2022-01-09").getTime() - 8 * 3600000);
-      const spring_sem = new Date(new Date("2022-02-13").getTime() - 8 * 3600000);
-      const spring_exam = new Date(new Date("2022-06-12").getTime() - 8 * 3600000);
-      const summer_school = new Date(new Date("2022-06-26").getTime() - 8 * 3600000);
-      const summer_holiday = new Date(new Date("2022-07-24").getTime() - 8 * 3600000);
-      const next_sem = new Date(new Date("2022-08-28").getTime() - 8 * 3600000); // Undetermined
+      const winter_holiday = new Date(new Date("2023-01-09").getTime() - 8 * 3600000);
+      const spring_sem = new Date(new Date("2023-02-13").getTime() - 8 * 3600000);
+      const spring_exam = new Date(new Date("2023-06-12").getTime() - 8 * 3600000);
+      const summer_school = new Date(new Date("2023-06-26").getTime() - 8 * 3600000);
+      const summer_holiday = new Date(new Date("2023-07-24").getTime() - 8 * 3600000);
+      const next_sem = new Date(new Date("2023-08-28").getTime() - 8 * 3600000); // Estimated
       const today = new Date();
       if (today < fall_sem)
         return `秋季学期将开始于 ${fall_sem.toDateString()}`;
