@@ -391,23 +391,24 @@ window.potatojw_intl = function() {
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgb(30, 50, 180);" data-link="/jiaowu/student/teachinginfo/courseList.do?method=currentTermCourse">
           <div class="mdc-button__ripple"></div>
           <i class="material-icons-round">today</i>
-          <div class="mdc-button__label">我的课程</div>
-          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(30, 50, 180);" data-link="/jiaowu/student/elective/index.do">
+          <div class="mdc-button__label">本学期课程</div>
+          <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button pjw-menu-button--inserted" style="background-color: white; color: rgb(30, 50, 180);" data-link="https://xk.nju.edu.cn/">
             <div class="mdc-button__ripple"></div>
             <i class="material-icons-round">add</i>
             <div class="mdc-button__label">选课</div>
           </div>
         </div>
-        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/teachinginfo/allCourseList.do?method=getTermAcademy">
-          <div class="mdc-button__ripple"></div>
-          <i class="material-icons-round">search</i>
-          <div class="mdc-button__label">查询全部课程</div>
-        </div>
 
         <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList">
           <div class="mdc-button__ripple"></div>
           <i class="material-icons-round">calculate</i>
-          <div class="mdc-button__label">成绩查看</div>
+          <div class="mdc-button__label">成绩</div>
+        </div>
+
+        <div data-mdc-auto-init="MDCRipple" class="mdc-button mdc-button--raised pjw-menu-button" style="background-color: rgba(255, 255, 255, .3);" data-link="/jiaowu/student/speccheck/specCheckSpecApply.do?method=printYearCheckResult">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons-round">verified</i>
+          <div class="mdc-button__label">学业审核</div>
         </div>
         <br>
         <br>
