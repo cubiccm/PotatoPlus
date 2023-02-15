@@ -1215,18 +1215,19 @@ window.potatojw_intl = function() {
     }
     
     function calcGPA() {
-      var total = 0, total_credit = 0;
-      for (var item of grade_list) {
-        var credit = parseInt(list.class_data[item - 1].data.num_info[0].num);
-        if (!credit) credit = 0;
-        total_credit += credit;
-        total += parseFloat(list.class_data[item - 1].data.num_info[1].num) / 20 * credit;
+      let accumulate_score = 0, accumulate_credit = 0;
+      for (const item of grade_list) {
+        let credit = parseInt(list.class_data[item - 1].data.num_info[0].num) || 0;
+        accumulate_credit += credit;
+        let score = parseFloat(list.class_data[item - 1].data.num_info[1].num) / 20 * credit || 0;
+        accumulate_score += score;
       }
-      if (total_credit == 0) {
+      if (accumulate_credit == 0) {
         $$("#average-score").html("PotatoPlus GPA计算器");
       } else {
-        $$("#average-score").html(`${grade_list.length} 门课程的平均学分绩：<span style="font-weight: bold; font-size: 18px;">${(total / total_credit).toFixed(4)}</span>`);
-        pconsole.debug(`${grade_list.length} 门课程的平均学分绩：${total / total_credit}`, "calc_grade");
+        const gpa = accumulate_score / accumulate_credit;
+        $$("#average-score").html(`${grade_list.length} 门课程的平均学分绩：<span style="font-weight: bold; font-size: 18px;">${gpa.toFixed(4)}</span>`);
+        pconsole.debug(`${grade_list.length} 门课程的平均学分绩：${gpa}`, "calc_grade");
       }
     }
 
